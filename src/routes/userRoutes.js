@@ -1,7 +1,10 @@
 const express = require('express');
 const { updateUserProfile } = require('../controllers/userController');
+const { userProtect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
+
+router.use(userProtect)
 
 
 /**
@@ -85,6 +88,10 @@ const router = express.Router();
  *         description: Profile updated successfully
  *       400:
  *         description: Invalid input
+ *       401:
+ *         description: Unauthorized user
+ *       403:
+ *         description: Unverified account
  *       500:
  *         description: Server error
  */

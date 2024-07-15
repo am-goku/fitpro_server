@@ -15,7 +15,7 @@ dotenv.config();
  * This function establishes a connection to the MongoDB database using Mongoose. It uses the `MONGO_URI` environment variable to specify the connection URI. If the connection is successful, it logs a message indicating the successful establishment of the database connection. If there is an error connecting to the database, the process will exit with an error code.
  *
  * @param {string} [uri=process.env.MONGO_URI] - The MongoDB connection URI. Defaults to the value of the `MONGO_URI` environment variable.
- * @param {Object} [options={useNewUrlParser: true, useUnifiedTopology: true}] - Additional options for the Mongoose connection. Defaults to `{ useNewUrlParser: true, useUnifiedTopology: true }`.
+ * @param {Object} Defaults to `{ useNewUrlParser: true, useUnifiedTopology: true }`.
  *
  * @returns {Promise<void>} - A Promise that resolves when the database connection is established.
  */

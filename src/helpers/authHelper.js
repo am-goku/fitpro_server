@@ -200,7 +200,7 @@ async function changePassword(email, otp, password) {
         user.password = password;
         user.otp = undefined;
         user.otpExpires = undefined;
-        
+
         await user.save();
 
         return { status: 200, message: "Password has been changed" };

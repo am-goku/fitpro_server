@@ -1,10 +1,15 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
+
 /**
- * This function is used to create a new UserSchema instance with the specified fields and validation rules.
- * @param {Object} options - An object containing the schema options for the User model.
- * @returns {mongoose.Schema} A new UserSchema instance with the specified fields and validation rules.
+ * This function defines the schema for a user in the FitPro application.
+ * It includes fields for name, email, password, OTP, OTP expiration, and verification status.
+ * Additionally, it includes fields for fitness profile such as age, gender, height, weight, goal, experience, workout type, and workout frequency.
+ * The schema also includes timestamps for createdAt and updatedAt fields.
+ *
+ * @param {mongoose.Schema} mongoose - The mongoose schema object.
+ * @returns {mongoose.Schema} A mongoose schema object representing a user in the FitPro application.
  */
 const UserSchema = new mongoose.Schema({
     name: {

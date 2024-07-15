@@ -2,9 +2,16 @@ const { updateProfile } = require("../helpers/userHelper");
 const responseHandler = require("../utils/responseHandler");
 
 
+/**
+ * Updates the user's profile information.
+ *
+ * @param {Object} req - Express request object containing the user's profile data in the body.
+ * @param {Object} res - Express response object to send the updated profile data back to the client.
+ * @returns {Promise<void>} - Returns a Promise that resolves when the profile is successfully updated.
+ * @throws {Error} - Throws an error if there's an issue updating the profile.
+ */
 async function updateUserProfile(req, res) {
     try {
-        
         const userData = req.body;
         const userID = req.userID;
 
@@ -12,7 +19,6 @@ async function updateUserProfile(req, res) {
         delete userData.password;
 
         const data = await updateProfile(userID, userData);
-
         return responseHandler(res, data);
 
     } catch (error) {
@@ -25,5 +31,4 @@ async function updateUserProfile(req, res) {
 }
 
 
-
-module.exports = {updateUserProfile}
+module.exports = { updateUserProfile }
