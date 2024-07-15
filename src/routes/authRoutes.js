@@ -4,15 +4,6 @@ const { registerUser, verifyUserOtp, loginUser, verifyUserEmail, verifyUserPassC
 
 const router = express.Router();
 
-/**
- * @swagger
- * components:
- *   securitySchemes:
- *     bearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
- */
 
 /**
  * @swagger
@@ -204,22 +195,6 @@ router.post('/forgot-password/verify-otp', verifyUserPassChangeOTP);
  */
 router.patch('/change-password', changeUserPassword);
 
-
-
-/**
- * @swagger
- * /api/auth/admin:
- *   get:
- *     summary: Admin access only
- *     tags: [Admin]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Welcome, admin!
- *       403:
- *         description: Forbidden
- */
 
 
 module.exports = router;

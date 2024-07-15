@@ -2,6 +2,12 @@ const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const dotenv = require('dotenv');
 
+/**
+ * Loads environment variables from a `.env` file.
+ * This function reads the `.env` file and loads the environment variables specified in it.
+ * @param {String} [path=process.env.DOTENV_PATH] - The path to the `.env` file. Defaults to the value of the `DOTENV_PATH` environment variable if set, otherwise defaults to the current directory.
+ * @returns {Object} - An object containing the loaded environment variables.
+ */
 dotenv.config();
 
 /**

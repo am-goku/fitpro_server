@@ -36,7 +36,56 @@ const UserSchema = new mongoose.Schema({
         type: String,
         default: 'user',
         enum: ['user', 'admin'],
+    },
+
+    // Fitness Profile
+
+    age: {
+        type: Number,
+        required: false,
+    },
+    gender: {
+        type: String,
+        required: false,
+        enum: ['male', 'female', 'other'],
+    },
+    height: {
+        value: {
+            type: Number,
+            min: 0
+        },
+        unit: {
+            type: String,
+            enum: ['cm', 'ft'],
+        }
+    },
+    weight: {
+        value: {
+            type: Number,
+            min: 0
+        },
+        unit: {
+            type: String,
+            enum: ['kg', 'lb'],
+        }
+    },
+    goal: {
+        type: String,
+        enum: ['loose weight', 'be healthier', 'build muscles'],
+    },
+    experience: {
+        type: String,
+        enum: ['beginner', 'loose weight', 'build muscles'],
+    },
+    workoutType: {
+        type: String,
+        enum: ['commercial gym', 'home gym', 'body weight']
+    },
+    workoutFrequency: {
+        type: Number,
+        enum: [3, 4, 5, 6]
     }
+
 }, { timestamps: true });
 
 
