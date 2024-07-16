@@ -14,8 +14,17 @@ const responseHandler = require("../utils/responseHandler");
  */
 async function userProtect(req, res, next) {
     try {
+        const accessToken = req.headers.authorization;
 
-        const token = req.headers.authorization.split(" ")[1];
+        if (!accessToken) {
+            const data = {
+                status: 401,
+                message: 'No token provided',
+            }
+            return responseHandler(res, data)
+        }
+
+        const token = accessToken.split(" ")[1];
 
         const decoded = validateToken(token);
 

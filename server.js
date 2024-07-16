@@ -5,6 +5,7 @@ const cors = require('cors');
 const connectDB = require('./src/config/db');
 const swaggerDocs = require('./src/config/swagger');
 const authRoutes = require('./src/routes/authRoutes');
+const oAuthRoutes = require('./src/routes/oAuthRoute');
 const userRoutes = require('./src/routes/userRoutes');
 
 /**
@@ -57,12 +58,12 @@ swaggerDocs(app);
 
 
 /**
- * Initializes the Express application to use the specified route prefix for the 'authRoutes' routes.
- * This function attaches the 'authRoutes' routes to the specified path '/api/v1/auth' on the Express application.
- * @param {String} path - The path to which the 'authRoutes' routes are attached. Defaults to '/api/v1/auth'.
- * @param {Object} authRoutes - The Express routes object containing the 'auth' routes.
+ * Initializes the Express application to use the specified routes for handling API requests.
+ * @param {String} path - The base path for the routes.
+ * @param {Object} routes - The routes object containing the route handlers for the specified path.
  */
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/oauth', oAuthRoutes);
 app.use('/api/v1/user', userRoutes);
 
 

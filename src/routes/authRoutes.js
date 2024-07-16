@@ -102,13 +102,19 @@ router.post('/verify-otp', verifyUserOtp);
  */
 router.post('/login', loginUser);
 
+/**
+ * @swagger
+ * tags:
+ *   name: Forgot password
+ *   description: Routes related to forgot password and change password
+ */
 
 /**
  * @swagger
  * /api/v1/auth/forgot-password/verify-email:
  *   post:
  *     summary: Verify user email before password change
- *     tags: [Auth]
+ *     tags: [Forgot password]
  *     requestBody:
  *       required: true
  *       content:
@@ -136,7 +142,7 @@ router.post('/forgot-password/verify-email', verifyUserEmail);
  * /api/v1/auth/forgot-password/verify-otp:
  *   post:
  *     summary: Verify otp that has been sent to the user email before password change
- *     tags: [Auth]
+ *     tags: [Forgot password]
  *     requestBody:
  *       required: true
  *       content:
@@ -167,7 +173,7 @@ router.post('/forgot-password/verify-otp', verifyUserPassChangeOTP);
  * /api/v1/auth/change-password:
  *   patch:
  *     summary: Change password for the user ( note- the server will check for the prevoius otp once again )
- *     tags: [Auth]
+ *     tags: [Forgot password]
  *     requestBody:
  *       required: true
  *       content:
