@@ -23,7 +23,7 @@ async function register(email, password) {
             password
         })
 
-        const otp = Math.floor(10000000 + Math.random() * 90000000).toString();
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
         const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
 
         user.otp = otp.toString();
@@ -52,7 +52,7 @@ async function register(email, password) {
 async function verifyOtp(otp, email) {
     try {
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).select("-password");
 
         if (!user) return { status: 400, message: "Invalid email address" }
 
@@ -67,7 +67,7 @@ async function verifyOtp(otp, email) {
 
         const accessToken = generateToken(user.id, user.role);
 
-        return { status: 200, message: "Account has been verified and Token generated", accessToken }
+        return { status: 200, message: "Account has been verified and Token generated", user, accessToken }
 
     } catch (error) {
         return Promise.reject({ status: 500, message: error.message })
@@ -129,7 +129,7 @@ async function verifyEmail(email) {
 
         if (!user.isVerified) return { status: 403, message: "Account is not verified" };
 
-        const otp = Math.floor(1000 + Math.random() * 9000).toString();
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
         const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
 
         user.otp = otp.toString();
