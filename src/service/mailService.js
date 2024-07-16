@@ -30,7 +30,7 @@ async function sendOtpEmail(email, otp) {
         from: 'no-reply@example.com',
         to: email,
         subject: 'OTP Verification',
-        text: `Your OTP is ${otp}. Please use this OTP to verify your email address.`,
+        text: `Your OTP is ${otp}. Please use this OTP to verify your email address. The OTP is only valid for 10 minutes.`,
     }
 
     await transporter.sendMail(mailOptions);
