@@ -120,7 +120,7 @@ UserSchema.pre('save', async function (next) {
  * @param {String} enteredPassword - The password entered by the user.
  * @returns {Promise<Boolean>} A Promise that resolves to a boolean value indicating whether the entered password matches the hashed password stored in the database.
  */
-UserSchema.methods.matchPassword = async function(enteredPassword) {
+UserSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 }
 

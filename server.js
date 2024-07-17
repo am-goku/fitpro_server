@@ -8,6 +8,7 @@ const authRoutes = require('./src/routes/authRoutes');
 const oAuthRoutes = require('./src/routes/oAuthRoute');
 const userRoutes = require('./src/routes/userRoutes');
 const adminRoutes = require('./src/routes/adminRoutes');
+const planRoutes = require('./src/routes/planRoutes');
 
 /**
  * Loads environment variables from a `.env` file.
@@ -67,6 +68,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/oauth', oAuthRoutes);
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/plan', planRoutes);
 
 
 
