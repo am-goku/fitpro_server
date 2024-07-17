@@ -77,12 +77,13 @@ async function verifyOtp(otp, email) {
 
 /**
  * Logs the user into the system.
- * @param {string} email - The email address associated with the user's account.
- * @param {string} password - The password entered by the user.
- * @returns {Promise<{status: number, message: string, user: User, accessToken: string}>} - A promise that resolves to an object containing the status code, a message, the user object, and a JWT access token if the login credentials are valid.
+ * @param {string} email - The email address of the user attempting to log in.
+ * @param {string} password - The password of the user attempting to log in.
+ * @param {string} role - The role of the user attempting to log in.
+ * @returns {Promise<{status: number, message: string, user: User, accessToken: string}>} - A promise that resolves to an object containing the status code, a message, the user object, and a JWT access token if the login is successful.
  * @throws {Error} - If an error occurs during the login process.
  */
-async function login(email, password) {
+async function login(email, password, role) {
     try {
 
         const user = await User.findOne({ email });
@@ -90,6 +91,8 @@ async function login(email, password) {
         if (!user) return { status: 400, message: "Invalid email address" };
 
         if (!user.isVerified) return { status: 403, message: "Account is not verified" };
+
+        if (user.role !== role) return { status: 401, message: "Unauthorized access" };
 
         const isMatch = await user.matchPassword(password);
 
@@ -209,7 +212,6 @@ async function changePassword(email, otp, password) {
         return Promise.reject({ status: 500, message: error.message });
     }
 }
-
 
 
 

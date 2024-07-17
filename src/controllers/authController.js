@@ -79,7 +79,7 @@ async function loginUser(req, res) {
             return responseHandler(res, { status: 400, message: "Missing or invalid credentials" });
         }
 
-        const data = await login(email, password);
+        const data = await login(email, password, 'user');
 
         responseHandler(res, data);
     } catch (error) {
@@ -155,13 +155,43 @@ async function changeUserPassword(req, res) {
     try {
         const { email, otp, password } = req.body;
 
-        if(!email || !otp || !password) {
-            return responseHandler(res, {status: 400, message: "Invalid or missing credentials"})
+        if (!email || !otp || !password) {
+            return responseHandler(res, { status: 400, message: "Invalid or missing credentials" })
         }
 
         const data = await changePassword(email, otp, password);
 
         return responseHandler(res, data);
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+        responseHandler(res, data);
+    }
+}
+
+
+/**
+ * Logs the admin into the system using their email and password.
+ * @param {Object} req - Express request object containing the admin's email and password.
+ * @param {Object} res - Express response object to send the login result.
+ * @param {String} req.body.email - The admin's email address.
+ * @param {String} req.body.password - The admin's password.
+ * @returns {Promise<Object>} - A promise that resolves to the login result or rejects with an error.
+ * @throws {Error} - If there is an error during login.
+ */
+async function loginAdmin(req, res) {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return responseHandler(res, { status: 400, message: "Missing or invalid credentials" });
+        }
+
+        const data = await login(email, password, 'admin');
+
+        responseHandler(res, data);
     } catch (error) {
         const data = {
             status: 500,
@@ -179,5 +209,6 @@ module.exports = {
     loginUser,
     verifyUserEmail,
     verifyUserPassChangeOTP,
-    changeUserPassword
+    changeUserPassword,
+    loginAdmin,
 }

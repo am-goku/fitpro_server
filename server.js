@@ -7,6 +7,7 @@ const swaggerDocs = require('./src/config/swagger');
 const authRoutes = require('./src/routes/authRoutes');
 const oAuthRoutes = require('./src/routes/oAuthRoute');
 const userRoutes = require('./src/routes/userRoutes');
+const adminRoutes = require('./src/routes/adminRoutes');
 
 /**
  * Loads environment variables from a `.env` file.
@@ -65,6 +66,7 @@ swaggerDocs(app);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/oauth', oAuthRoutes);
 app.use('/api/v1/user', userRoutes);
+app.use('/api/v1/admin', adminRoutes);
 
 
 

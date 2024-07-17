@@ -96,7 +96,7 @@ router.post('/verify-otp', verifyUserOtp);
  *       200:
  *         description: Login successful
  *       400:
- *         description: OInvalid credentials
+ *         description: Invalid credentials
  *       500:
  *         description: Server error
  */
