@@ -70,4 +70,78 @@ async function userProtect(req, res, next) {
 }
 
 
-module.exports = { userProtect }
+async function adminProtect(req, res, next) {
+    try {
+        const accessToken = req.headers.authorization;
+
+        if (!accessToken) {
+            const data = {
+                status: 401,
+                message: 'No token provided',
+            }
+            return responseHandler(res, data)
+        }
+
+        const token = accessToken.split(" ")[1];
+
+        const decoded = validateToken(token);
+
+        if (!decoded) {
+            const data = {
+                status: 401,
+                message: 'Invalid or expired token',
+            }
+            return responseHandler(res, data);
+        }
+
+        if(decoded.role !== 'admin') {
+            const data = {
+                status: 403,
+                message: 'Unauthorised access',
+            }
+            return responseHandler(res, data);
+        }
+
+        const user = await User.findOne({ _id: decoded.id }).select("-password");
+
+        if (!user) {
+            const data = {
+                status: 400,
+                message: 'User not found',
+            }
+            return responseHandler(res, data);
+        }
+
+        if (!user.isVerified) {
+            const data = {
+                status: 403,
+                message: 'Account is not verified',
+            }
+            return responseHandler(res, data);
+        }
+
+        if(user.role !== 'admin') {
+            const data = {
+                status: 403,
+                message: 'Unauthorised access',
+            }
+            return responseHandler(res, data);
+        }
+
+        req.userID = user._id;
+
+        next();
+
+    } catch (error) {
+
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+
+        responseHandler(res, data)
+    }
+}
+
+
+module.exports = { userProtect, adminProtect }

@@ -1,5 +1,6 @@
 const express = require('express');
 const { createWorkoutPlan, createWeeklyPlan, createDailyPlan, createNewExercise } = require('../controllers/planController');
+const { adminProtect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -106,7 +107,7 @@ const router = express.Router();
  *       '401':
  *         description: Unauthorized
  */
-router.post('/create', createWorkoutPlan);
+router.post('/create', adminProtect, createWorkoutPlan);
 
 
 /**
@@ -141,7 +142,7 @@ router.post('/create', createWorkoutPlan);
  *       '401':
  *         description: Unauthorized
  */
-router.post('/create/week-plan', createWeeklyPlan);
+router.post('/create/week-plan', adminProtect, createWeeklyPlan);
 
 /**
  * @swagger
@@ -195,7 +196,7 @@ router.post('/create/week-plan', createWeeklyPlan);
  *       '401':
  *         description: Unauthorized
  */
-router.post('/create/day-plan', createDailyPlan);
+router.post('/create/day-plan', adminProtect, createDailyPlan);
 
 /**
  * @swagger
@@ -269,6 +270,6 @@ router.post('/create/day-plan', createDailyPlan);
  *       '401':
  *         description: Unauthorized
  */
-router.post('/create/exercise', createNewExercise)
+router.post('/create/exercise', adminProtect, createNewExercise)
 
 module.exports = router;
