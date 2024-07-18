@@ -1,10 +1,12 @@
 const express = require('express');
 const { updateUserProfile } = require('../controllers/userController');
 const { userProtect } = require('../middleware/authMiddleware');
+const User = require('../models/User');
+const responseHandler = require('../utils/responseHandler');
 
 const router = express.Router();
 
-router.use(userProtect)
+// router.use(userProtect)
 
 
 /**
@@ -95,9 +97,42 @@ router.use(userProtect)
  *       500:
  *         description: Server error
  */
-router.post('/update', updateUserProfile)
+router.post('/update', userProtect, updateUserProfile)
 
 
+
+/**
+ * @swagger
+ * /api/v1/user/clear:
+ *   delete:
+ *     summary: To Update User Profile ( All body datas are not necessary, remove unnecessary body data )
+ *     tags: [helpers]
+ *     responses:
+ *       200:
+ *         description: All users deleted successfully
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Server error
+ */
+router.delete('/clear', async (req, res) => {
+    try {
+        await User.deleteMany({});
+
+        const data = {
+            status: 200,
+            message: "All users deleted successfully"
+        }
+
+        return responseHandler(res, data);
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+        responseHandler(res, data);
+    }
+})
 
 
 module.exports = router;
