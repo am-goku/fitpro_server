@@ -1,13 +1,13 @@
 const express = require('express');
-const { createWorkoutPlan, createWeeklyPlan, createDailyPlan, createNewExercise } = require('../controllers/planController');
 const { adminProtect } = require('../middleware/authMiddleware');
+const { createWorkoutPlan, fetchWorkoutPlan, updateWorkoutPlan, deleteWorkoutPlan } = require('../controllers/planController');
 
 const router = express.Router();
 
 /**
  * @swagger
  * tags:
- *   name: Admin - Workout Plans
+ *   name: Workout-plan
  *   description: Routes for admin to update workout plans
  */
 
@@ -15,8 +15,8 @@ const router = express.Router();
  * @swagger
  * /api/v1/plan/create:
  *   post:
- *     summary: Admin can add a new workout plans
- *     tags: [Admin - Workout Plans]
+ *     summary: Create a new workout plan
+ *     tags: [Workout-plan]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -24,252 +24,203 @@ const router = express.Router();
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               planName:
- *                 type: string
- *                 example: "Beginner Cardio"
- *               category:
- *                 type: string
- *                 example: "Cardio"
- *               duration:
- *                 type: number
- *                 example: 12
- *               daysPerWeek:
- *                 type: number
- *                 example: 3
- *               timePerDay:
- *                 type: string
- *                 example: "30 minutes"
- *               level:
- *                 type: string
- *                 example: "Beginner"
- *               location:
- *                 type: string
- *                 example: "Gym"
- *               description:
- *                 type: string
- *                 example: "A beginner level cardio workout plan."
- *               uploads:
- *                 type: array
- *                 items:
- *                   type: string
- *                 example: ["link_to_image1.jpg", "link_to_image2.jpg"]
- *             required:
- *               - planName
- *               - category
- *               - duration
- *               - daysPerWeek
- *               - timePerDay
- *               - level
+ *             $ref: '#/components/schemas/PlanSchema'
  *     responses:
- *       '201':
- *         description: Successfully created a workout plan
+ *       200:
+ *         description: Created workout plan
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ * components:
+ *   schemas:
+ *     ExerciseSchema:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *         exercise_number:
+ *           type: number
+ *         exercise_type:
+ *           type: string
+ *         time_based:
+ *           type: string
+ *         weighted:
+ *           type: string
+ *         sets:
+ *           type: number
+ *         reps:
+ *           type: array
+ *           items:
+ *             type: number
+ *         set_time:
+ *           type: string
+ *         superset_names:
+ *           type: array
+ *           items:
+ *             type: string
+ *         rest_time:
+ *           type: number
+ *         video_url:
+ *           type: string
+ *         image_url:
+ *           type: string
+ *     CategorySchema:
+ *       type: object
+ *       properties:
+ *         sub_category:
+ *           type: string
+ *         circuit_rest_time:
+ *           type: number
+ *         circuit_reps:
+ *           type: number
+ *         exercises:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/ExerciseSchema'
+ *     DaySchema:
+ *       type: object
+ *       properties:
+ *         day:
+ *           type: number
+ *         day_name:
+ *           type: string
+ *         day_banner_image:
+ *           type: string
+ *         day_of_week:
+ *           type: string
+ *         estimated_duration:
+ *           type: string
+ *         categories:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/CategorySchema'
+ *     WeekSchema:
+ *       type: object
+ *       properties:
+ *         week:
+ *           type: number
+ *         days:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/DaySchema'
+ *     PlanSchema:
+ *       type: object
+ *       properties:
+ *         plan_name:
+ *           type: string
+ *         description:
+ *           type: string
+ *         banner_image:
+ *           type: string
+ *         workout_keywords:
+ *           type: string
+ *         goal_orientation:
+ *           type: array
+ *           items:
+ *             type: string
+ *         target_age_group:
+ *           type: string
+ *         training_type:
+ *           type: string
+ *         location:
+ *           type: string
+ *         level:
+ *           type: string
+ *         estimated_duration:
+ *           type: string
+ *         rest_between_exercises_seconds:
+ *           type: number
+ *         average_calories_burned_per_minute:
+ *           type: number
+ *         weeks:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/WeekSchema'
+ *       required:
+ *         - workout_name
+ */
+router.post('/create', adminProtect, createWorkoutPlan)
+
+/**
+ * @swagger
+ * /api/v1/plan/fetch:
+ *   get:
+ *     summary: Fetch all workout plans / fetch single workout plan using ID
+ *     tags: [Workout-plan]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: planID
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: "The ID of the workout plan to fetch a single workout plan"
+ *     responses:
+ *       200:
+ *         description: Workout plan / plans successfully fetched
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                   example: "60d0fe4f5311236168a109ca"
- *                 planName:
- *                   type: string
- *                   example: "Beginner Cardio"
- *                 category:
- *                   type: string
- *                   example: "Cardio"
- *                 duration:
- *                   type: number
- *                   example: 12
- *                 daysPerWeek:
- *                   type: number
- *                   example: 3
- *                 timePerDay:
- *                   type: string
- *                   example: "30 minutes"
- *                 level:
- *                   type: string
- *                   example: "Beginner"
- *                 location:
- *                   type: string
- *                   example: "Gym"
- *                 description:
- *                   type: string
- *                   example: "A beginner level cardio workout plan."
- *                 uploads:
- *                   type: array
- *                   items:
- *                     type: string
- *                   example: ["link_to_image1.jpg", "link_to_image2.jpg"]
- *       '400':
- *         description: Bad request
- *       '401':
- *         description: Unauthorized
+ *               $ref: '#/components/schemas/PlanSchema'
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
  */
-router.post('/create', adminProtect, createWorkoutPlan);
-
+router.get('/fetch', fetchWorkoutPlan)
 
 /**
  * @swagger
- * /api/v1/plan/create/week-plan:
- *   post:
- *     summary: Admin can add a new week plan
- *     tags: [Admin - Workout Plans]
+ * /api/v1/plan/update/{planID}:
+ *   patch:
+ *     summary: Update a new workout plan using planID
+ *     tags: [Workout-plan]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: planID
+ *         required: true
+ *         description: "The ID of the workout plan to update a single workout plan"
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               weekNumber:
- *                 type: number
- *                 example: 1
- *               planID:
- *                 type: string
- *                 example: 6697a6e717e852492580bebe
- *             required:
- *               - weekNumber
- *               - planID
+ *             $ref: '#/components/schemas/PlanSchema'
  *     responses:
- *       '201':
- *         description: Successfully created a week plan
- *       '400':
- *         description: Bad request
- *       '401':
- *         description: Unauthorized
+ *       200:
+ *         description: Updated workout plan
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
  */
-router.post('/create/week-plan', adminProtect, createWeeklyPlan);
+router.patch('/update/:planID', adminProtect, updateWorkoutPlan);
 
 /**
  * @swagger
- * /api/v1/plan/create/day-plan:
- *   post:
- *     summary: API to create a day-of-week plan
- *     tags: [Admin - Workout Plans]
+ * /api/v1/plan/delete/{planID}:
+ *   delete:
+ *     summary: Delete a workout plan
+ *     tags: [Workout-plan]
  *     security:
  *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               dayNumber:
- *                 type: number
- *                 example: 1
- *               dayName:
- *                 type: string
- *                 example: Arms day
- *               duration:
- *                 type: string
- *                 example: ""
- *               subCategory:
- *                 type: string
- *                 example: ""
- *               bannerImage:
- *                 type: string
- *                 example: ""
- *               introVideo:
- *                 type: string
- *                 example: ""
- *               weekID:
- *                 type: string
- *                 example: 6697b371bf4177f7ff229b0c
- *             required:
- *               - dayNumber
- *               - dayName
- *               - duration
- *               - subCategory
- *               - bannerImage
- *               - introVideo
- *               - weekID
+ *     parameters:
+ *       - in: path
+ *         name: planID
+ *         required: true
+ *         description: "The ID of the workout plan to delete a single workout plan"
  *     responses:
- *       '201':
- *         description: Successfully created a day plan
- *       '400':
- *         description: Bad request
- *       '401':
- *         description: Unauthorized
+ *       200:
+ *         description: Deleted workout plan
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
  */
-router.post('/create/day-plan', adminProtect, createDailyPlan);
-
-/**
- * @swagger
- * /api/v1/plan/create/exercise:
- *   post:
- *     summary: API to create a new exercise to a day-of-week
- *     tags: [Admin - Workout Plans]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               exerciseName:
- *                 type: string
- *                 example: ""
- *               type:
- *                 type: string
- *                 example: ""
- *               exerciseA:
- *                 type: string
- *                 example: ""
- *               exerciseB:
- *                 type: string
- *                 example: ""
- *               weighted:
- *                 type: boolean
- *                 example: false
- *               sets:
- *                 type: number
- *                 example: 4
- *               reps:
- *                 type: [number]
- *                 example: [10, 8, 6, 2]
- *               timeBased:
- *                 type: boolean
- *                 example: true
- *               setTime:
- *                 type: string
- *                 example: ""
- *               interExerciseRest:
- *                 type: string
- *                 example: ""
- *               restTime:
- *                 type: string
- *                 example: ""
- *               dayID:
- *                 type: string
- *                 example: 6697b664d638f5c61b48d2db
- *             required:
- *               - exerciseName
- *               - type
- *               - exerciseA
- *               - exerciseB
- *               - weighted
- *               - sets
- *               - reps
- *               - timeBased
- *               - setTime
- *               - interExerciseRest
- *               - restTime
- *               - dayID
- *     responses:
- *       '201':
- *         description: Successfully created new exercise to a day plan
- *       '400':
- *         description: Bad request
- *       '401':
- *         description: Unauthorized
- */
-router.post('/create/exercise', adminProtect, createNewExercise)
+router.delete('/delete/:planID', adminProtect, deleteWorkoutPlan);
 
 module.exports = router;

@@ -70,8 +70,18 @@ async function userProtect(req, res, next) {
 }
 
 
+/**
+* This middleware function is used to protect admin routes.
+* It validates the token, checks if the user is verified and has an admin role, and sets the user ID in the request object.
+* @param {Object} req - Express request object.
+* @param {Object} res - Express response object.
+* @param {Function} next - Express next middleware function.
+* @returns {Promise<void>} - Resolves when the middleware function is done executing.
+* @throws {Error} - If an error occurs during the execution of the middleware function.
+ */
 async function adminProtect(req, res, next) {
     try {
+        // Extract the token from the Authorization header
         const accessToken = req.headers.authorization;
 
         if (!accessToken) {
@@ -82,8 +92,10 @@ async function adminProtect(req, res, next) {
             return responseHandler(res, data)
         }
 
+        // Split the token from the Bearer scheme
         const token = accessToken.split(" ")[1];
 
+        // Validate the token
         const decoded = validateToken(token);
 
         if (!decoded) {
@@ -94,7 +106,8 @@ async function adminProtect(req, res, next) {
             return responseHandler(res, data);
         }
 
-        if(decoded.role !== 'admin') {
+        // Check if the user has an admin role
+        if (decoded.role !== 'admin') {
             const data = {
                 status: 403,
                 message: 'Unauthorised access',
@@ -102,6 +115,7 @@ async function adminProtect(req, res, next) {
             return responseHandler(res, data);
         }
 
+        // Find the user by ID and exclude the password field
         const user = await User.findOne({ _id: decoded.id }).select("-password");
 
         if (!user) {
@@ -112,6 +126,7 @@ async function adminProtect(req, res, next) {
             return responseHandler(res, data);
         }
 
+        // Ensure the user's account is verified
         if (!user.isVerified) {
             const data = {
                 status: 403,
@@ -120,7 +135,8 @@ async function adminProtect(req, res, next) {
             return responseHandler(res, data);
         }
 
-        if(user.role !== 'admin') {
+        // Double-check the user's role
+        if (user.role !== 'admin') {
             const data = {
                 status: 403,
                 message: 'Unauthorised access',
@@ -128,12 +144,13 @@ async function adminProtect(req, res, next) {
             return responseHandler(res, data);
         }
 
+        // Attach the user's ID to the request object
         req.userID = user._id;
 
+        // Proceed to the next middleware or route handler
         next();
 
     } catch (error) {
-
         const data = {
             status: 500,
             message: error.message,

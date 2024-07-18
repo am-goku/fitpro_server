@@ -1,49 +1,31 @@
 /**
- * Represents a Week Plan model in a MongoDB database.
- * This model is used to store information about a week's plan, including the week number and associated day plans.
+ * Defines the Mongoose schema for a week, which includes the week number and an array of DaySchema.
+ * This schema is used to model and interact with week data in a MongoDB database.
  *
- * @module WeekPlan
+ * @module WeekSchema
  * @requires mongoose
+ * @requires ./DayPlan
+ * @returns {mongoose.Schema} WeekSchema - A Mongoose schema for a week.
  */
-const mongoose = require("mongoose");
+const { Schema } = require("mongoose");
+const DaySchema = require("./DayPlan");
+
 
 /**
- * Week Plan schema definition.
- *
- * @typedef {Object} WeekPlanSchema
- * @property {Number} weekNumber - The week number.
- * @property {Array.<mongoose.Types.ObjectId>} dayPlans - An array of ObjectId references to the associated Day Plan documents.
+ * @typedef {Object} Week
+ * @property {number} week - The week number.
+ * @property {DaySchema[]} days - An array of DaySchema.
  */
-const WeekPlanSchema = new mongoose.Schema({
 
-    weekNumber: {
+/**
+ * @type {mongoose.Schema}
+ */
+const WeekSchema = new Schema({
+    week: {
         type: Number,
-        require: true
+        required: true
     },
+    days: [DaySchema]
+}, { timestamps: true });
 
-    dayPlans: {
-        type: [
-            {
-                type: mongoose.Types.ObjectId,
-                ref: 'dayPlan',
-            }
-        ],
-        required: false
-    }
-
-}, { timestamps: true })
-
-/**
- * Week Plan model definition.
- *
- * @type {mongoose.Model<mongoose.Document, mongoose.ModelOptions>}
- */
-const WeekPlan = mongoose.model('weekPlan', WeekPlanSchema);
-
-/**
- * Exports the Week Plan model.
- *
- * @module WeekPlan
- * @exports WeekPlan
- */
-module.exports = WeekPlan;
+module.exports = WeekSchema;

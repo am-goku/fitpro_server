@@ -80,19 +80,15 @@ const UserSchema = new mongoose.Schema({
     },
     goal: {
         type: String,
-        enum: ['loose weight', 'be healthier', 'build muscles'],
     },
     experience: {
         type: String,
-        enum: ['beginner', 'loose weight', 'build muscles'],
     },
     workoutType: {
         type: String,
-        enum: ['commercial gym', 'home gym', 'body weight']
     },
     workoutFrequency: {
         type: Number,
-        enum: [3, 4, 5, 6]
     }
 
 }, { timestamps: true });
