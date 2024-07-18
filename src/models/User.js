@@ -24,6 +24,7 @@ const UserSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
+        set: value => value.toLowerCase(),
         unique: true,
     },
     password: {
@@ -56,6 +57,7 @@ const UserSchema = new mongoose.Schema({
     gender: {
         type: String,
         required: false,
+        set: value => value.toLowerCase(),
         enum: ['male', 'female', 'other'],
     },
     height: {
@@ -65,6 +67,7 @@ const UserSchema = new mongoose.Schema({
         },
         unit: {
             type: String,
+            set: value => value.toLowerCase(),
             enum: ['cm', 'ft'],
         }
     },
@@ -75,19 +78,23 @@ const UserSchema = new mongoose.Schema({
         },
         unit: {
             type: String,
+            set: value => value.toLowerCase(),
             enum: ['kg', 'lb'],
         }
     },
     goal: {
         type: String,
+        set: value => value.toLowerCase(),
         enum: ['loose weight', 'be healthier', 'build muscles'],
     },
     experience: {
         type: String,
+        set: value => value.toLowerCase(),
         enum: ['beginner', 'loose weight', 'build muscles'],
     },
     workoutType: {
         type: String,
+        set: value => value.toLowerCase(),
         enum: ['commercial gym', 'home gym', 'body weight']
     },
     workoutFrequency: {
