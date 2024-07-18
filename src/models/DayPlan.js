@@ -1,81 +1,46 @@
 /**
- * Represents a DayPlan model in a MongoDB database.
- * This model is used to store information about daily plans in a fitness application.
+ * Defines the schema for a Day in a training program.
  * 
- * @module models/DayPlan
+ * @module DaySchema
  * @requires mongoose
+ * @requires ./Category
+ * @returns {mongoose.Schema} A mongoose schema for a Day.
  */
+const { Schema } = require("mongoose");
+const CategorySchema = require("./Category");
 
-const mongoose = require("mongoose");
 
 /**
- * Defines the schema for a DayPlan document.
- * 
- * @typedef {mongoose.Schema} DayPlanSchema
- * @property {mongoose.Schema.Types.ObjectId} weekPlanID - The ID of the WeekPlan this DayPlan belongs to.
- * @property {Number} dayNumber - The number of the day in the week.
- * @property {String} dayName - The name of the day.
- * @property {String} duration - The duration of the day plan.
- * @property {String} subCategory - The subcategory of the day plan.
- * @property {String} bannerImage - The URL of the banner image for the day plan.
- * @property {String} introVideo - The URL of the introductory video for the day plan.
- * @property {Array.<mongoose.Schema.Types.ObjectId>} exercises - An array of exercise IDs associated with the day plan.
+ * @typedef {Object} Day
+ * @property {number} day - The day number in the training program.
+ * @property {string} day_name - The name of the day.
+ * @property {string} day_banner_image - The URL of the banner image for the day.
+ * @property {string} day_of_week - The day of the week (e.g., Monday, Tuesday).
+ * @property {string} estimated_duration - The estimated duration of the day.
+ * @property {Category[]} categories - An array of categories for the day.
  */
-const DayPlanSchema = new mongoose.Schema({
-
-    weekPlanID: {
-        type: mongoose.Types.ObjectId,
-        ref: 'weekPlan',
-        required: true
-    },
-    dayNumber: {
+const DaySchema = new Schema({
+    day: {
         type: Number,
         required: true
     },
-    dayName: {
+    day_name: {
         type: String,
         required: false
     },
-    duration: {
+    day_banner_image: {
         type: String,
         required: false
     },
-    subCategory: {
+    day_of_week: {
+        type: String,
+        required: false
+    }, // Monday, Tuesday, etc.
+    estimated_duration: {
         type: String,
         required: false
     },
-    bannerImage: {
-        type: String,
-        required: false
-    },
-    introVideo: {
-        type: String,
-        required: false
-    },
-
-    //Exercises
-    exercises: {
-        type: [
-            {
-                type: mongoose.Types.ObjectId,
-                ref: 'exercise',
-            }
-        ],
-        required: false
-    }
-
+    categories: [CategorySchema]
 }, { timestamps: true });
 
-/**
- * Creates a DayPlan model from the DayPlanSchema.
- * 
- * @type {mongoose.Model<mongoose.Document>}
- */
-const DayPlan = mongoose.model('dayPlan', DayPlanSchema);
-
-/**
- * Exports the DayPlan model.
- * 
- * @exports DayPlan
- */
-module.exports = DayPlan;
+module.exports = DaySchema;
