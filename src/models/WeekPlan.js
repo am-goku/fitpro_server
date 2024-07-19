@@ -4,11 +4,8 @@
  *
  * @module WeekSchema
  * @requires mongoose
- * @returns {mongoose.Schema} WeekSchema - A Mongoose schema for a week.
  */
 const mongoose = require("mongoose");
-const { Schema, model } = require("mongoose");
-
 
 /**
  * @typedef {Object} Week
@@ -18,7 +15,7 @@ const { Schema, model } = require("mongoose");
 /**
  * @type {mongoose.Schema}
  */
-const WeekSchema = new Schema({
+const WeekSchema = new mongoose.Schema({
     week: {
         type: Number,
         required: true
@@ -34,5 +31,6 @@ const WeekSchema = new Schema({
 }, { timestamps: true });
 
 
-const WeekPlan = model('weekPlan', WeekSchema);
+const WeekPlan = mongoose.model('weekPlan', WeekSchema);
+
 module.exports = WeekPlan;

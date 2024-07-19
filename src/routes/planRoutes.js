@@ -1,6 +1,6 @@
 const express = require('express');
-const { adminProtect } = require('../middleware/authMiddleware');
-const { createWorkoutPlan, fetchWorkoutPlan, updateWorkoutPlan, deleteWorkoutPlan } = require('../controllers/planController');
+const { adminProtect, userProtect } = require('../middleware/authMiddleware');
+const { createWorkoutPlan, fetchWorkoutPlan, updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise, fetchWorkoutOverview } = require('../controllers/planController');
 
 const router = express.Router();
 
@@ -10,6 +10,7 @@ const router = express.Router();
  *   name: Workout-plan
  *   description: Routes for admin to update workout plans
  */
+
 
 /**
  * @swagger
@@ -142,6 +143,7 @@ const router = express.Router();
  */
 router.post('/create', adminProtect, createWorkoutPlan)
 
+
 /**
  * @swagger
  * /api/v1/plan/fetch:
@@ -169,13 +171,73 @@ router.post('/create', adminProtect, createWorkoutPlan)
  *       500:
  *         description: Server error
  */
-router.get('/fetch', fetchWorkoutPlan)
+router.get('/fetch', userProtect, fetchWorkoutPlan)
+
+
+/**
+ * @swagger
+ * /api/v1/plan/overview:
+ *   get:
+ *     summary: Fetch all workout Overviews of plans / fetch single workout Overview of a plan using ID
+ *     tags: [Workout-plan]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: planID
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: "The ID of the workout plan to fetch a single workout overview"
+ *     responses:
+ *       200:
+ *         description: Workout overview of a plan / plans successfully fetched
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 plan_name:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                 banner_image:
+ *                   type: string
+ *                 workout_keywords:
+ *                   type: string
+ *                 goal_orientation:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 target_age_group:
+ *                   type: string
+ *                 training_type:
+ *                   type: string
+ *                 location:
+ *                   type: string
+ *                 level:
+ *                   type: string
+ *                 estimated_duration:
+ *                   type: string
+ *                 rest_between_exercises_seconds:
+ *                   type: number
+ *                 average_calories_burned_per_minute:
+ *                   type: number
+ *                 weeks:
+ *                   type: array
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.get('/overview', userProtect, fetchWorkoutOverview);
+
 
 /**
  * @swagger
  * /api/v1/plan/update/{planID}:
  *   patch:
- *     summary: Update a new workout plan using planID
+ *     summary: Update a new workout-plan using planID - OVERVIEW ONLY
  *     tags: [Workout-plan]
  *     security:
  *       - bearerAuth: []
@@ -183,13 +245,40 @@ router.get('/fetch', fetchWorkoutPlan)
  *       - in: path
  *         name: planID
  *         required: true
- *         description: "The ID of the workout plan to update a single workout plan"
+ *         description: "The _id of the workout plan to update a single workout plan"
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/PlanSchema'
+ *              type: object
+ *              properties:
+ *                plan_name:
+ *                  type: string
+ *                description:
+ *                  type: string
+ *                banner_image:
+ *                  type: string
+ *                workout_keywords:
+ *                  type: string
+ *                goal_orientation:
+ *                  type: array
+ *                  items:
+ *                    type: string
+ *                target_age_group:
+ *                  type: string
+ *                training_type:
+ *                  type: string
+ *                location:
+ *                  type: string
+ *                level:
+ *                  type: string
+ *                estimated_duration:
+ *                  type: string
+ *                rest_between_exercises_seconds:
+ *                  type: number
+ *                average_calories_burned_per_minute:
+ *                  type: number
  *     responses:
  *       200:
  *         description: Updated workout plan
@@ -199,6 +288,177 @@ router.get('/fetch', fetchWorkoutPlan)
  *         description: Server error
  */
 router.patch('/update/:planID', adminProtect, updateWorkoutPlan);
+
+
+/**
+ * @swagger
+ * /api/v1/plan/update/week/{weekID}:
+ *   patch:
+ *     summary: Update a week-plan for workout using weekID
+ *     tags: [Workout-plan]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: weekID
+ *         required: true
+ *         description: "The _id of the week to update a single week's workout plan"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *              type: object
+ *              properties:
+ *                week:
+ *                  type: number
+ *     responses:
+ *       200:
+ *         description: Week plan has been updated
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.patch('/update/week/:weekID', adminProtect, updateWorkoutWeekPlan);
+
+
+/**
+ * @swagger
+ * /api/v1/plan/update/day/{dayID}:
+ *   patch:
+ *     summary: Update a day-plan for workout using dayID
+ *     tags: [Workout-plan]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: dayID
+ *         required: true
+ *         description: "The _id of the day to update a single day's workout plan"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *              type: object
+ *              properties:
+ *                day:
+ *                  type: number
+ *                day_name:
+ *                  type: string
+ *                day_banner_image:
+ *                  type: string
+ *                day_of_week:
+ *                  type: string
+ *                estimated_duration:
+ *                  type: string
+ *     responses:
+ *       200:
+ *         description: Day plan has been updated
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.patch('/update/day/:dayID', adminProtect, updateWorkoutDayPlan);
+
+
+/**
+ * @swagger
+ * /api/v1/plan/update/category/{categoryID}:
+ *   patch:
+ *     summary: Update a category using categoryID
+ *     tags: [Workout-plan]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: categoryID
+ *         required: true
+ *         description: "The _id of the category to update a category"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *              type: object
+ *              properties:
+ *                sub_category:
+ *                  type: string
+ *                circuit_rest_time:
+ *                  type: number
+ *                circuit_reps:
+ *                  type: number
+ *     responses:
+ *       200:
+ *         description: Category has been updated
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.patch('/update/category/:categoryID', adminProtect, updateWorkoutCategory);
+
+
+/**
+ * @swagger
+ * /api/v1/plan/update/exercise/{exerciseID}:
+ *   patch:
+ *     summary: Update an exercise using exerciseID
+ *     tags: [Workout-plan]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: exerciseID
+ *         required: true
+ *         description: "The _id of the exercise to update an exercise"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *              type: object
+ *              properties:
+ *                name:
+ *                  type: string
+ *                exercise_number:
+ *                  type: number
+ *                exercise_type:
+ *                  type: string
+ *                time_based:
+ *                  type: string
+ *                weighted:
+ *                  type: string
+ *                sets:
+ *                  type: number
+ *                reps:
+ *                  type: array
+ *                  items:
+ *                    type: number
+ *                set_time:
+ *                  type: string
+ *                superset_names:
+ *                  type: array
+ *                  items:
+ *                    type: string
+ *                rest_time:
+ *                  type: number
+ *                video_url:
+ *                  type: string
+ *                image_url:
+ *                  type: string
+ *     responses:
+ *       200:
+ *         description: Exercise has been updated
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.patch('/update/exercise/:exerciseID', adminProtect, updateWorkoutExercise);
+
 
 /**
  * @swagger
@@ -222,5 +482,6 @@ router.patch('/update/:planID', adminProtect, updateWorkoutPlan);
  *         description: Server error
  */
 router.delete('/delete/:planID', adminProtect, deleteWorkoutPlan);
+
 
 module.exports = router;
