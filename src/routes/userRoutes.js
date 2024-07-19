@@ -1,5 +1,5 @@
 const express = require('express');
-const { updateUserProfile } = require('../controllers/userController');
+const { updateUserProfile, fetchUserData } = require('../controllers/userController');
 const { userProtect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -18,8 +18,8 @@ const router = express.Router();
 /**
  * @swagger
  * tags:
- *   name: Profile
- *   description: Routes to user profile
+ *   name: User
+ *   description: Routes to user features
  */
 
 /**
@@ -27,7 +27,7 @@ const router = express.Router();
  * /api/v1/user/update:
  *   post:
  *     summary: To Update User Profile ( All body datas are not necessary, remove unnecessary body data )
- *     tags: [Profile]
+ *     tags: [User]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -94,6 +94,35 @@ const router = express.Router();
  *         description: Server error
  */
 router.post('/update', userProtect, updateUserProfile)
+
+
+/**
+ * @swagger
+ * /api/v1/user/fetch:
+ *   post:
+ *     summary: To fetch User Profile
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: userID
+ *         description: id of the user to fetch
+ *     requestBody:
+ *       required: false
+ *     responses:
+ *       200:
+ *         description: User fetched successfully
+ *       400:
+ *         description: Invalid input
+ *       401:
+ *         description: Unauthorized user
+ *       403:
+ *         description: Unverified account
+ *       500:
+ *         description: Server error
+ */
+router.get('/fetch', userProtect, fetchUserData)
 
 
 

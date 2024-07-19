@@ -171,7 +171,7 @@ router.post('/create', adminProtect, createWorkoutPlan)
  *       500:
  *         description: Server error
  */
-router.get('/fetch', userProtect, fetchWorkoutPlan)
+router.get('/fetch', fetchWorkoutPlan)
 
 
 /**
@@ -230,7 +230,7 @@ router.get('/fetch', userProtect, fetchWorkoutPlan)
  *       500:
  *         description: Server error
  */
-router.get('/overview', userProtect, fetchWorkoutOverview);
+router.get('/overview', fetchWorkoutOverview);
 
 
 /**
