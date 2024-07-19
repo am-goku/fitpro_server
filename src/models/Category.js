@@ -4,11 +4,10 @@
  *
  * @module CategorySchema
  * @requires mongoose
- * @requires ExerciseSchema
  * @returns {mongoose.Schema} A Mongoose schema for a category.
  */
 const { Schema } = require("mongoose");
-const ExerciseSchema = require("./Exercise");
+const mongoose = require("mongoose");
 
 
 /**
@@ -31,7 +30,14 @@ const CategorySchema = new Schema({
         type: Number,
         required: false
     },
-    exercises: [ExerciseSchema]
+    exercises: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: 'exercise'
+        }
+    ]
 }, { timestamps: true });
 
-module.exports = CategorySchema;
+const Category = mongoose.model('category', CategorySchema);
+
+module.exports = Category;

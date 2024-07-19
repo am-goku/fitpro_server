@@ -4,17 +4,15 @@
  *
  * @module WeekSchema
  * @requires mongoose
- * @requires ./DayPlan
  * @returns {mongoose.Schema} WeekSchema - A Mongoose schema for a week.
  */
-const { Schema } = require("mongoose");
-const DaySchema = require("./DayPlan");
+const mongoose = require("mongoose");
+const { Schema, model } = require("mongoose");
 
 
 /**
  * @typedef {Object} Week
  * @property {number} week - The week number.
- * @property {DaySchema[]} days - An array of DaySchema.
  */
 
 /**
@@ -25,7 +23,16 @@ const WeekSchema = new Schema({
         type: Number,
         required: true
     },
-    days: [DaySchema]
+    days: {
+        type: [
+            {
+                type: mongoose.Types.ObjectId,
+                ref: 'dayPlan'
+            }
+        ]
+    }
 }, { timestamps: true });
 
-module.exports = WeekSchema;
+
+const WeekPlan = model('weekPlan', WeekSchema);
+module.exports = WeekPlan;

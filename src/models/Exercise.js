@@ -5,12 +5,12 @@
  * @requires mongoose
  * @returns {mongoose.Schema} A mongoose schema for a Day.
  */
-const { Schema } = require("mongoose");
+const { Schema, model } = require("mongoose");
 
 /**
  * Defines the schema for an exercise in a fitness application.
  * 
- * @typedef {import('mongoose').Schema} Schema
+ * @typedef {require('mongoose').Schema} Schema
  * 
  * @returns {Schema} A Mongoose schema for an exercise.
  */
@@ -65,4 +65,6 @@ const ExerciseSchema = new Schema({
     }
 }, { timestamps: true });
 
-module.exports = ExerciseSchema;
+
+const Exercise = model('exercise', ExerciseSchema);
+module.exports = Exercise;

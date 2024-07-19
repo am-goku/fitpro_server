@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-
 /**
  * This function defines the schema for a user in the FitPro application.
  * It includes fields for name, email, password, OTP, OTP expiration, and verification status.

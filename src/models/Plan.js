@@ -3,10 +3,8 @@
  * 
  * @module Plan
  * @requires mongoose
- * @requires ./WeekPlan
  */
 const mongoose = require('mongoose');
-const WeekSchema = require("./WeekPlan");
 
 
 /**
@@ -76,7 +74,12 @@ const PlanSchema = new mongoose.Schema({
         type: Number,
         required: false
     },
-    weeks: [WeekSchema]
+    weeks: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: 'weekPlan'
+        }
+    ]
 }, { timestamps: true });
 
 

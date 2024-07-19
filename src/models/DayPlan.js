@@ -3,11 +3,9 @@
  * 
  * @module DaySchema
  * @requires mongoose
- * @requires ./Category
  * @returns {mongoose.Schema} A mongoose schema for a Day.
  */
-const { Schema } = require("mongoose");
-const CategorySchema = require("./Category");
+const { Schema, default: mongoose, model } = require("mongoose");
 
 
 /**
@@ -40,7 +38,14 @@ const DaySchema = new Schema({
         type: String,
         required: false
     },
-    categories: [CategorySchema]
+    categories: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: 'category'
+        }
+    ]
 }, { timestamps: true });
 
-module.exports = DaySchema;
+
+const DayPlan = model('dayPlan', DaySchema);
+module.exports = DayPlan;
