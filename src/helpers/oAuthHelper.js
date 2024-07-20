@@ -23,7 +23,7 @@ async function googleLogin(body) {
             accessToken: null
         }
 
-        data.user = await User.findOne({ email }).select("-password");
+        data.user = await User.findOne({ email: body.email }).select("-password");
 
         if (!data.user) {
             const newUser = new User({
@@ -34,6 +34,7 @@ async function googleLogin(body) {
             });
 
             data.user = await newUser.save();
+            data.message = "Account created successfully";
 
         }
 
