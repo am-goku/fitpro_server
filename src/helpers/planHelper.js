@@ -14,7 +14,7 @@ const Exercise = require("../models/Exercise");
  * @returns {Promise} A promise that resolves to an object containing the status, message, and the saved plan.
  * If an error occurs during the save process, the promise rejects with an object containing a status of 500 and the error message.
  */
-async function createPlan({ weeks, ...planBody }) {
+async function createJsonPlan({ weeks, ...planBody }) {
     try {
         const weekDocs = await Promise.all(weeks.map(async (week) => {
             const dayDocs = await Promise.all(week.days.map(async (day) => {
@@ -61,6 +61,38 @@ async function createPlan({ weeks, ...planBody }) {
             ...planBody
         });
 
+        await newPlan.save();
+
+        const data = {
+            status: 200,
+            message: "Workout plan saved successfully",
+            plan: newPlan
+        }
+
+        return data;
+
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+
+        return Promise.reject(data);
+    }
+}
+
+
+/**
+ * Creates a new workout plan by saving the provided plan body.
+ *
+ * @function createPlan
+ * @param {Object} planBody - The object containing the plan data (e.g., name, description, etc.).
+ * @returns {Promise} A promise that resolves to an object containing the status, message, and the saved plan.
+ * If an error occurs during the save process, the promise rejects with an object containing a status of 500 and the error message.
+ */
+async function createPlan(planBody){
+    try {
+        const newPlan = new Plan({...planBody});
         await newPlan.save();
 
         const data = {
@@ -440,4 +472,5 @@ async function deletePlan(id) {
  *
  * @module helpers/planHelper
  */
-module.exports = { createPlan, fetchPlan, fetchPlanOverview, updatePlan, deletePlan, updateWeek, updateDay, updateCategory, updateExercise }
+const createFunctions = {createPlan, createJsonPlan}
+module.exports = { ...createFunctions, fetchPlan, fetchPlanOverview, updatePlan, deletePlan, updateWeek, updateDay, updateCategory, updateExercise }

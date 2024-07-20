@@ -1,4 +1,4 @@
-const { createPlan, fetchPlan, updatePlan, deletePlan, updateWeek, updateDay, updateCategory, updateExercise, fetchPlanOverview } = require("../helpers/planHelper");
+const { fetchPlan, updatePlan, deletePlan, updateWeek, updateDay, updateCategory, updateExercise, fetchPlanOverview, createJsonPlan, createPlan } = require("../helpers/planHelper");
 const responseHandler = require("../utils/responseHandler");
 
 
@@ -8,6 +8,38 @@ const responseHandler = require("../utils/responseHandler");
  * @param {Object} req - The request object containing the plan data.
  * @param {Object} res - The response object to send the response.
  * @returns {Object} - The response object with status and message.
+ *
+ * @throws Will throw an error if the request body is invalid.
+ * @throws Will throw an error if there is a problem with the database operation.
+ */
+async function createJsonWorkoutPlan(req, res) {
+    try {
+        const body = req.body;
+
+        if (!body) return responseHandler(res, { status: 200, message: "Invalid request body." });
+
+        const data = await createJsonPlan(body);
+
+        return responseHandler(res, data);
+
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+
+        return responseHandler(res, data);
+    }
+}
+
+
+/**
+ * Creates a new workout plan in the database.
+ *
+ * @function createWorkoutPlan
+ * @param {Object} req - The request object containing the plan data.
+ * @param {Object} res - The response object to send the response.
+ * @returns {Promise<Object>} - A promise that resolves to the response object with status and data.
  *
  * @throws Will throw an error if the request body is invalid.
  * @throws Will throw an error if there is a problem with the database operation.
@@ -332,4 +364,4 @@ async function deleteWorkoutPlan(req, res) {
  *
  * @module controllers/planController
  */
-module.exports = { createWorkoutPlan, fetchWorkoutPlan, fetchWorkoutOverview, updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise }
+module.exports = { createJsonWorkoutPlan, createWorkoutPlan, fetchWorkoutPlan, fetchWorkoutOverview, updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise }
