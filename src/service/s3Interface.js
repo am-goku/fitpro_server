@@ -37,7 +37,7 @@ class BucketInterface {
      */
     async uploadToS3(file, dir) {
         try {
-            const key = `dir/${Date.now()}-${file.originalname}`
+            const key = `${dir}/${Date.now()}-${file.originalname}`
             const params = {
                 Bucket: process.env.AWS_BUCKET_NAME,
                 Key: key,

@@ -47,10 +47,11 @@ async function createJsonWorkoutPlan(req, res) {
 async function createWorkoutPlan(req, res) {
     try {
         const body = req.body;
+        const files = req.files;
 
         if (!body) return responseHandler(res, { status: 200, message: "Invalid request body." });
 
-        const data = await createPlan(body);
+        const data = await createPlan(files, body);
 
         return responseHandler(res, data);
 

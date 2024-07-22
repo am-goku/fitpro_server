@@ -3,6 +3,7 @@ const WeekPlan = require("../models/WeekPlan");
 const DayPlan = require("../models/DayPlan");
 const Category = require("../models/Category");
 const Exercise = require("../models/Exercise");
+const uploadFile = require("../service/fileUploadService");
 
 
 /**
@@ -90,9 +91,16 @@ async function createJsonPlan({ weeks, ...planBody }) {
  * @returns {Promise} A promise that resolves to an object containing the status, message, and the saved plan.
  * If an error occurs during the save process, the promise rejects with an object containing a status of 500 and the error message.
  */
-async function createPlan(planBody){
+async function createPlan(files, planBody){
     try {
-        const newPlan = new Plan({...planBody});
+        const urls = await uploadFile(files, 'plan');
+
+        const newPlan = new Plan({
+            ...planBody,
+            plan_video: urls[0],
+            banner_image: urls[1]
+        });
+
         await newPlan.save();
 
         const data = {

@@ -1,6 +1,7 @@
 const express = require('express');
 const { adminProtect, userProtect } = require('../middleware/authMiddleware');
 const { fetchWorkoutPlan, updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise, fetchWorkoutOverview, createJsonWorkoutPlan, createWorkoutPlan } = require('../controllers/planController');
+const upload = require('../utils/multerConfig');
 
 const router = express.Router();
 
@@ -153,38 +154,42 @@ router.post('/create/json', adminProtect, createJsonWorkoutPlan)
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *              type: object
- *              properties:
- *                plan_name:
- *                  type: string
- *                description:
- *                  type: string
- *                banner_image:
- *                  type: string
- *                workout_keywords:
- *                  type: string
- *                goal_orientation:
- *                  type: array
- *                  items:
- *                    type: string
- *                target_age_group:
- *                  type: string
- *                training_type:
- *                  type: string
- *                location:
- *                  type: string
- *                level:
- *                  type: string
- *                estimated_duration:
- *                  type: string
- *                rest_between_exercises_seconds:
- *                  type: number
- *                average_calories_burned_per_minute:
- *                  type: number
- *              required:
- *                - workout_name
+ *             type: object
+ *             properties:
+ *               banner_image:
+ *                 type: string
+ *                 format: binary
+ *               plan_video:
+ *                 type: string
+ *                 format: binary
+ *               plan_name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               workout_keywords:
+ *                 type: string
+ *               goal_orientation:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               target_age_group:
+ *                 type: string
+ *               training_type:
+ *                 type: string
+ *               location:
+ *                 type: string
+ *               level:
+ *                 type: string
+ *               estimated_duration:
+ *                 type: string
+ *               rest_between_exercises_seconds:
+ *                 type: number
+ *               average_calories_burned_per_minute:
+ *                 type: number
+ *             required:
+ *               - plan_name
  *     responses:
  *       200:
  *         description: Created workout plan
@@ -193,7 +198,7 @@ router.post('/create/json', adminProtect, createJsonWorkoutPlan)
  *       500:
  *         description: Server error
  */
-router.post('/create', adminProtect, createWorkoutPlan);
+router.post('/create', adminProtect, upload.fields([{ name: 'banner_image' }, { name: 'plan_video' }]), createWorkoutPlan);
 
 
 /**
