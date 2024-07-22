@@ -1,15 +1,19 @@
 const express = require('express');
 const { adminProtect, userProtect } = require('../middleware/authMiddleware');
-const { fetchWorkoutPlan, updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise, fetchWorkoutOverview, createJsonWorkoutPlan, createWorkoutPlan, addFeaturedPlan, fetchFeaturedPlans, addTrendingPlan, fetchTrendingPlans } = require('../controllers/planController');
+const { fetchWorkoutPlan, updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise, fetchWorkoutOverview, createJsonWorkoutPlan, createWorkoutPlan, addFeaturedPlan, fetchFeaturedPlans, addTrendingPlan, fetchTrendingPlans, createWeekPlan, createDayPlan, createCategory, createExercise } = require('../controllers/planController');
 const upload = require('../utils/multerConfig');
 
 const router = express.Router();
 
+
+////////////////////////////////////////////////////////////
+/////////////////////// WORKOUT PLANS //////////////////////
+
 /**
  * @swagger
  * tags:
- *   name: Workout-plan - CREATE
- *   description: Routes to workout plans
+ *   name: Workout-plan
+ *   description: Routes for admin to update workout plans - MOSTLY OVERVIEW
  */
 
 /**
@@ -17,7 +21,7 @@ const router = express.Router();
  * /api/v1/plan/create/json:
  *   post:
  *     summary: Create a new workout plan using JSON
- *     tags: [Workout-plan - CREATE]
+ *     tags: [Workout-plan]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -152,7 +156,7 @@ router.post('/create/json', adminProtect, createJsonWorkoutPlan)
  * /api/v1/plan/create:
  *   post:
  *     summary: Create a new workout plan (Overview)
- *     tags: [Workout-plan - CREATE]
+ *     tags: [Workout-plan]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -202,22 +206,14 @@ router.post('/create/json', adminProtect, createJsonWorkoutPlan)
  *       500:
  *         description: Server error
  */
-router.post('/create', adminProtect, upload.fields([{ name: 'banner_image' }, { name: 'plan_video' }]), createWorkoutPlan);
-
-
-/**
- * @swagger
- * tags:
- *   name: Workout-plan - READ
- *   description: Routes for admin to update workout plans
- */
+router.post('/create', adminProtect, upload.fields([{ name: 'plan_video' }, { name: 'banner_image' }]), createWorkoutPlan);
 
 /**
  * @swagger
  * /api/v1/plan/fetch:
  *   get:
  *     summary: Fetch all workout plans / fetch single workout plan using ID
- *     tags: [Workout-plan - READ]
+ *     tags: [Workout-plan]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -246,7 +242,7 @@ router.get('/fetch', userProtect, fetchWorkoutPlan)
  * /api/v1/plan/overview:
  *   get:
  *     summary: Fetch all workout Overviews of plans / fetch single workout Overview of a plan using ID
- *     tags: [Workout-plan - READ]
+ *     tags: [Workout-plan]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -299,20 +295,12 @@ router.get('/fetch', userProtect, fetchWorkoutPlan)
  */
 router.get('/overview', userProtect, fetchWorkoutOverview);
 
-
 /**
  * @swagger
- * tags:
- *   name: Workout-plan - UPDATE
- *   description: Routes for admin to update workout plans
- */
-
-/**
- * @swagger
- * /api/v1/plan/update/{planID}:
+ * /api/v1/plan/{planID}:
  *   put:
  *     summary: Update a new workout-plan using planID - OVERVIEW ONLY
- *     tags: [Workout-plan - UPDATE]
+ *     tags: [Workout-plan]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -361,14 +349,76 @@ router.get('/overview', userProtect, fetchWorkoutOverview);
  *       500:
  *         description: Server error
  */
-router.put('/update/:planID', adminProtect, updateWorkoutPlan);
+router.put('/:planID', adminProtect, updateWorkoutPlan);
 
 /**
  * @swagger
- * /api/v1/plan/update/week/{weekID}:
+ * /api/v1/plan/{planID}:
+ *   delete:
+ *     summary: Delete a workout plan
+ *     tags: [Workout-plan]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: planID
+ *         required: true
+ *         description: "The ID of the workout plan to delete a single workout plan"
+ *     responses:
+ *       200:
+ *         description: Deleted workout plan
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.delete('/:planID', adminProtect, deleteWorkoutPlan);
+
+
+////////////////////////////////////////////////////////////
+/////////////////////// WORKOUT WEEKS //////////////////////
+
+/**
+ * @swagger
+ * /api/v1/plan/{planID}/week:
+ *   post:
+ *     summary: Create a new week in a workout-plan
+ *     tags: [Workout-plan - WEEK]
+ *     parameters:
+ *       - in: path
+ *         name: planID
+ *         required: true
+ *         description: The id of plan which the week should push to
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               week:
+ *                 type: number
+ *               description:
+ *             required:
+ *               - week
+ *     responses:
+ *       200:
+ *         description: Created week in a workout plan
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.post('/:planID/week', adminProtect, createWeekPlan);
+
+/**
+ * @swagger
+ * /api/v1/plan/week/{weekID}:
  *   put:
  *     summary: Update a week-plan for workout using weekID
- *     tags: [Workout-plan - UPDATE]
+ *     tags: [Workout-plan - WEEK]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -393,14 +443,70 @@ router.put('/update/:planID', adminProtect, updateWorkoutPlan);
  *       500:
  *         description: Server error
  */
-router.put('/update/week/:weekID', adminProtect, updateWorkoutWeekPlan);
+router.put('/week/:weekID', adminProtect, updateWorkoutWeekPlan);
+
+////////////////////////////////////////////////////////////
+/////////////////////// WORKOUT DAYS ///////////////////////
 
 /**
  * @swagger
- * /api/v1/plan/update/day/{dayID}:
+ * /api/v1/plan/week/{weekID}/day:
+ *   post:
+ *     summary: Create a new day in a week of a workout-plan
+ *     tags: [Workout-plan - DAY]
+ *     parameters:
+ *       - in: path
+ *         name: weekID
+ *         required: true
+ *         description: The id of week which the day should push to.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               exe_image:
+ *                 type: string
+ *                 format: binary
+ *               exe_video:
+ *                 type: string
+ *                 format: binary
+ *               day_banner_image:
+ *                 type: string
+ *                 format: binary
+ *               intro_video:
+ *                 type: string
+ *                 format: binary
+ *               day:
+ *                 type: number
+ *               day_name:
+ *                 type: string
+ *               day_of_week:
+ *                 type: string
+ *               estimated_duration:
+ *                 type: string
+ *             required:
+ *               - day
+ *               - day_name
+ *     responses:
+ *       200:
+ *         description: Created day in a week of a workout plan
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.post('/week/:weekID/day', adminProtect, upload.fields([{ name: 'intro_video' }, { name: 'day_banner_image' }]), createDayPlan);
+
+/**
+ * @swagger
+ * /api/v1/plan/day/{dayID}:
  *   put:
  *     summary: Update a day-plan for workout using dayID
- *     tags: [Workout-plan - UPDATE]
+ *     tags: [Workout-plan - DAY]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -433,14 +539,56 @@ router.put('/update/week/:weekID', adminProtect, updateWorkoutWeekPlan);
  *       500:
  *         description: Server error
  */
-router.put('/update/day/:dayID', adminProtect, updateWorkoutDayPlan);
+router.put('/day/:dayID', adminProtect, updateWorkoutDayPlan);
+
+
+///////////////////////////////////////////////////////////////
+/////////////////////// WORKOUT CATEGORY //////////////////////
 
 /**
  * @swagger
- * /api/v1/plan/update/category/{categoryID}:
+ * /api/v1/plan/day/{dayID}/category:
+ *   post:
+ *     summary: Create a new category in a day of a workout-plan
+ *     tags: [Workout-plan - CATEGORY]
+ *     parameters:
+ *       - in: path
+ *         name: dayID
+ *         required: true
+ *         description: The id of a day which the category should push to
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               sub_category:
+ *                 type: string
+ *               circuit_rest_time:
+ *                 type: number
+ *               circuit_reps:
+ *                 type: number
+ *             required:
+ *               - sub_category
+ *     responses:
+ *       200:
+ *         description: Created Category in a workout plan
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.post('/day/:dayID/category', adminProtect, createCategory);
+
+/**
+ * @swagger
+ * /api/v1/plan/category/{categoryID}:
  *   put:
  *     summary: Update a category using categoryID
- *     tags: [Workout-plan - UPDATE]
+ *     tags: [Workout-plan - CATEGORY]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -469,14 +617,71 @@ router.put('/update/day/:dayID', adminProtect, updateWorkoutDayPlan);
  *       500:
  *         description: Server error
  */
-router.put('/update/category/:categoryID', adminProtect, updateWorkoutCategory);
+router.put('/category/:categoryID', adminProtect, updateWorkoutCategory);
+
+
+///////////////////////////////////////////////////////////////
+/////////////////////// WORKOUT EXERCISE //////////////////////
+/**
+ * @swagger
+ * /api/v1/plan/category/{categoryID}/exercise:
+ *   post:
+ *     summary: Create a new exercise to a category in a workout-plan
+ *     tags: [Workout-plan - EXERCISE]
+ *     parameters:
+ *       - in: path
+ *         name: categoryID
+ *         required: true
+ *         description: The id of a category which the exercise should push to
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               exercise_number:
+ *                 type: number
+ *               exercise_type:
+ *                 type: string
+ *               time_based:
+ *                 type: string
+ *               weighted:
+ *                 type: string
+ *               sets:
+ *                 type: number
+ *               reps:
+ *                 type: array
+ *                 items:
+ *                   type: number
+ *               set_time:
+ *                 type: string
+ *               superset_names:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               rest_time:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Created Category in a workout plan
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.post('/category/:categoryID/exercise', adminProtect, upload.fields([{ name: 'exe_video' }, { name: 'exe_image' }]), createExercise);
 
 /**
  * @swagger
- * /api/v1/plan/update/exercise/{exerciseID}:
+ * /api/v1/plan/exercise/{exerciseID}:
  *   put:
  *     summary: Update an exercise using exerciseID
- *     tags: [Workout-plan - UPDATE]
+ *     tags: [Workout-plan - EXERCISE]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -527,7 +732,7 @@ router.put('/update/category/:categoryID', adminProtect, updateWorkoutCategory);
  *       500:
  *         description: Server error
  */
-router.put('/update/exercise/:exerciseID', adminProtect, updateWorkoutExercise);
+router.put('/exercise/:exerciseID', adminProtect, updateWorkoutExercise);
 
 
 /**
@@ -646,34 +851,5 @@ router.post('/trending/:planID', adminProtect, addTrendingPlan);
 router.get('/trending', userProtect, fetchTrendingPlans);
 
 
-/**
- * @swagger
- * tags:
- *   name: Workout-plan - DELETE
- *   description: Routes for admin to update workout plans
- */
-
-/**
- * @swagger
- * /api/v1/plan/delete/{planID}:
- *   delete:
- *     summary: Delete a workout plan
- *     tags: [Workout-plan - DELETE]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: planID
- *         required: true
- *         description: "The ID of the workout plan to delete a single workout plan"
- *     responses:
- *       200:
- *         description: Deleted workout plan
- *       400:
- *         description: Invalid credentials
- *       500:
- *         description: Server error
- */
-router.delete('/delete/:planID', adminProtect, deleteWorkoutPlan);
 
 module.exports = router;

@@ -286,6 +286,47 @@ async function updatePlan(id, { weeks, ...planBody }) {
 
 
 /**
+ * Adds a new week to an existing data plan.
+ *
+ * @function addWeek
+ * @param {string} planID - The ID of the data plan to which the week will be added.
+ * @param {Object} weekBody - The object containing the fields to be added to the new week.
+ * @returns {Promise} A promise that resolves to an object containing the status, message, and the added week.
+ * If the plan is not found, the promise resolves to an object with a status of 400 and a message indicating the plan not found.
+ * If an error occurs during the addition process, the promise rejects with an object containing a status of 500 and the error message.
+ *
+ * @throws Will throw an error if the plan ID is not provided or if an error occurs during the addition process.
+ */
+async function addWeek(planID, weekBody) {
+    try {
+        const plan = await Plan.findById(planID);
+
+        if (!plan) {
+            return { status: 400, message: "Plan not found" };
+        }
+
+        const newWeek = new WeekPlan({ ...weekBody });
+        const week = await newWeek.save();
+
+        plan.weeks.addToSet(week._id);
+        await plan.save();
+
+        return {
+            status: 200,
+            message: "Week plan added successfully",
+            week
+        };
+    } catch (error) {
+        console.error("Error adding week plan:", error);
+        return Promise.reject({
+            status: 500,
+            message: "Internal Server Error",
+        });
+    }
+}
+
+
+/**
  * Updates a week plan by finding the week by its ID and updating its fields.
  *
  * @function updateWeek
@@ -314,6 +355,57 @@ async function updateWeek(id, { days, ...weekBody }) {
         }
 
         return data;
+
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+
+        return Promise.reject(data);
+    }
+}
+
+
+/**
+ * Adds a new day to an existing week plan.
+ *
+ * @function addDay
+ * @param {string} weekID - The ID of the week plan to which the day will be added.
+ * @param {Object} dayBody - The object containing the fields to be added to the new day.
+ * @param {Object} files - The files object containing the day's intro video and day banner image.
+ * @returns {Promise} A promise that resolves to an object containing the status, message, and the added day.
+ * If the week is not found, the promise resolves to an object with a status of 400 and a message indicating the week not found.
+ * If an error occurs during the addition process, the promise rejects with an object containing a status of 500 and the error message.
+ *
+ * @throws Will throw an error if the week ID is not provided or if an error occurs during the addition process.
+ */
+async function addDay(weekID, dayBody, files) {
+    try {
+        const weekPlan = await WeekPlan.findById(weekID);
+
+        if (!weekPlan) {
+            return { status: 400, message: "Week not found" }
+        }
+
+        const urls = await uploadFile(files, 'day')
+
+        const day = new DayPlan({
+            intro_video: urls[0],
+            day_banner_image: urls[1],
+            ...dayBody
+        });
+        const newDay = await day.save();
+
+        weekPlan.days.addToSet(newDay._id);
+
+        await weekPlan.save();
+
+        return {
+            status: 200,
+            message: "Day plan added successfully",
+            day: newDay
+        }
 
     } catch (error) {
         const data = {
@@ -368,6 +460,51 @@ async function updateDay(id, { category, ...dayBody }) {
 
 
 /**
+ * Adds a new category to a day plan.
+ *
+ * @function addCategory
+ * @param {string} dayID - The ID of the day plan to which the category will be added.
+ * @param {Object} catBody - The object containing the fields to be added to the new category.
+ * @returns {Promise} A promise that resolves to an object containing the status, message, and the added category.
+ * If the day is not found, the promise resolves to an object with a status of 400 and a message indicating the day not found.
+ * If an error occurs during the addition process, the promise rejects with an object containing a status of 500 and the error message.
+ *
+ * @throws Will throw an error if the day ID is not provided or if an error occurs during the addition process.
+ */
+async function addCategory(dayID, catBody) {
+    try {
+        const day = await DayPlan.findById(dayID);
+
+        if (!day) {
+            return { status: 400, message: "Day not found" };
+        }
+
+        const newCat = new Category({ ...catBody });
+
+        const cat = await newCat.save();
+
+        day.categories.addToSet(cat._id);
+
+        await day.save();
+
+        return {
+            status: 200,
+            message: "Category added successfully",
+            category: cat
+        }
+
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+
+        return Promise.reject(data);
+    }
+}
+
+
+/**
  * Updates a category by finding the category by its ID and updating its fields.
  *
  * @function updateCategory
@@ -407,6 +544,57 @@ async function updateCategory(id, { exercises, ...categoryBody }) {
         }
 
         return Promise.reject(data);
+    }
+}
+
+
+/**
+ * Adds a new exercise to a category.
+ *
+ * @function addExercise
+ * @param {string} categoryID - The ID of the category to which the exercise will be added.
+ * @param {Object} exerciseBody - The object containing the fields to be added to the new exercise.
+ * @param {Object} files - The files object containing the exercise's video and image.
+ * @returns {Promise} A promise that resolves to an object containing the status, message, and the added exercise.
+ * If the category is not found, the promise resolves to an object with a status of 400 and a message indicating the category not found.
+ * If an error occurs during the addition process, the promise rejects with an object containing a status of 500 and the error message.
+ */
+async function addExercise(categoryID, exerciseBody, files) {
+    try {
+        const category = await Category.findById(categoryID);
+
+        if (!category) {
+            return {
+                status: 400,
+                message: "Category not found"
+            }
+        }
+
+        const urls = await uploadFile(files, 'exercise');
+
+        const newExercise = new Exercise({
+            exercise_video: urls[0],
+            exercise_image: urls[1],
+            ...exerciseBody
+        });
+
+        const exercise = await newExercise.save();
+
+        category.exercises.addToSet(exercise._id);
+
+        await category.save();
+
+        return {
+            status: 200,
+            message: "Exercise added successfully",
+            exercise
+        }
+
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message,
+        }
     }
 }
 
@@ -663,6 +851,6 @@ async function getFeaturedPlans() {
  *
  * @module helpers/planHelper
  */
-const createFunctions = { createPlan, createJsonPlan }
+const createFunctions = { createPlan, createJsonPlan, addWeek, addDay, addCategory, addExercise };
 const specialPlans = { setTrendingPlanStatus, getTrendingPlans, setFeaturedPlanStatus, getFeaturedPlans };
 module.exports = { ...createFunctions, ...specialPlans, fetchPlan, fetchPlanOverview, updatePlan, deletePlan, updateWeek, updateDay, updateCategory, updateExercise };

@@ -33,7 +33,7 @@ async function uploadFile(files, type) {
                 }
 
                 break;
-            case 'exercise':
+            case 'day':
                 if (files.intro_video) {
                     const dir = 'workoutPlan/intro_videos';
                     uploadPromises.push(s3Interface.uploadToS3(files.intro_video[0], dir))
@@ -42,6 +42,18 @@ async function uploadFile(files, type) {
                 if (files.day_banner_image) {
                     const dir = 'workoutPlan/day_banner_images';
                     uploadPromises.push(s3Interface.uploadToS3(files.day_banner_image[0], dir))
+                }
+
+                break;
+            case 'exercise':
+                if (files.exe_video) {
+                    const dir = 'workoutPlan/exercises/videos';
+                    uploadPromises.push(s3Interface.uploadToS3(files.exe_video[0], dir))
+                }
+
+                if (files.exe_image) {
+                    const dir = 'workoutPlan/exercises/images';
+                    uploadPromises.push(s3Interface.uploadToS3(files.exe_image[0], dir))
                 }
 
                 break;
