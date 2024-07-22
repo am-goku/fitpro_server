@@ -1,6 +1,11 @@
-const { fetchPlan, updatePlan, deletePlan, updateWeek, updateDay, updateCategory, updateExercise, fetchPlanOverview, createJsonPlan, createPlan } = require("../helpers/planHelper");
+const { fetchPlan, updatePlan, deletePlan, updateWeek, updateDay, updateCategory, updateExercise, fetchPlanOverview, createJsonPlan, createPlan, setFeaturedPlanStatus, setTrendingPlanStatus, getTrendingPlans, getFeaturedPlans } = require("../helpers/planHelper");
 const responseHandler = require("../utils/responseHandler");
 
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////CREATE PLANS SECTION//////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Creates a new workout plan.
@@ -66,6 +71,10 @@ async function createWorkoutPlan(req, res) {
 }
 
 
+/////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////FETCH PLANS SECTION///////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Fetches a workout plan from the database based on the provided planID.
  *
@@ -130,6 +139,10 @@ async function fetchWorkoutOverview(req, res) {
     }
 }
 
+
+/////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////UPDATE PLANS SECTION//////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Updates a workout plan in the database based on the provided planID.
@@ -360,9 +373,145 @@ async function deleteWorkoutPlan(req, res) {
 }
 
 
+/////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////TRENDING AND FEATURED PLANS///////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Adds a featured status to a workout plan in the database.
+ *
+ * @function addFeaturedPlan
+ * @param {Object} req - The request object containing the planID.
+ * @param {Object} res - The response object to send the response.
+ * @returns {Promise<Object>} - A promise that resolves to the response object with status and data.
+ *
+ * @throws Will throw an error if the planID is not provided.
+ * @throws Will throw an error if there is a problem with the database operation.
+ *
+ * @example
+ * // Adding featured status to a workout plan with ID 123
+ * addFeaturedPlan({ params: { planID: 123 } }, res);
+ */
+async function addFeaturedPlan(req, res) {
+    try {
+        const planID = req.params.planID;
+
+        const data = await setFeaturedPlanStatus(planID);
+
+        return responseHandler(res, data);
+
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+
+        return responseHandler(res, data);
+    }
+}
+
+
+/**
+ * Adds a trending status to a workout plan in the database.
+ *
+ * @function addTrendingPlan
+ * @param {Object} req - The request object containing the planID.
+ * @param {Object} res - The response object to send the response.
+ * @returns {Promise<Object>} - A promise that resolves to the response object with status and data.
+ *
+ * @throws Will throw an error if the planID is not provided.
+ * @throws Will throw an error if there is a problem with the database operation.
+ *
+ * @example
+ * // Adding trending status to a workout plan with ID 123
+ * addTrendingPlan({ params: { planID: 123 } }, res);
+ */
+async function addTrendingPlan(req, res) {
+    try {
+        const planID = req.params.planID;
+
+        const data = await setTrendingPlanStatus(planID);
+
+        return responseHandler(res, data);
+
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+
+        return responseHandler(res, data);
+    }
+}
+
+
+/**
+ * Fetches trending workout plans from the database.
+ *
+ * @function fetchTrendingPlans
+ * @param {Object} req - The request object containing the query parameters.
+ * @param {Object} res - The response object to send the response.
+ * @returns {Promise<Object>} - A promise that resolves to the response object with status and data.
+ *
+ * @throws Will throw an error if there is a problem with the database operation.
+ *
+ * @example
+ * // Fetching trending workout plans
+ * fetchTrendingPlans(req, res);
+ */
+async function fetchTrendingPlans(req, res) {
+    try {
+        const data = await getTrendingPlans();
+
+        return responseHandler(res, data);
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+
+        return responseHandler(res, data);
+    }
+}
+
+
+/**
+ * Fetches featured workout plans from the database.
+ *
+ * @function fetchFeaturedPlans
+ * @param {Object} req - The request object containing the query parameters.
+ * @param {Object} res - The response object to send the response.
+ * @returns {Promise<Object>} - A promise that resolves to the response object with status and data.
+ *
+ * @throws Will throw an error if there is a problem with the database operation.
+ *
+ * @example
+ * // Fetching featured workout plans
+ * fetchFeaturedPlans(req, res);
+ */
+async function fetchFeaturedPlans(req, res) {
+    try {
+        const data = await getFeaturedPlans();
+
+        return responseHandler(res, data);
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+
+        return responseHandler(res, data);
+    }
+}
+
+
+
+
+
 /**
  * Exports the functions for managing workout plans.
  *
  * @module controllers/planController
  */
-module.exports = { createJsonWorkoutPlan, createWorkoutPlan, fetchWorkoutPlan, fetchWorkoutOverview, updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise }
+const specialPlans = {addFeaturedPlan, addTrendingPlan, fetchFeaturedPlans, fetchTrendingPlans}
+module.exports = { ...specialPlans, createJsonWorkoutPlan, createWorkoutPlan, fetchWorkoutPlan, fetchWorkoutOverview, updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise }

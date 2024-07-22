@@ -6,6 +6,10 @@ const Exercise = require("../models/Exercise");
 const uploadFile = require("../service/fileUploadService");
 
 
+/////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////CREATE PLANS SECTION//////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Creates a new workout plan by saving the provided weeks and plan body.
  *
@@ -91,7 +95,7 @@ async function createJsonPlan({ weeks, ...planBody }) {
  * @returns {Promise} A promise that resolves to an object containing the status, message, and the saved plan.
  * If an error occurs during the save process, the promise rejects with an object containing a status of 500 and the error message.
  */
-async function createPlan(files, planBody){
+async function createPlan(files, planBody) {
     try {
         const urls = await uploadFile(files, 'plan');
 
@@ -121,6 +125,10 @@ async function createPlan(files, planBody){
     }
 }
 
+
+/////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////FETCH PLANS SECTION///////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Fetches a data plan based on the provided ID. If no ID is provided, fetches all data plans.
@@ -232,6 +240,10 @@ async function fetchPlanOverview(id) {
     }
 }
 
+
+/////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////UPDATE PLANS SECTION//////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Updates a workout plan by finding the plan by its ID and updating its fields.
@@ -475,10 +487,182 @@ async function deletePlan(id) {
 }
 
 
+/////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////TRENDING AND FEATURED PLANS///////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
+
+/**
+ * Sets the trending status of a data plan based on the provided ID.
+ *
+ * @function setTrendingPlanStatus
+ * @param {string} planID - The ID of the data plan to update.
+ * @returns {Promise} A promise that resolves to an object containing the status, message, and the updated plan.
+ * If the plan is not found, the promise resolves to an object with a status of 400 and a message indicating the plan not found.
+ * If an error occurs during the update process, the promise rejects with an object containing a status of 500 and the error message.
+ *
+ * @throws Will throw an error if the plan ID is not provided or if an error occurs during the update process.
+ */
+async function setTrendingPlanStatus(planID) {
+    try {
+        const trendingPlan = await Plan.findById(planID);
+
+        trendingPlan.isTrending = !trendingPlan.isTrending;
+
+        await trendingPlan.save();
+
+        const data = {
+            status: 200,
+            message: "Changed trending status",
+            trendingPlan
+        }
+
+        return data;
+
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+
+        return Promise.reject(data);
+    }
+}
+
+
+/**
+ * Fetches a list of trending data plans from the database.
+ *
+ * @function getTrendingPlans
+ * @returns {Promise} A promise that resolves to an object containing the status, message, and the fetched trending plans.
+ * If an error occurs during the fetch process, the promise rejects with an object containing a status of 500 and the error message.
+ *
+ * @throws Will throw an error if an error occurs during the fetch process.
+ */
+async function getTrendingPlans() {
+    try {
+        const trendingPlans = await Plan.find(
+            { isTrending: true }
+        ).populate({
+            path: 'weeks',
+            populate: {
+                path: 'days',
+                populate: {
+                    path: 'categories',
+                    populate: {
+                        path: 'exercises'
+                    }
+                }
+            }
+        });
+
+        const data = {
+            status: 200,
+            message: "Fetched trending plans",
+            trendingPlans
+        }
+
+        return data;
+
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+
+        return Promise.reject(data);
+    }
+}
+
+
+/**
+ * Sets the featured status of a data plan based on the provided ID.
+ *
+ * @function setFeaturedPlanStatus
+ * @param {string} planID - The ID of the data plan to update.
+ * @returns {Promise} A promise that resolves to an object containing the status, message, and the updated plan.
+ * If the plan is not found, the promise resolves to an object with a status of 400 and a message indicating the plan not found.
+ * If an error occurs during the update process, the promise rejects with an object containing a status of 500 and the error message.
+ *
+ * @throws Will throw an error if the plan ID is not provided or if an error occurs during the update process.
+ */
+async function setFeaturedPlanStatus(planID) {
+    try {
+        const featuredPlan = await Plan.findById(planID);
+
+        featuredPlan.isFeatured = !featuredPlan.isFeatured;
+
+        await featuredPlan.save();
+
+        const data = {
+            status: 200,
+            message: "Changed featured status",
+            featuredPlan
+        }
+
+        return data;
+
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+
+        return Promise.reject(data);
+    }
+}
+
+
+/**
+ * Fetches a list of featured data plans from the database.
+ *
+ * @function getFeaturedPlans
+ * @returns {Promise} A promise that resolves to an object containing the status, message, and the fetched featured plans.
+ * If an error occurs during the fetch process, the promise rejects with an object containing a status of 500 and the error message.
+ *
+ * @throws Will throw an error if an error occurs during the fetch process.
+ */
+async function getFeaturedPlans() {
+    try {
+        const featuredPlans = await Plan.find(
+            { isFeatured: true }
+        ).populate({
+            path: 'weeks',
+            populate: {
+                path: 'days',
+                populate: {
+                    path: 'categories',
+                    populate: {
+                        path: 'exercises'
+                    }
+                }
+            }
+        });
+
+        const data = {
+            status: 200,
+            message: "Fetched featured plans",
+            featuredPlans
+        }
+
+        return data;
+
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+
+        return Promise.reject(data);
+    }
+}
+
+
 /**
  * Exports functions for managing data plans.
  *
  * @module helpers/planHelper
  */
-const createFunctions = {createPlan, createJsonPlan}
-module.exports = { ...createFunctions, fetchPlan, fetchPlanOverview, updatePlan, deletePlan, updateWeek, updateDay, updateCategory, updateExercise }
+const createFunctions = { createPlan, createJsonPlan }
+const specialPlans = { setTrendingPlanStatus, getTrendingPlans, setFeaturedPlanStatus, getFeaturedPlans };
+module.exports = { ...createFunctions, ...specialPlans, fetchPlan, fetchPlanOverview, updatePlan, deletePlan, updateWeek, updateDay, updateCategory, updateExercise };

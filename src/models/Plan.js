@@ -83,7 +83,36 @@ const PlanSchema = new mongoose.Schema({
             type: mongoose.Types.ObjectId,
             ref: 'weekPlan'
         }
+    ],
+
+
+    // plan status
+    isTrending: {
+        type: Boolean,
+        required: false,
+        default: false
+    },
+
+    isFeatured: {
+        type: Boolean,
+        required: false,
+        default: false
+    },
+
+    views: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+
+    selectedBy: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: 'User'
+        }
     ]
+
+
 }, { timestamps: true });
 
 

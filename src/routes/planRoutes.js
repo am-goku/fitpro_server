@@ -1,6 +1,6 @@
 const express = require('express');
 const { adminProtect, userProtect } = require('../middleware/authMiddleware');
-const { fetchWorkoutPlan, updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise, fetchWorkoutOverview, createJsonWorkoutPlan, createWorkoutPlan } = require('../controllers/planController');
+const { fetchWorkoutPlan, updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise, fetchWorkoutOverview, createJsonWorkoutPlan, createWorkoutPlan, addFeaturedPlan, fetchFeaturedPlans, addTrendingPlan, fetchTrendingPlans } = require('../controllers/planController');
 const upload = require('../utils/multerConfig');
 
 const router = express.Router();
@@ -528,6 +528,122 @@ router.put('/update/category/:categoryID', adminProtect, updateWorkoutCategory);
  *         description: Server error
  */
 router.put('/update/exercise/:exerciseID', adminProtect, updateWorkoutExercise);
+
+
+/**
+ * @swagger
+ * tags:
+ *   name: Featured
+ *   description: Routes for managing featured plans
+ */
+
+/**
+ * @swagger
+ * /api/v1/plan/featured/{planID}:
+ *   post:
+ *     summary: Update an plan's Featured status
+ *     tags: [Featured]
+ *     description: Call it for once for turning true again for false
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: planID
+ *         required: true
+ *         description: _id of the plan to update featured status
+ *     requestBody:
+ *       required: false
+ *     responses:
+ *       200:
+ *         description: Plan status has been updated
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.post('/featured/:planID', adminProtect, addFeaturedPlan);
+
+/**
+ * @swagger
+ * /api/v1/plan/featured:
+ *   get:
+ *     summary: Fetch featured plans
+ *     tags: [Featured]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *     responses:
+ *       200:
+ *         description: Plans fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PlanSchema'
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.get('/featured', userProtect, fetchFeaturedPlans);
+
+
+/**
+ * @swagger
+ * tags:
+ *   name: Trending
+ *   description: Routes for managing trending plans
+ */
+
+/**
+ * @swagger
+ * /api/v1/plan/trending/{planID}:
+ *   post:
+ *     summary: Update an plan's Trending status
+ *     tags: [Trending]
+ *     description: Call it for once for turning true again for false
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: planID
+ *         required: true
+ *         description: _id of the plan to update trending status
+ *     requestBody:
+ *       required: false
+ *     responses:
+ *       200:
+ *         description: Plan status has been updated
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.post('/trending/:planID', adminProtect, addTrendingPlan);
+
+/**
+ * @swagger
+ * /api/v1/plan/trending:
+ *   get:
+ *     summary: Fetch trending plans
+ *     tags: [Trending]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *     responses:
+ *       200:
+ *         description: Plans fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PlanSchema'
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.get('/trending', userProtect, fetchTrendingPlans);
 
 
 /**
