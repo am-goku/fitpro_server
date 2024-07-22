@@ -88,6 +88,8 @@ const router = express.Router();
  *           type: string
  *         day_banner_image:
  *           type: string
+ *         intro_video:
+ *           type: string
  *         day_of_week:
  *           type: string
  *         estimated_duration:
@@ -113,6 +115,8 @@ const router = express.Router();
  *         description:
  *           type: string
  *         banner_image:
+ *           type: string
+ *         plan_video:
  *           type: string
  *         workout_keywords:
  *           type: string

@@ -71,7 +71,6 @@ app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/plan', planRoutes);
 
 
-
 /**
  * This function retrieves the server's port number from the environment variable 'PORT' or defaults to 5000 if not specified.
  * @returns {Number} The port number on which the server is running.

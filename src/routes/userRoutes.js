@@ -1,5 +1,5 @@
 const express = require('express');
-const { updateUserProfile, fetchUserData } = require('../controllers/userController');
+const { updateUserProfile, fetchUserData, newBookmark, fetchBookmark, deleteBookmark } = require('../controllers/userController');
 const { userProtect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -99,7 +99,7 @@ router.post('/update', userProtect, updateUserProfile)
 /**
  * @swagger
  * /api/v1/user/fetch:
- *   post:
+ *   get:
  *     summary: To fetch User Profile
  *     tags: [User]
  *     security:
@@ -124,6 +124,97 @@ router.post('/update', userProtect, updateUserProfile)
  */
 router.get('/fetch', userProtect, fetchUserData)
 
+
+
+
+/**
+ * @swagger
+ * tags:
+ *   name: Bookmarks
+ *   description: Routes to user bookmarks
+*/
+
+/**
+ * @swagger
+ * /api/v1/user/bookmarks/{dayID}:
+ *   post:
+ *     summary: To set new bookmark
+ *     tags: [Bookmarks]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: dayID
+ *         description: id of the day to set bookmark
+ *         required: true
+ *     requestBody:
+ *       required: false
+ *     responses:
+ *       200:
+ *         description: Bookmarks added successfully
+ *       400:
+ *         description: Invalid input
+ *       401:
+ *         description: Unauthorized user
+ *       403:
+ *         description: Unverified account
+ *       500:
+ *         description: Server error
+*/
+router.post('/bookmarks/:dayID', userProtect, newBookmark);
+
+/**
+ * @swagger
+ * /api/v1/user/bookmarks:
+ *   get:
+ *     summary: To fetch user bookmarks
+ *     tags: [Bookmarks]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *     responses:
+ *       200:
+ *         description: Bookmarks fetched successfully
+ *       400:
+ *         description: Invalid input
+ *       401:
+ *         description: Unauthorized user
+ *       403:
+ *         description: Unverified account
+ *       500:
+ *         description: Server error
+*/
+router.get('/bookmarks', userProtect, fetchBookmark);
+
+/**
+ * @swagger
+ * /api/v1/user/bookmarks/{dayID}:
+ *   delete:
+ *     summary: To remove a bookmark
+ *     tags: [Bookmarks]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: dayID
+ *         description: id of the day to remove from bookmarks
+ *         required: true
+ *     requestBody:
+ *       required: false
+ *     responses:
+ *       200:
+ *         description: Bookmarks removed successfully
+ *       400:
+ *         description: Invalid input
+ *       401:
+ *         description: Unauthorized user
+ *       403:
+ *         description: Unverified account
+ *       500:
+ *         description: Server error
+*/
+router.delete('/bookmarks/:dayID', userProtect, deleteBookmark);
 
 
 module.exports = router;
