@@ -30,6 +30,10 @@ const DaySchema = new Schema({
         type: String,
         required: false
     },
+    intro_video: {
+        type: String,
+        required: false
+    },
     day_of_week: {
         type: String,
         required: false

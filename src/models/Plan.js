@@ -38,6 +38,10 @@ const PlanSchema = new mongoose.Schema({
         type: String,
         required: false
     },
+    plan_video: {
+        type: String,
+        required: false
+    },
     workout_keywords: {
         type: String,
         required: false
