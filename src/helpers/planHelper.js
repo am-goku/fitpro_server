@@ -141,48 +141,30 @@ async function createPlan(files, planBody) {
  */
 async function fetchPlan(id) {
     try {
-        const data = {
-            status: 200,
-            message: "Data Plans fetched successfully",
-        };
+        const query = {}
 
         if (id) {
-            const plan = await Plan.findById(id).populate({
-                path: 'weeks',
-                populate: {
-                    path: 'days',
-                    populate: {
-                        path: 'categories',
-                        populate: {
-                            path: 'exercises'
-                        }
-                    }
-                }
-            })
-
-            if (!plan) {
-                data.status = 400;
-                data.message = "Plan not found";
-                return data;
-            }
-
-            data["plan"] = plan;
-        } else {
-            const plans = await Plan.find({}).populate({
-                path: 'weeks',
-                populate: {
-                    path: 'days',
-                    populate: {
-                        path: 'categories',
-                        populate: {
-                            path: 'exercises'
-                        }
-                    }
-                }
-            });
-
-            data["plans"] = plans;
+            query["_id"] = id;
         }
+
+        const plans = await Plan.find(query).populate({
+            path: 'weeks',
+            populate: {
+                path: 'days',
+                populate: {
+                    path: 'categories',
+                    populate: {
+                        path: 'exercises'
+                    }
+                }
+            }
+        })
+
+        const data = {
+            status: 200,
+            message: "Plans fetched successfully",
+            plans
+        };
 
         return data;
 

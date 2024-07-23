@@ -408,8 +408,10 @@ router.post('/create/json', adminProtect, createJsonWorkoutPlan)
  * @swagger
  * /api/v1/plan/create:
  *   post:
- *     summary: Create a new workout plan (Overview)
- *     tags: [Workout-plan]
+ *     summary: Creates a new workout plan
+ *     description: Creates and saves a new workout plan using the provided files and plan details. This endpoint is protected and requires admin privileges.
+ *     tags:
+ *       - Workout-plan
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -419,45 +421,150 @@ router.post('/create/json', adminProtect, createJsonWorkoutPlan)
  *           schema:
  *             type: object
  *             properties:
- *               banner_image:
- *                 type: string
- *                 format: binary
  *               plan_video:
  *                 type: string
  *                 format: binary
+ *                 description: Video introducing the workout plan.
+ *               banner_image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Banner image for the workout plan.
  *               plan_name:
  *                 type: string
+ *                 description: The name of the workout plan.
+ *                 example: "Summer Body Transformation"
  *               description:
  *                 type: string
+ *                 description: A brief description of the workout plan.
+ *                 example: "A comprehensive plan to get in shape for summer."
  *               workout_keywords:
  *                 type: string
+ *                 description: Keywords related to the workout plan.
+ *                 example: "cardio, strength"
  *               goal_orientation:
  *                 type: array
  *                 items:
  *                   type: string
+ *                 description: Goals that the workout plan is oriented towards.
+ *                 example: ["flexibility", "strength"]
  *               target_age_group:
  *                 type: string
+ *                 description: Target age group for the workout plan.
+ *                 example: "30-40"
  *               training_type:
  *                 type: string
+ *                 description: Type of training included in the plan.
+ *                 example: "HIIT"
  *               location:
  *                 type: string
+ *                 description: Location where the workout can be performed.
+ *                 example: "Home"
  *               level:
  *                 type: string
+ *                 description: Difficulty level of the workout plan.
+ *                 example: "Intermediate"
  *               estimated_duration:
  *                 type: string
+ *                 description: Estimated total duration of the workout plan.
+ *                 example: "6 weeks"
  *               rest_between_exercises_seconds:
- *                 type: number
+ *                 type: integer
+ *                 description: Rest time in seconds between exercises.
+ *                 example: 60
  *               average_calories_burned_per_minute:
  *                 type: number
- *             required:
- *               - plan_name
+ *                 format: float
+ *                 description: Average calories burned per minute during the workout.
+ *                 example: 8.5
  *     responses:
- *       200:
- *         description: Created workout plan
- *       400:
- *         description: Invalid credentials
- *       500:
+ *       '200':
+ *         description: Workout plan created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Workout plan saved successfully
+ *                 plan:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       description: Unique identifier for the workout plan.
+ *                       example: 60d5f2e91c9d44000014d2c7
+ *                     plan_name:
+ *                       type: string
+ *                       description: The name of the workout plan.
+ *                       example: "Summer Body Transformation"
+ *                     description:
+ *                       type: string
+ *                       description: A brief description of the workout plan.
+ *                       example: "A comprehensive plan to get in shape for summer."
+ *                     banner_image:
+ *                       type: string
+ *                       description: URL of the banner image for the workout plan.
+ *                       example: "https://example.com/banner.jpg"
+ *                     plan_video:
+ *                       type: string
+ *                       description: URL of the video introducing the workout plan.
+ *                       example: "https://example.com/intro.mp4"
+ *                     workout_keywords:
+ *                       type: string
+ *                       description: Keywords related to the workout plan.
+ *                       example: "cardio, strength"
+ *                     goal_orientation:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       description: Goals that the workout plan is oriented towards.
+ *                       example: ["flexibility", "strength"]
+ *                     target_age_group:
+ *                       type: string
+ *                       description: Target age group for the workout plan.
+ *                       example: "30-40"
+ *                     training_type:
+ *                       type: string
+ *                       description: Type of training included in the plan.
+ *                       example: "HIIT"
+ *                     location:
+ *                       type: string
+ *                       description: Location where the workout can be performed.
+ *                       example: "Home"
+ *                     level:
+ *                       type: string
+ *                       description: Difficulty level of the workout plan.
+ *                       example: "Intermediate"
+ *                     estimated_duration:
+ *                       type: string
+ *                       description: Estimated total duration of the workout plan.
+ *                       example: "6 weeks"
+ *                     rest_between_exercises_seconds:
+ *                       type: integer
+ *                       description: Rest time in seconds between exercises.
+ *                       example: 60
+ *                     average_calories_burned_per_minute:
+ *                       type: number
+ *                       format: float
+ *                       description: Average calories burned per minute during the workout.
+ *                       example: 8.5
+ *       '500':
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.post('/create', adminProtect, upload.fields([{ name: 'plan_video' }, { name: 'banner_image' }]), createWorkoutPlan);
 
@@ -465,28 +572,239 @@ router.post('/create', adminProtect, upload.fields([{ name: 'plan_video' }, { na
  * @swagger
  * /api/v1/plan/fetch:
  *   get:
- *     summary: Fetch all workout plans / fetch single workout plan using ID
- *     tags: [Workout-plan]
+ *     summary: Fetches workout plans
+ *     description: Fetches workout plans based on the provided ID. If no ID is provided, it fetches all plans. This endpoint is protected and requires user authentication.
+ *     tags:
+ *       - Workout-plan
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
- *         name: planID
- *         required: false
+ *         name: id
  *         schema:
  *           type: string
- *         description: "The ID of the workout plan to fetch a single workout plan"
+ *         description: The ID of the workout plan to fetch
+ *         required: false
+ *         example: "60d5f2e91c9d44000014d2c7"
  *     responses:
- *       200:
- *         description: Workout plan / plans successfully fetched
+ *       '200':
+ *         description: Plans fetched successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/PlanSchema'
- *       400:
- *         description: Invalid credentials
- *       500:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Plans fetched successfully
+ *                 plans:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         description: Unique identifier for the workout plan.
+ *                         example: "60d5f2e91c9d44000014d2c7"
+ *                       plan_name:
+ *                         type: string
+ *                         description: The name of the workout plan.
+ *                         example: "Summer Body Transformation"
+ *                       description:
+ *                         type: string
+ *                         description: A brief description of the workout plan.
+ *                         example: "A comprehensive plan to get in shape for summer."
+ *                       banner_image:
+ *                         type: string
+ *                         description: URL of the banner image for the workout plan.
+ *                         example: "https://example.com/image.jpg"
+ *                       plan_video:
+ *                         type: string
+ *                         description: URL of the video for the workout plan.
+ *                         example: "https://example.com/video.mp4"
+ *                       workout_keywords:
+ *                         type: string
+ *                         description: Keywords related to the workout plan.
+ *                         example: "cardio, strength"
+ *                       goal_orientation:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                         description: Goals that the workout plan is oriented towards.
+ *                         example: ["flexibility", "strength"]
+ *                       target_age_group:
+ *                         type: string
+ *                         description: Target age group for the workout plan.
+ *                         example: "30-40"
+ *                       training_type:
+ *                         type: string
+ *                         description: Type of training included in the plan.
+ *                         example: "HIIT"
+ *                       location:
+ *                         type: string
+ *                         description: Location where the workout can be performed.
+ *                         example: "Home"
+ *                       level:
+ *                         type: string
+ *                         description: Difficulty level of the workout plan.
+ *                         example: "Intermediate"
+ *                       estimated_duration:
+ *                         type: string
+ *                         description: Estimated total duration of the workout plan.
+ *                         example: "6 weeks"
+ *                       rest_between_exercises_seconds:
+ *                         type: integer
+ *                         description: Rest time in seconds between exercises.
+ *                         example: 60
+ *                       average_calories_burned_per_minute:
+ *                         type: number
+ *                         format: float
+ *                         description: Average calories burned per minute during the workout.
+ *                         example: 8.5
+ *                       weeks:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             _id:
+ *                               type: string
+ *                               description: Unique identifier for the week.
+ *                               example: "60d5f2e91c9d44000014d2c8"
+ *                             week:
+ *                               type: integer
+ *                               description: The week number.
+ *                               example: 1
+ *                             days:
+ *                               type: array
+ *                               items:
+ *                                 type: object
+ *                                 properties:
+ *                                   _id:
+ *                                     type: string
+ *                                     description: Unique identifier for the day.
+ *                                     example: "60d5f2e91c9d44000014d2c9"
+ *                                   day:
+ *                                     type: integer
+ *                                     description: The day number.
+ *                                     example: 1
+ *                                   day_name:
+ *                                     type: string
+ *                                     description: Name of the day.
+ *                                     example: "Day 1"
+ *                                   day_banner_image:
+ *                                     type: string
+ *                                     description: URL of the banner image for the day.
+ *                                     example: "https://example.com/image.jpg"
+ *                                   intro_video:
+ *                                     type: string
+ *                                     description: URL of the intro video for the day.
+ *                                     example: "https://example.com/video.mp4"
+ *                                   day_of_week:
+ *                                     type: string
+ *                                     description: Day of the week.
+ *                                     example: "Monday"
+ *                                   estimated_duration:
+ *                                     type: string
+ *                                     description: Estimated duration of the day.
+ *                                     example: "45 minutes"
+ *                                   categories:
+ *                                     type: array
+ *                                     items:
+ *                                       type: object
+ *                                       properties:
+ *                                         _id:
+ *                                           type: string
+ *                                           description: Unique identifier for the category.
+ *                                           example: "60d5f2e91c9d44000014d2ca"
+ *                                         sub_category:
+ *                                           type: string
+ *                                           description: Sub-category of the exercises.
+ *                                           example: "Warm-up"
+ *                                         circuit_rest_time:
+ *                                           type: integer
+ *                                           description: Rest time in seconds between circuits.
+ *                                           example: 30
+ *                                         circuit_reps:
+ *                                           type: integer
+ *                                           description: Number of repetitions for the circuit.
+ *                                           example: 3
+ *                                         exercises:
+ *                                           type: array
+ *                                           items:
+ *                                             type: object
+ *                                             properties:
+ *                                               _id:
+ *                                                 type: string
+ *                                                 description: Unique identifier for the exercise.
+ *                                                 example: "60d5f2e91c9d44000014d2cb"
+ *                                               name:
+ *                                                 type: string
+ *                                                 description: Name of the exercise.
+ *                                                 example: "Push-ups"
+ *                                               exercise_number:
+ *                                                 type: integer
+ *                                                 description: Exercise number.
+ *                                                 example: 1
+ *                                               exercise_type:
+ *                                                 type: string
+ *                                                 description: Type of exercise.
+ *                                                 example: "Strength"
+ *                                               time_based:
+ *                                                 type: string
+ *                                                 description: Whether the exercise is time-based.
+ *                                                 example: "No"
+ *                                               weighted:
+ *                                                 type: string
+ *                                                 description: Whether the exercise is weighted.
+ *                                                 example: "Yes"
+ *                                               sets:
+ *                                                 type: integer
+ *                                                 description: Number of sets.
+ *                                                 example: 3
+ *                                               reps:
+ *                                                 type: array
+ *                                                 items:
+ *                                                   type: integer
+ *                                                 description: Number of repetitions per set.
+ *                                                 example: [12, 12, 12]
+ *                                               set_time:
+ *                                                 type: string
+ *                                                 description: Duration of each set.
+ *                                                 example: "30 seconds"
+ *                                               superset_names:
+ *                                                 type: array
+ *                                                 items:
+ *                                                   type: string
+ *                                                 description: Names of the exercises in the superset.
+ *                                                 example: ["Push-ups", "Pull-ups"]
+ *                                               rest_time:
+ *                                                 type: integer
+ *                                                 description: Rest time in seconds between sets.
+ *                                                 example: 30
+ *                                               video_url:
+ *                                                 type: string
+ *                                                 description: URL of the exercise video.
+ *                                                 example: "https://example.com/video.mp4"
+ *                                               image_url:
+ *                                                 type: string
+ *                                                 description: URL of the exercise image.
+ *                                                 example: "https://example.com/image.jpg"
+ *       '500':
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.get('/fetch', userProtect, fetchWorkoutPlan)
 
@@ -608,55 +926,202 @@ router.get('/overview', userProtect, fetchWorkoutOverview);
  * @swagger
  * /api/v1/plan/{planID}:
  *   put:
- *     summary: Update a new workout-plan using planID - OVERVIEW ONLY
- *     tags: [Workout-plan]
+ *     summary: Update a workout plan
+ *     description: Updates the details of an existing workout plan by plan ID. This endpoint is protected and requires admin authentication.
+ *     tags:
+ *       - Workout-plan
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: planID
+ *         schema:
+ *           type: string
  *         required: true
- *         description: "The _id of the workout plan to update a single workout plan"
+ *         description: The ID of the workout plan to update
+ *         example: "60d5f2e91c9d44000014d2c7"
  *     requestBody:
+ *       description: JSON object containing the fields to update in the workout plan
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *              type: object
- *              properties:
- *                plan_name:
- *                  type: string
- *                description:
- *                  type: string
- *                banner_image:
- *                  type: string
- *                workout_keywords:
- *                  type: string
- *                goal_orientation:
- *                  type: array
- *                  items:
- *                    type: string
- *                target_age_group:
- *                  type: string
- *                training_type:
- *                  type: string
- *                location:
- *                  type: string
- *                level:
- *                  type: string
- *                estimated_duration:
- *                  type: string
- *                rest_between_exercises_seconds:
- *                  type: number
- *                average_calories_burned_per_minute:
- *                  type: number
+ *             type: object
+ *             properties:
+ *               plan_name:
+ *                 type: string
+ *                 example: "Summer Body Transformation"
+ *               description:
+ *                 type: string
+ *                 example: "A comprehensive plan to get in shape for summer."
+ *               banner_image:
+ *                 type: string
+ *                 example: "https://example.com/image.jpg"
+ *               plan_video:
+ *                 type: string
+ *                 example: "https://example.com/video.mp4"
+ *               workout_keywords:
+ *                 type: string
+ *                 example: "cardio, strength"
+ *               goal_orientation:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: ["flexibility", "strength"]
+ *               target_age_group:
+ *                 type: string
+ *                 example: "30-40"
+ *               training_type:
+ *                 type: string
+ *                 example: "HIIT"
+ *               location:
+ *                 type: string
+ *                 example: "Home"
+ *               level:
+ *                 type: string
+ *                 example: "Intermediate"
+ *               estimated_duration:
+ *                 type: string
+ *                 example: "6 weeks"
+ *               rest_between_exercises_seconds:
+ *                 type: integer
+ *                 example: 60
+ *               average_calories_burned_per_minute:
+ *                 type: number
+ *                 format: float
+ *                 example: 8.5
+ *               isTrending:
+ *                 type: boolean
+ *                 example: true
+ *               isFeatured:
+ *                 type: boolean
+ *                 example: false
  *     responses:
- *       200:
- *         description: Updated workout plan
- *       400:
- *         description: Invalid credentials
- *       500:
+ *       '200':
+ *         description: Workout plan updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Workout plan updated successfully
+ *                 plan:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       description: Unique identifier for the workout plan.
+ *                       example: "60d5f2e91c9d44000014d2c7"
+ *                     plan_name:
+ *                       type: string
+ *                       description: The name of the workout plan.
+ *                       example: "Summer Body Transformation"
+ *                     description:
+ *                       type: string
+ *                       description: A brief description of the workout plan.
+ *                       example: "A comprehensive plan to get in shape for summer."
+ *                     banner_image:
+ *                       type: string
+ *                       description: URL of the banner image for the workout plan.
+ *                       example: "https://example.com/image.jpg"
+ *                     plan_video:
+ *                       type: string
+ *                       description: URL of the video for the workout plan.
+ *                       example: "https://example.com/video.mp4"
+ *                     workout_keywords:
+ *                       type: string
+ *                       description: Keywords related to the workout plan.
+ *                       example: "cardio, strength"
+ *                     goal_orientation:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       description: Goals that the workout plan is oriented towards.
+ *                       example: ["flexibility", "strength"]
+ *                     target_age_group:
+ *                       type: string
+ *                       description: Target age group for the workout plan.
+ *                       example: "30-40"
+ *                     training_type:
+ *                       type: string
+ *                       description: Type of training included in the plan.
+ *                       example: "HIIT"
+ *                     location:
+ *                       type: string
+ *                       description: Location where the workout can be performed.
+ *                       example: "Home"
+ *                     level:
+ *                       type: string
+ *                       description: Difficulty level of the workout plan.
+ *                       example: "Intermediate"
+ *                     estimated_duration:
+ *                       type: string
+ *                       description: Estimated total duration of the workout plan.
+ *                       example: "6 weeks"
+ *                     rest_between_exercises_seconds:
+ *                       type: integer
+ *                       description: Rest time in seconds between exercises.
+ *                       example: 60
+ *                     average_calories_burned_per_minute:
+ *                       type: number
+ *                       format: float
+ *                       description: Average calories burned per minute during the workout.
+ *                       example: 8.5
+ *                     weeks:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                         description: IDs of the weeks included in the plan.
+ *                         example: ["60d5f2e91c9d44000014d2c8"]
+ *                     isTrending:
+ *                       type: boolean
+ *                       description: Indicates if the plan is trending.
+ *                       example: true
+ *                     isFeatured:
+ *                       type: boolean
+ *                       description: Indicates if the plan is featured.
+ *                       example: false
+ *                     views:
+ *                       type: integer
+ *                       description: Number of views of the plan.
+ *                       example: 100
+ *                     selectedBy:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                         description: IDs of users who selected the plan.
+ *                         example: ["60d5f2e91c9d44000014d2c9"]
+ *       '400':
+ *         description: Invalid planID or request body
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: Invalid planID or request body
+ *       '500':
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.put('/:planID', adminProtect, updateWorkoutPlan);
 
@@ -665,21 +1130,59 @@ router.put('/:planID', adminProtect, updateWorkoutPlan);
  * /api/v1/plan/{planID}:
  *   delete:
  *     summary: Delete a workout plan
- *     tags: [Workout-plan]
+ *     description: Deletes a workout plan by plan ID. This endpoint is protected and requires admin authentication.
+ *     tags:
+ *       - Workout-plan
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: planID
+ *         schema:
+ *           type: string
  *         required: true
- *         description: "The ID of the workout plan to delete a single workout plan"
+ *         description: The ID of the workout plan to delete
+ *         example: "60d5f2e91c9d44000014d2c7"
  *     responses:
- *       200:
- *         description: Deleted workout plan
- *       400:
- *         description: Invalid credentials
- *       500:
+ *       '200':
+ *         description: Plan deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Plan deleted successfully
+ *       '400':
+ *         description: Invalid planID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: Plan not found
+ *       '500':
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.delete('/:planID', adminProtect, deleteWorkoutPlan);
 
@@ -691,34 +1194,92 @@ router.delete('/:planID', adminProtect, deleteWorkoutPlan);
  * @swagger
  * /api/v1/plan/{planID}/week:
  *   post:
- *     summary: Create a new week in a workout-plan
- *     tags: [Workout-plan - WEEK]
+ *     summary: Add a week to a workout plan
+ *     description: Adds a new week plan to an existing workout plan. This endpoint is protected and requires admin authentication.
+ *     tags:
+ *       - Workout-plan - WEEK
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: planID
+ *         schema:
+ *           type: string
  *         required: true
- *         description: The id of plan which the week should push to
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               week:
- *                 type: number
- *               description:
- *             required:
- *               - week
+ *         description: The ID of the workout plan
+ *         example: "60d5f2e91c9d44000014d2c7"
+ *       - in: body
+ *         name: weekBody
+ *         description: The week details to add to the workout plan
+ *         required: true
+ *         schema:
+ *           type: object
+ *           required:
+ *             - week
+ *           properties:
+ *             week:
+ *               type: number
+ *               example: 1
  *     responses:
- *       200:
- *         description: Created week in a workout plan
- *       400:
- *         description: Invalid credentials
- *       500:
- *         description: Server error
+ *       '200':
+ *         description: Week plan added successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Week plan added successfully
+ *                 week:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "60d5f2e91c9d44000014d2ca"
+ *                     week:
+ *                       type: number
+ *                       example: 1
+ *                     days:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       example: ["60d5f2e91c9d44000014d2c8", "60d5f2e91c9d44000014d2c9"]
+ *                     createdAt:
+ *                       type: string
+ *                       example: "2023-07-23T19:22:00Z"
+ *                     updatedAt:
+ *                       type: string
+ *                       example: "2023-07-23T19:22:00Z"
+ *       '400':
+ *         description: Invalid planID or week details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: Plan not found
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
  */
 router.post('/:planID/week', adminProtect, createWeekPlan);
 
@@ -726,33 +1287,80 @@ router.post('/:planID/week', adminProtect, createWeekPlan);
  * @swagger
  * /api/v1/plan/week/{weekID}:
  *   get:
- *     summary: Fetch a week in a workout-plan
- *     tags: [Workout-plan - WEEK]
+ *     summary: Fetch week plan
+ *     description: Retrieves the details of a specific week plan by its ID. This endpoint is protected and requires user authentication.
+ *     tags:
+ *       - Workout-plan - WEEK
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: weekID
+ *         schema:
+ *           type: string
  *         required: true
- *         description: The id of the week
- *     security:
- *       - bearerAuth: []
+ *         description: The ID of the week plan
+ *         example: "60d5f2e91c9d44000014d2c7"
  *     responses:
- *       200:
- *         description: Fetched a week in a workout plan
+ *       '200':
+ *         description: Week data fetched successfully
  *         content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                week:
- *                  type: number
- *                days:
- *                  type: array
- *                  items:
- *                    id: objectID
- *       400:
- *         description: Invalid credentials
- *       500:
- *         description: Server error
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Week data fetched successfully
+ *                 week:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "60d5f2e91c9d44000014d2ca"
+ *                     week:
+ *                       type: number
+ *                       example: 1
+ *                     days:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       example: ["60d5f2e91c9d44000014d2c8", "60d5f2e91c9d44000014d2c9"]
+ *                     createdAt:
+ *                       type: string
+ *                       example: "2023-07-23T19:22:00Z"
+ *                     updatedAt:
+ *                       type: string
+ *                       example: "2023-07-23T19:22:00Z"
+ *       '400':
+ *         description: Invalid parameter or week data not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: Invalid parameter or Week data not found
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
  */
 router.get('/week/:weekID', userProtect, fetchWeekPlan)
 
@@ -760,31 +1368,89 @@ router.get('/week/:weekID', userProtect, fetchWeekPlan)
  * @swagger
  * /api/v1/plan/week/{weekID}:
  *   put:
- *     summary: Update a week-plan for workout using weekID
- *     tags: [Workout-plan - WEEK]
+ *     summary: Update a week plan
+ *     description: Updates the details of a specific week plan by its ID. This endpoint is protected and requires admin authentication.
+ *     tags:
+ *       - Workout-plan - WEEK
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: weekID
+ *         schema:
+ *           type: string
  *         required: true
- *         description: "The _id of the week to update a single week's workout plan"
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *              type: object
- *              properties:
- *                week:
- *                  type: number
+ *         description: The ID of the week plan to be updated
+ *         example: "60d5f2e91c9d44000014d2c7"
+ *       - in: body
+ *         name: weekBody
+ *         description: The week plan data to update
+ *         schema:
+ *           type: object
+ *           properties:
+ *             week:
+ *               type: number
+ *               example: 1
  *     responses:
- *       200:
- *         description: Week plan has been updated
- *       400:
- *         description: Invalid credentials
- *       500:
- *         description: Server error
+ *       '200':
+ *         description: Week plan updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Week plan updated successfully
+ *                 weekPlan:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "60d5f2e91c9d44000014d2ca"
+ *                     week:
+ *                       type: number
+ *                       example: 1
+ *                     days:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       example: ["60d5f2e91c9d44000014d2c8", "60d5f2e91c9d44000014d2c9"]
+ *                     createdAt:
+ *                       type: string
+ *                       example: "2023-07-23T19:22:00Z"
+ *                     updatedAt:
+ *                       type: string
+ *                       example: "2023-07-23T19:22:00Z"
+ *       '400':
+ *         description: Invalid parameter or week data not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: Plan not found
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
  */
 router.put('/week/:weekID', adminProtect, updateWorkoutWeekPlan);
 
