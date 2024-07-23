@@ -1,4 +1,4 @@
-const { fetchPlan, updatePlan, deletePlan, updateWeek, updateDay, updateCategory, updateExercise, fetchPlanOverview, createJsonPlan, createPlan, setFeaturedPlanStatus, setTrendingPlanStatus, getTrendingPlans, getFeaturedPlans, addWeek, addDay, addCategory, addExercise } = require("../helpers/planHelper");
+const { fetchPlan, updatePlan, deletePlan, updateWeek, updateDay, updateCategory, updateExercise, fetchPlanOverview, createJsonPlan, createPlan, setFeaturedPlanStatus, setTrendingPlanStatus, getTrendingPlans, getFeaturedPlans, addWeek, addDay, addCategory, addExercise, getWeek, getDay, getCategory, getExercise } = require("../helpers/planHelper");
 const responseHandler = require("../utils/responseHandler");
 
 
@@ -234,6 +234,151 @@ async function fetchWorkoutPlan(req, res) {
         return responseHandler(res, data);
     }
 }
+
+
+/**
+ * Fetches a workout week plan from the database based on the provided weekID.
+ *
+ * @function fetchWeekPlan
+ * @param {Object} req - The request object containing the parameters.
+ * @param {Object} res - The response object to send the response.
+ * @returns {Promise<Object>} - A promise that resolves to the response object with status and data.
+ *
+ * @throws Will throw an error if the weekID is not provided.
+ * @throws Will throw an error if there is a problem with the database operation.
+ *
+ * @example
+ * // Fetching a workout week plan with ID 123
+ * fetchWeekPlan({ params: { id: 123 } }, res);
+ */
+async function fetchWeekPlan(res, res) {
+    try {
+        const id = req.params.weekID;
+        if (!id) {
+            return responseHandler(res, { status: 400, message: "Invalid parameter" })
+        }
+        const data = await getWeek(id);
+
+        return responseHandler(res, data);
+
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+
+        return responseHandler(res, data);
+    }
+}
+
+
+/**
+ * Fetches a workout day plan from the database based on the provided dayID.
+ *
+ * @function fetchDayPlan
+ * @param {Object} req - The request object containing the dayID as a parameter.
+ * @param {Object} res - The response object to send the response.
+ * @returns {Promise<Object>} - A promise that resolves to the response object with status and data.
+ *
+ * @throws Will throw an error if the dayID is not provided.
+ * @throws Will throw an error if there is a problem with the database operation.
+ *
+ * @example
+ * // Fetching a workout day plan with ID 123
+ * fetchDayPlan({ params: { id: 123 } }, res);
+ */
+async function fetchDayPlan(res, res) {
+    try {
+        const id = req.params.dayID;
+        if (!id) {
+            return responseHandler(res, { status: 400, message: "Invalid parameter" })
+        }
+        const data = await getDay(id);
+
+        return responseHandler(res, data);
+
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+
+        return responseHandler(res, data);
+    }
+}
+
+
+/**
+ * Fetches a workout category from the database based on the provided categoryID.
+ *
+ * @function fetchCategory
+ * @param {Object} req - The request object containing the categoryID.
+ * @param {Object} res - The response object to send the response.
+ * @returns {Promise<Object>} - A promise that resolves to the response object with status and data.
+ *
+ * @throws Will throw an error if the categoryID is not provided.
+ * @throws Will throw an error if there is a problem with the database operation.
+ *
+ * @example
+ * // Fetching a workout category with ID 123
+ * fetchCategory({ params: { categoryID: 123 } }, res);
+ */
+async function fetchCategory(res, res) {
+    try {
+        const id = req.params.categoryID;
+        if (!id) {
+            return responseHandler(res, { status: 400, message: "Invalid parameter" })
+        }
+        const data = await getCategory(id);
+
+        return responseHandler(res, data);
+
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+
+        return responseHandler(res, data);
+    }
+}
+
+
+/**
+ * Fetches a workout exercise from the database based on the provided exerciseID.
+ *
+ * @function fetchExercise
+ * @param {Object} req - The request object containing the exerciseID.
+ * @param {Object} res - The response object to send the response.
+ * @returns {Promise<Object>} - A promise that resolves to the response object with status and data.
+ *
+ * @throws Will throw an error if the exerciseID is not provided.
+ * @throws Will throw an error if there is a problem with the database operation.
+ *
+ * @example
+ * // Fetching a workout exercise with ID 123
+ * fetchExercise({ params: { exerciseID: 123 } }, res);
+ */
+async function fetchExercise(res, res) {
+    try {
+        const id = req.params.exerciseID;
+        if (!id) {
+            return responseHandler(res, { status: 400, message: "Invalid parameter" })
+        }
+        const data = await getExercise(id);
+
+        return responseHandler(res, data);
+
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message,
+        }
+
+        return responseHandler(res, data);
+    }
+}
+
 
 
 /**
@@ -643,7 +788,7 @@ async function fetchFeaturedPlans(req, res) {
  * @module controllers/planController
  */
 const workoutCreate = { createJsonWorkoutPlan, createWorkoutPlan, createWeekPlan, createDayPlan, createCategory, createExercise }
-const workoutFetch = { fetchWorkoutPlan, fetchWorkoutOverview }
+const workoutFetch = { fetchWorkoutPlan, fetchWorkoutOverview, fetchWeekPlan, fetchDayPlan, fetchCategory, fetchExercise }
 const specialPlans = { addFeaturedPlan, addTrendingPlan, fetchFeaturedPlans, fetchTrendingPlans }
 const workoutUpdate = { updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise }
 module.exports = { ...specialPlans, ...workoutCreate, ...workoutFetch, ...workoutUpdate }

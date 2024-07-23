@@ -44,6 +44,7 @@ async function createJsonPlan({ weeks, ...planBody }) {
                     day: day.day,
                     day_name: day.day_name,
                     day_banner_image: day.day_banner_image,
+                    intro_video: day.intro_video,
                     day_of_week: day.day_of_week,
                     estimated_duration: day.estimated_duration,
                     categories: categoryDocs
@@ -317,7 +318,38 @@ async function addWeek(planID, weekBody) {
             week
         };
     } catch (error) {
-        console.error("Error adding week plan:", error);
+        return Promise.reject({
+            status: 500,
+            message: "Internal Server Error",
+        });
+    }
+}
+
+
+/**
+ * Fetches a week plan based on the provided ID.
+ *
+ * @function getWeek
+ * @param {string} id - The ID of the week plan to fetch.
+ * @returns {Promise} A promise that resolves to an object containing the status, message, and the fetched week.
+ * If the week is not found, the promise resolves to an object with a status of 400 and a message indicating the week not found.
+ * If an error occurs during the fetch process, the promise rejects with an object containing a status of 500 and the error message.
+ */
+async function getWeek(id) {
+    try {
+        const week = await WeekPlan.findById(id);
+
+        if (!week) {
+            return { status: 400, message: "Week data not found" }
+        }
+
+        return {
+            status: 200,
+            message: "Week data fetched successfully",
+            week
+        }
+
+    } catch (error) {
         return Promise.reject({
             status: 500,
             message: "Internal Server Error",
@@ -419,6 +451,38 @@ async function addDay(weekID, dayBody, files) {
 
 
 /**
+ * Fetches a list of featured data plans from the database.
+ *
+ * @function getFeaturedPlans
+ * @returns {Promise} A promise that resolves to an object containing the status, message, and the fetched featured plans.
+ * If an error occurs during the fetch process, the promise rejects with an object containing a status of 500 and the error message.
+ *
+ * @throws Will throw an error if an error occurs during the fetch process.
+ */
+async function getDay(id) {
+    try {
+        const day = await DayPlan.findById(id);
+
+        if (!day) {
+            return { status: 400, message: "Day data not found" }
+        }
+
+        return {
+            status: 200,
+            message: "Day data fetched successfully",
+            day
+        }
+
+    } catch (error) {
+        return Promise.reject({
+            status: 500,
+            message: "Internal Server Error",
+        });
+    }
+}
+
+
+/**
  * Updates a day plan by finding the day by its ID and updating its fields.
  *
  * @function updateDay
@@ -502,6 +566,39 @@ async function addCategory(dayID, catBody) {
         return Promise.reject(data);
     }
 }
+
+
+/**
+ * Fetches a category based on the provided ID.
+ *
+ * @function getCategory
+ * @param {string} id - The ID of the category to fetch.
+ * @returns {Promise} A promise that resolves to an object containing the status, message, and the fetched category.
+ * If the category is not found, the promise resolves to an object with a status of 400 and a message indicating the category not found.
+ * If an error occurs during the fetch process, the promise rejects with an object containing a status of 500 and the error message.
+ */
+async function getCategory(id) {
+    try {
+        const category = await Category.findById(id);
+
+        if (!category) {
+            return { status: 400, message: "Category not found" }
+        }
+
+        return {
+            status: 200,
+            message: "Category fetched successfully",
+            category
+        }
+
+    } catch (error) {
+        return Promise.reject({
+            status: 500,
+            message: "Internal Server Error",
+        });
+    }
+}
+
 
 
 /**
@@ -595,6 +692,38 @@ async function addExercise(categoryID, exerciseBody, files) {
             status: 500,
             message: error.message,
         }
+    }
+}
+
+
+/**
+ * Fetches an exercise based on the provided ID.
+ *
+ * @function getExercise
+ * @param {string} id - The ID of the exercise to fetch.
+ * @returns {Promise} A promise that resolves to an object containing the status, message, and the fetched exercise.
+ * If the exercise is not found, the promise resolves to an object with a status of 400 and a message indicating the exercise not found.
+ * If an error occurs during the fetch process, the promise rejects with an object containing a status of 500 and the error message.
+ */
+async function getExercise(id) {
+    try {
+        const exercise = await Exercise.findById(id);
+
+        if (!exercise) {
+            return { status: 400, message: "Exercise not found" }
+        }
+
+        return {
+            status: 200,
+            message: "Exercise fetched successfully",
+            exercise
+        }
+
+    } catch (error) {
+        return Promise.reject({
+            status: 500,
+            message: "Internal Server Error",
+        });
     }
 }
 
@@ -853,4 +982,5 @@ async function getFeaturedPlans() {
  */
 const createFunctions = { createPlan, createJsonPlan, addWeek, addDay, addCategory, addExercise };
 const specialPlans = { setTrendingPlanStatus, getTrendingPlans, setFeaturedPlanStatus, getFeaturedPlans };
-module.exports = { ...createFunctions, ...specialPlans, fetchPlan, fetchPlanOverview, updatePlan, deletePlan, updateWeek, updateDay, updateCategory, updateExercise };
+const fetchingPlans = { getWeek, getDay, getCategory, getExercise }
+module.exports = { ...createFunctions, ...specialPlans, ...fetchingPlans, fetchPlan, fetchPlanOverview, updatePlan, deletePlan, updateWeek, updateDay, updateCategory, updateExercise };

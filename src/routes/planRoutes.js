@@ -1,6 +1,6 @@
 const express = require('express');
 const { adminProtect, userProtect } = require('../middleware/authMiddleware');
-const { fetchWorkoutPlan, updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise, fetchWorkoutOverview, createJsonWorkoutPlan, createWorkoutPlan, addFeaturedPlan, fetchFeaturedPlans, addTrendingPlan, fetchTrendingPlans, createWeekPlan, createDayPlan, createCategory, createExercise } = require('../controllers/planController');
+const { fetchWorkoutPlan, updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise, fetchWorkoutOverview, createJsonWorkoutPlan, createWorkoutPlan, addFeaturedPlan, fetchFeaturedPlans, addTrendingPlan, fetchTrendingPlans, createWeekPlan, createDayPlan, createCategory, createExercise, fetchWeekPlan, fetchDayPlan, fetchCategory, fetchExercise } = require('../controllers/planController');
 const upload = require('../utils/multerConfig');
 
 const router = express.Router();
@@ -266,6 +266,8 @@ router.get('/fetch', userProtect, fetchWorkoutPlan)
  *                   type: string
  *                 banner_image:
  *                   type: string
+ *                 plan_video:
+ *                   type: string
  *                 workout_keywords:
  *                   type: string
  *                 goal_orientation:
@@ -416,6 +418,40 @@ router.post('/:planID/week', adminProtect, createWeekPlan);
 /**
  * @swagger
  * /api/v1/plan/week/{weekID}:
+ *   get:
+ *     summary: Fetch a week in a workout-plan
+ *     tags: [Workout-plan - WEEK]
+ *     parameters:
+ *       - in: path
+ *         name: weekID
+ *         required: true
+ *         description: The id of the week
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Fetched a week in a workout plan
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                week:
+ *                  type: number
+ *                days:
+ *                  type: array
+ *                  items:
+ *                    id: objectID
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.get('/week/:weekID', userProtect, fetchWeekPlan)
+
+/**
+ * @swagger
+ * /api/v1/plan/week/{weekID}:
  *   put:
  *     summary: Update a week-plan for workout using weekID
  *     tags: [Workout-plan - WEEK]
@@ -504,6 +540,50 @@ router.post('/week/:weekID/day', adminProtect, upload.fields([{ name: 'intro_vid
 /**
  * @swagger
  * /api/v1/plan/day/{dayID}:
+ *   get:
+ *     summary: Fetch a day in a workout-plan
+ *     tags: [Workout-plan - DAY]
+ *     parameters:
+ *       - in: path
+ *         name: dayID
+ *         required: true
+ *         description: The id of the day
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Fetched a day in a workout plan
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                day:
+ *                  type: number
+ *                day_name:
+ *                  type: string
+ *                day_banner_image:
+ *                  type: string
+ *                intro_video:
+ *                  type: string
+ *                day_of_week:
+ *                  type: string
+ *                estimated_duration:
+ *                  type: string
+ *                categories:
+ *                  type: array
+ *                  items:
+ *                    category: string
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.get('/day/:dayID', userProtect, fetchDayPlan);
+
+/**
+ * @swagger
+ * /api/v1/plan/day/{dayID}:
  *   put:
  *     summary: Update a day-plan for workout using dayID
  *     tags: [Workout-plan - DAY]
@@ -582,6 +662,44 @@ router.put('/day/:dayID', adminProtect, updateWorkoutDayPlan);
  *         description: Server error
  */
 router.post('/day/:dayID/category', adminProtect, createCategory);
+
+/**
+ * @swagger
+ * /api/v1/plan/category/{categoryID}:
+ *   get:
+ *     summary: Fetch a category in a workout-plan
+ *     tags: [Workout-plan - CATEGORY]
+ *     parameters:
+ *       - in: path
+ *         name: categoryID
+ *         required: true
+ *         description: The id of the day
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Fetched a Category in a workout plan
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                sub_category:
+ *                  type: string
+ *                circuit_rest_time:
+ *                  type: number
+ *                circuit_reps:
+ *                  type: number
+ *                exercises:
+ *                  type: array
+ *                  items:
+ *                    exercise: string
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.get('/category/:categoryID', userProtect, fetchCategory);
 
 /**
  * @swagger
@@ -675,6 +793,33 @@ router.put('/category/:categoryID', adminProtect, updateWorkoutCategory);
  *         description: Server error
  */
 router.post('/category/:categoryID/exercise', adminProtect, upload.fields([{ name: 'exe_video' }, { name: 'exe_image' }]), createExercise);
+
+/**
+ * @swagger
+ * /api/v1/plan/exercise/{exerciseID}:
+ *   get:
+ *     summary: Fetch an exercise in a workout-plan
+ *     tags: [Workout-plan - EXERCISE]
+ *     parameters:
+ *       - in: path
+ *         name: exerciseID
+ *         required: true
+ *         description: The id of the exercise
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Fetched an exercise in a workout plan
+ *         content:
+ *          application/json:
+ *            schema:
+ *               $ref: '#/components/schemas/ExerciseSchema'
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
+router.get('/exercise/:exerciseID', userProtect, fetchExercise);
 
 /**
  * @swagger
