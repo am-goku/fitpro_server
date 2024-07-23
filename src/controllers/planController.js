@@ -594,9 +594,14 @@ async function updateWorkoutExercise(req, res) {
         const id = req.params.exerciseID;
         const body = req.body;
 
-        if (!body) return responseHandler(res, { status: 200, message: "Invalid request body." });
-        if (!id) return responseHandler(res, { status: 200, message: "Invalid exerciseID." });
+        if (!id) {
+            return responseHandler(res, { status: 400, message: "Missing exerciseID." });
+        }
 
+        if (Object.keys(body).length === 0) {
+            return responseHandler(res, { status: 400, message: "Request body cannot be empty." });
+        }
+        
         const data = await updateExercise(id, body);
 
         return responseHandler(res, data);

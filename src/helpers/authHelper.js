@@ -124,7 +124,6 @@ async function verifyOtp(otp, email) {
  */
 async function login(email, password, role) {
     try {
-
         const user = await User.findOne({ email });
 
         if (!user) return { status: 400, message: "Invalid email address" };
