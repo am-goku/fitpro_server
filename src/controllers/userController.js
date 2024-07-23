@@ -1,4 +1,4 @@
-const { updateProfile, fetchUser, setBookmark, getBookmarks, removeBookmark } = require("../helpers/userHelper");
+const { updateProfile, fetchUser, setBookmark, getBookmarks, removeBookmark, getUserData } = require("../helpers/userHelper");
 const responseHandler = require("../utils/responseHandler");
 
 
@@ -53,6 +53,35 @@ async function fetchUserData(req, res) {
             message: error.message,
         }
         responseHandler(res, data);
+    }
+}
+
+
+/**
+ * Fetches user data from the database based on the provided user ID.
+ * 
+ * @param {Object} req - Express request object containing the user ID in the req.userID property.
+ * @param {Object} res - Express response object to send the fetched user data back to the client.
+ * 
+ * @returns {Promise<void>} - Returns a Promise that resolves when the user data is successfully fetched.
+ * If successful, the response will be sent using the responseHandler function with the fetched data.
+ * If an error occurs, the response will be sent using the responseHandler function with a status code of 500 and the error message.
+ * 
+ * @throws {Error} - Throws an error if there's an issue fetching the user data.
+ * 
+ * @example
+ * // Request
+ * GET /user
+ */
+async function getUser(req, res) {
+    try {
+        const id = req.userID
+
+        const data = await getUserData(id);
+
+        return responseHandler(res, data);
+    } catch (error) {
+        return responseHandler(res, { status: 500, message: error.message })
     }
 }
 
@@ -152,4 +181,4 @@ async function deleteBookmark(req, res) {
 
 const bookmarkControllers = { newBookmark, fetchBookmark, deleteBookmark }
 
-module.exports = { updateUserProfile, fetchUserData, ...bookmarkControllers }
+module.exports = { updateUserProfile, fetchUserData, getUser, ...bookmarkControllers }

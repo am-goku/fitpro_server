@@ -60,6 +60,37 @@ async function fetchUser(id) {
 }
 
 
+/**
+ * Fetches a user's profile information from the database.
+ * 
+ * @param {string} id - The unique identifier of the user to be fetched.
+ * @returns {Promise<{status: number, message: string, user?: User}>} - A promise that resolves to an object containing the fetched user's profile information, a status code, and a message.
+ * If an ID is provided, the promise resolves to an object containing a single user.
+ * If no ID is provided, the promise does not resolve with an array of all users.
+ * @throws {Error} - If the user is not found in the database.
+ */
+async function getUserData(id) {
+    try {
+        const user = await User.findById(id).select("-password");
+
+        if (!user) {
+            return { status: 404, message: "User not found" }
+        }
+
+        return {
+            status: 200,
+            message: "User data fetched successfully",
+            user
+        }
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message,
+        }
+    }
+}
+
+
 
 /**
  * Adds a bookmark to a user's fitness profile.
@@ -162,4 +193,4 @@ async function removeBookmark(uid, dayID) {
 
 const bookmarkHelpers = { setBookmark, getBookmarks, removeBookmark }
 
-module.exports = { updateProfile, fetchUser, ...bookmarkHelpers }
+module.exports = { updateProfile, fetchUser, getUserData, ...bookmarkHelpers }

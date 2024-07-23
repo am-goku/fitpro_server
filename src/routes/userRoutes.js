@@ -1,5 +1,5 @@
 const express = require('express');
-const { updateUserProfile, fetchUserData, newBookmark, fetchBookmark, deleteBookmark } = require('../controllers/userController');
+const { updateUserProfile, fetchUserData, newBookmark, fetchBookmark, deleteBookmark, getUser } = require('../controllers/userController');
 const { userProtect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -95,7 +95,6 @@ const router = express.Router();
  */
 router.post('/update', userProtect, updateUserProfile)
 
-
 /**
  * @swagger
  * /api/v1/user/fetch:
@@ -124,6 +123,29 @@ router.post('/update', userProtect, updateUserProfile)
  */
 router.get('/fetch', userProtect, fetchUserData)
 
+/**
+ * @swagger
+ * /api/v1/user:
+ *   get:
+ *     summary: To fetch a single user's data
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *     responses:
+ *       200:
+ *         description: User-data fetched successfully
+ *       400:
+ *         description: Invalid input
+ *       401:
+ *         description: Unauthorized user
+ *       403:
+ *         description: Unverified account
+ *       500:
+ *         description: Server error
+ */
+router.get('/', userProtect, getUser);
 
 
 
