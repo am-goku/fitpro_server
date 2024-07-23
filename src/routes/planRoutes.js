@@ -241,59 +241,111 @@ router.get('/fetch', userProtect, fetchWorkoutPlan)
  * @swagger
  * /api/v1/plan/overview:
  *   get:
- *     summary: Fetch all workout Overviews of plans / fetch single workout Overview of a plan using ID
- *     tags: [Workout-plan]
- *     security:
- *       - bearerAuth: []
+ *     summary: Fetches plan overview details
+ *     description: Retrieves detailed information about workout plans. Can optionally filter by plan ID.
+ *     tags:
+ *       - Workout-plan
  *     parameters:
  *       - in: query
- *         name: planID
- *         required: false
+ *         name: id
  *         schema:
  *           type: string
- *         description: "The ID of the workout plan to fetch a single workout overview"
+ *         description: The ID of the plan to retrieve. If not provided, retrieves all plans.
  *     responses:
- *       200:
- *         description: Workout overview of a plan / plans successfully fetched
+ *       '200':
+ *         description: Successfully fetched plan details
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 plan_name:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
  *                   type: string
- *                 description:
- *                   type: string
- *                 banner_image:
- *                   type: string
- *                 plan_video:
- *                   type: string
- *                 workout_keywords:
- *                   type: string
- *                 goal_orientation:
+ *                   example: Data Plans fetched successfully
+ *                 plans:
  *                   type: array
  *                   items:
- *                     type: string
- *                 target_age_group:
- *                   type: string
- *                 training_type:
- *                   type: string
- *                 location:
- *                   type: string
- *                 level:
- *                   type: string
- *                 estimated_duration:
- *                   type: string
- *                 rest_between_exercises_seconds:
- *                   type: number
- *                 average_calories_burned_per_minute:
- *                   type: number
- *                 weeks:
- *                   type: array
- *       400:
- *         description: Invalid credentials
- *       500:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         description: Unique identifier for the plan
+ *                       plan_name:
+ *                         type: string
+ *                         description: Name of the plan
+ *                       description:
+ *                         type: string
+ *                         description: Description of the plan
+ *                       banner_image:
+ *                         type: string
+ *                         description: URL of the banner image for the plan
+ *                       plan_video:
+ *                         type: string
+ *                         description: URL of the video for the plan
+ *                       workout_keywords:
+ *                         type: string
+ *                         description: Keywords related to the workout
+ *                       goal_orientation:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                         description: Goals associated with the plan
+ *                       target_age_group:
+ *                         type: string
+ *                         description: Target age group for the plan
+ *                       training_type:
+ *                         type: string
+ *                         description: Type of training (e.g., strength, cardio)
+ *                       location:
+ *                         type: string
+ *                         description: Location where the training can be performed (e.g., Home)
+ *                       level:
+ *                         type: string
+ *                         description: Difficulty level of the plan (e.g., Beginner)
+ *                       estimated_duration:
+ *                         type: string
+ *                         description: Estimated duration of the plan
+ *                       rest_between_exercises_seconds:
+ *                         type: number
+ *                         description: Rest time between exercises in seconds
+ *                       average_calories_burned_per_minute:
+ *                         type: number
+ *                         description: Average calories burned per minute
+ *                       weeks:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                         description: List of week plan IDs
+ *                       isTrending:
+ *                         type: boolean
+ *                         description: Whether the plan is trending
+ *                       isFeatured:
+ *                         type: boolean
+ *                         description: Whether the plan is featured
+ *                       views:
+ *                         type: number
+ *                         description: Number of views for the plan
+ *                       selectedBy:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                         description: List of user IDs who have selected the plan
+ *       '500':
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.get('/overview', userProtect, fetchWorkoutOverview);
 

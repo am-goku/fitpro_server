@@ -304,7 +304,7 @@ router.put('/profile-pic', userProtect, upload.fields([{ name: 'profilePic' }]),
 
 /**
  * @swagger
- * /image/transformation:
+ * /api/v1/user/image/transformation:
  *   post:
  *     summary: Upload transformation images for a user
  *     description: Allows users to upload 'before' and 'after' transformation images. The images are associated with the user's fitness profile.

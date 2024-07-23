@@ -208,26 +208,19 @@ async function fetchPlan(id) {
  */
 async function fetchPlanOverview(id) {
     try {
+        const query = {}
+
+        if (id) {
+            query["_id"] = id;
+        }
+
+        const plans = await Plan.find(query);
+
         const data = {
             status: 200,
             message: "Data Plans fetched successfully",
+            plans
         };
-
-        if (id) {
-            const plan = await Plan.findById(id)
-
-            if (!plan) {
-                data.status = 400;
-                data.message = "Plan not found";
-                return data;
-            }
-
-            data["plan"] = plan;
-        } else {
-            const plans = await Plan.find({})
-
-            data["plans"] = plans;
-        }
 
         return data;
 
