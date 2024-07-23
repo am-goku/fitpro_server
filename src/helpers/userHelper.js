@@ -1,5 +1,6 @@
 const FitnessProfile = require("../models/FitnessProfile");
 const User = require("../models/User");
+const uploadFile = require("../service/fileUploadService");
 
 
 /**
@@ -91,6 +92,60 @@ async function getUserData(id) {
 }
 
 
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////// USER PROFILE //////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Updates a user's profile picture in the database.
+ * 
+ * @function uploadProfilePic
+ * @param {object} files - The uploaded files containing the profile picture.
+ * @param {string} id - The unique identifier of the user whose profile picture will be updated.
+ * @returns {Promise<{status: number, message: string, user: object}>} - A promise that resolves to an object containing the status code, a message, and the updated user object.
+ * If the user is found and the profile picture is successfully updated, the promise resolves to an object with a status code of 200 and a message indicating success.
+ * If the user is not found, the promise resolves to an object with a status code of 404 and a message indicating user not found.
+ * If an error occurs during the database operation, the promise rejects with a status code of 500 and an error message.
+ */
+async function uploadProfilePic(files, id) {
+    try {
+        const user = await User.findById(id);
+
+        if(!user) {
+            return { status: 404, message: "User not found" }
+        }
+
+        const urls = await uploadFile(files, 'profile');
+
+        user.profilePic = urls[0];
+
+        await user.save();
+
+        return {
+            status: 200,
+            message: "Profile picture updated successfully",
+            user
+        }
+
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message
+        }
+    }
+}
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////// USER BOOKMARK /////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Adds a bookmark to a user's fitness profile.
@@ -193,4 +248,4 @@ async function removeBookmark(uid, dayID) {
 
 const bookmarkHelpers = { setBookmark, getBookmarks, removeBookmark }
 
-module.exports = { updateProfile, fetchUser, getUserData, ...bookmarkHelpers }
+module.exports = { updateProfile, fetchUser, getUserData, uploadProfilePic, ...bookmarkHelpers }

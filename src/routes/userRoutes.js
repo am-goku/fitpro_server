@@ -1,6 +1,7 @@
 const express = require('express');
-const { updateUserProfile, fetchUserData, newBookmark, fetchBookmark, deleteBookmark, getUser } = require('../controllers/userController');
+const { updateUserProfile, fetchUserData, newBookmark, fetchBookmark, deleteBookmark, getUser, newProfilePic } = require('../controllers/userController');
 const { userProtect } = require('../middleware/authMiddleware');
+const upload = require('../utils/multerConfig');
 
 const router = express.Router();
 
@@ -13,6 +14,8 @@ const router = express.Router();
  *       type: http
  *       scheme: bearer
  *       bearerFormat: JWT
+ * 
+ * 
  */
 
 /**
@@ -20,12 +23,184 @@ const router = express.Router();
  * tags:
  *   name: User
  *   description: Routes to user features
+ * 
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *           minLength: 3
+ *           maxLength: 50
+ *         profilePic:
+ *           type: string
+ *           format: uri
+ *         email:
+ *           type: string
+ *           format: email
+ *         otp:
+ *           type: string
+ *         otpExpires:
+ *           type: string
+ *           format: date-time
+ *         isVerified:
+ *           type: boolean
+ *           default: false
+ *         role:
+ *           type: string
+ *           enum:
+ *             - user
+ *             - admin
+ *           default: user
+ *         age:
+ *           type: integer
+ *         gender:
+ *           type: string
+ *           enum:
+ *             - male
+ *             - female
+ *             - other
+ *         height:
+ *           type: object
+ *           properties:
+ *             value:
+ *               type: number
+ *               minimum: 0
+ *             unit:
+ *               type: string
+ *               enum:
+ *                 - cm
+ *                 - ft
+ *         weight:
+ *           type: object
+ *           properties:
+ *             value:
+ *               type: number
+ *               minimum: 0
+ *             unit:
+ *               type: string
+ *               enum:
+ *                 - kg
+ *                 - lb
+ *         goal:
+ *           type: string
+ *         experience:
+ *           type: string
+ *         workoutType:
+ *           type: string
+ *         workoutFrequency:
+ *           type: integer
+ *       required:
+ *         - email
+ *     FitnessProfile:
+ *       type: object
+ *       properties:
+ *         userID:
+ *           type: string
+ *           format: uuid
+ *         bookmarks:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: uuid
+ *       required:
+ *         - userID
  */
 
 /**
  * @swagger
+ * /api/v1/user:
+ *   get:
+ *     summary: To fetch a single user's data
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *     responses:
+ *       200:
+ *         description: User-data fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       400:
+ *         description: Invalid input
+ *       401:
+ *         description: Unauthorized user
+ *       403:
+ *         description: Unverified account
+ *       500:
+ *         description: Server error
+ * 
+ * components:
+ *      schemas:
+ *       ApiResponse:
+ *          type: object
+ *          properties:
+ *            status:
+ *              type: number
+ *              example: 200
+ *            message:
+ *              type: string
+ *            user:
+ *              $ref: '#/components/schemas/User'
+ */
+router.get('/', userProtect, getUser);
+
+/**
+ * @swagger
+ * /api/v1/user/fetch:
+ *   get:
+ *     summary: To fetch User Profile
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: userID
+ *         description: id of the user to fetch
+ *     requestBody:
+ *       required: false
+ *     responses:
+ *       200:
+ *         description: User fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/fetchUserResponse'
+ *       400:
+ *         description: Invalid input
+ *       401:
+ *         description: Unauthorized user
+ *       403:
+ *         description: Unverified account
+ *       500:
+ *         description: Server error
+ * 
+ * components:
+ *      schemas:
+ *       fetchUserResponse:
+ *          type: object
+ *          properties:
+ *            status:
+ *              type: number
+ *              example: 200
+ *            message:
+ *              type: string
+ *            users:
+ *              items:
+ *                 $ref: '#/components/schemas/User'
+ *            user:
+ *              $ref: '#/components/schemas/User'
+ */
+router.get('/fetch', userProtect, fetchUserData)
+
+/**
+ * @swagger
  * /api/v1/user/update:
- *   post:
+ *   put:
  *     summary: To Update User Profile ( All body datas are not necessary, remove unnecessary body data )
  *     tags: [User]
  *     security:
@@ -93,25 +268,29 @@ const router = express.Router();
  *       500:
  *         description: Server error
  */
-router.post('/update', userProtect, updateUserProfile)
+router.put('/update', userProtect, updateUserProfile)
 
 /**
  * @swagger
- * /api/v1/user/fetch:
- *   get:
- *     summary: To fetch User Profile
+ * /api/v1/user/profile-pic:
+ *   put:
+ *     summary: To update the profile-pic of a user
  *     tags: [User]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: userID
- *         description: id of the user to fetch
  *     requestBody:
- *       required: false
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               profilePic:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
- *         description: User fetched successfully
+ *         description: Profile Picture successfully
  *       400:
  *         description: Invalid input
  *       401:
@@ -121,31 +300,7 @@ router.post('/update', userProtect, updateUserProfile)
  *       500:
  *         description: Server error
  */
-router.get('/fetch', userProtect, fetchUserData)
-
-/**
- * @swagger
- * /api/v1/user:
- *   get:
- *     summary: To fetch a single user's data
- *     tags: [User]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: false
- *     responses:
- *       200:
- *         description: User-data fetched successfully
- *       400:
- *         description: Invalid input
- *       401:
- *         description: Unauthorized user
- *       403:
- *         description: Unverified account
- *       500:
- *         description: Server error
- */
-router.get('/', userProtect, getUser);
+router.put('/profile-pic', userProtect, upload.fields([{ name: 'profilePic' }]), newProfilePic)
 
 
 

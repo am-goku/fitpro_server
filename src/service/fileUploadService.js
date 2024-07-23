@@ -57,6 +57,13 @@ async function uploadFile(files, type) {
                 }
 
                 break;
+            case 'profile':
+                if (files.profilePic) {
+                    const dir = 'user/profile_pictures';
+                    uploadPromises.push(s3Interface.uploadToS3(files.profilePic[0], dir))
+                }
+
+                break;
             default:
                 break;
         }
