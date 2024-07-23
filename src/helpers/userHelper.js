@@ -40,20 +40,18 @@ async function updateProfile(userID, userData) {
  * If an ID is provided, the promise resolves to an object containing a single user.
  * @throws {Error} - If the user is not found in the database.
  */
-async function fetchUser(id) {
+async function fetchUser(userID) {
     try {
-        if (!id) {
-            const users = await User.find({}).select("-password");
-            return { status: 200, message: "Users has been fetched", users }
+
+        const query = {}
+
+        if (!userID) {
+            query['_id'] = userID
         }
 
-        const user = await User.findById(id).select("-password");
+        const users = await User.find(query)
 
-        if (!user) {
-            return { status: 404, message: "User not found" }
-        }
-
-        return { status: 200, message: "User fetched successfullly", user }
+        return { status: 200, message: "User fetched successfullly", users }
 
     } catch (error) {
         return Promise.reject({ status: 500, message: error.message });
@@ -176,7 +174,6 @@ async function beforeAndAfter(files, id) {
             message: error.message
         }
     }
-
 }
 
 

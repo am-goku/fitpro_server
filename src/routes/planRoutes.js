@@ -20,8 +20,10 @@ const router = express.Router();
  * @swagger
  * /api/v1/plan/create/json:
  *   post:
- *     summary: Create a new workout plan using JSON
- *     tags: [Workout-plan]
+ *     summary: Creates a workout plan from JSON data
+ *     description: Creates and saves a new workout plan using the provided JSON data, including weeks, days, categories, and exercises. The route is protected and requires admin privileges.
+ *     tags:
+ *       - Workout-plan
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -29,125 +31,376 @@ const router = express.Router();
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/PlanSchema'
+ *             type: object
+ *             properties:
+ *               plan_name:
+ *                 type: string
+ *                 description: The name of the workout plan.
+ *                 example: "Summer Body Transformation"
+ *               description:
+ *                 type: string
+ *                 description: A brief description of the workout plan.
+ *                 example: "A comprehensive plan to get in shape for summer."
+ *               banner_image:
+ *                 type: string
+ *                 description: URL of the banner image for the workout plan.
+ *                 example: "https://example.com/banner.jpg"
+ *               plan_video:
+ *                 type: string
+ *                 description: URL of the video introducing the workout plan.
+ *                 example: "https://example.com/intro.mp4"
+ *               workout_keywords:
+ *                 type: string
+ *                 description: Keywords related to the workout plan.
+ *                 example: "cardio, strength"
+ *               goal_orientation:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Goals that the workout plan is oriented towards.
+ *                 example: ["flexibility", "strength"]
+ *               target_age_group:
+ *                 type: string
+ *                 description: Target age group for the workout plan.
+ *                 example: "30-40"
+ *               training_type:
+ *                 type: string
+ *                 description: Type of training included in the plan.
+ *                 example: "HIIT"
+ *               location:
+ *                 type: string
+ *                 description: Location where the workout can be performed.
+ *                 example: "Home"
+ *               level:
+ *                 type: string
+ *                 description: Difficulty level of the workout plan.
+ *                 example: "Intermediate"
+ *               estimated_duration:
+ *                 type: string
+ *                 description: Estimated total duration of the workout plan.
+ *                 example: "6 weeks"
+ *               rest_between_exercises_seconds:
+ *                 type: integer
+ *                 description: Rest time in seconds between exercises.
+ *                 example: 60
+ *               average_calories_burned_per_minute:
+ *                 type: number
+ *                 format: float
+ *                 description: Average calories burned per minute during the workout.
+ *                 example: 8.5
+ *               weeks:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     week:
+ *                       type: integer
+ *                       description: Week number in the workout plan.
+ *                       example: 1
+ *                     days:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           day:
+ *                             type: integer
+ *                             description: Day number in the week.
+ *                             example: 1
+ *                           day_name:
+ *                             type: string
+ *                             description: Name of the day.
+ *                             example: "Leg Day"
+ *                           day_banner_image:
+ *                             type: string
+ *                             description: URL of the banner image for the day.
+ *                             example: "https://example.com/day-banner.jpg"
+ *                           intro_video:
+ *                             type: string
+ *                             description: URL of the introductory video for the day.
+ *                             example: "https://example.com/day-intro.mp4"
+ *                           day_of_week:
+ *                             type: string
+ *                             description: Day of the week.
+ *                             example: "Monday"
+ *                           estimated_duration:
+ *                             type: string
+ *                             description: Estimated duration of the day's workout.
+ *                             example: "45 minutes"
+ *                           categories:
+ *                             type: array
+ *                             items:
+ *                               type: object
+ *                               properties:
+ *                                 sub_category:
+ *                                   type: string
+ *                                   description: Sub-category of the workout.
+ *                                   example: "Cardio"
+ *                                 circuit_rest_time:
+ *                                   type: integer
+ *                                   description: Rest time between circuits in seconds.
+ *                                   example: 60
+ *                                 circuit_reps:
+ *                                   type: integer
+ *                                   description: Number of repetitions for the circuit.
+ *                                   example: 3
+ *                                 exercises:
+ *                                   type: array
+ *                                   items:
+ *                                     type: object
+ *                                     properties:
+ *                                       name:
+ *                                         type: string
+ *                                         description: Name of the exercise.
+ *                                         example: "Push-up"
+ *                                       exercise_number:
+ *                                         type: integer
+ *                                         description: Number of the exercise.
+ *                                         example: 1
+ *                                       exercise_type:
+ *                                         type: string
+ *                                         description: Type of exercise.
+ *                                         example: "Strength"
+ *                                       time_based:
+ *                                         type: string
+ *                                         description: Time-based format (if applicable).
+ *                                         example: "30 seconds"
+ *                                       weighted:
+ *                                         type: string
+ *                                         description: Indicates if the exercise is weighted.
+ *                                         example: "No"
+ *                                       sets:
+ *                                         type: integer
+ *                                         description: Number of sets for the exercise.
+ *                                         example: 3
+ *                                       reps:
+ *                                         type: array
+ *                                         items:
+ *                                           type: integer
+ *                                         description: Number of repetitions for each set.
+ *                                         example: [10, 12, 15]
+ *                                       set_time:
+ *                                         type: string
+ *                                         description: Time duration of each set (if applicable).
+ *                                         example: "1 minute"
+ *                                       superset_names:
+ *                                         type: array
+ *                                         items:
+ *                                           type: string
+ *                                         description: Names of supersets associated with the exercise.
+ *                                         example: ["Chest Superset"]
+ *                                       rest_time:
+ *                                         type: integer
+ *                                         description: Rest time between sets in seconds.
+ *                                         example: 60
+ *                                       video_url:
+ *                                         type: string
+ *                                         description: URL of the exercise video.
+ *                                         example: "https://example.com/exercise-video.mp4"
+ *                                       image_url:
+ *                                         type: string
+ *                                         description: URL of the exercise image.
+ *                                         example: "https://example.com/exercise-image.jpg"
  *     responses:
- *       200:
- *         description: Created workout plan
- *       400:
- *         description: Invalid credentials
- *       500:
+ *       '200':
+ *         description: Workout plan created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Workout plan saved successfully
+ *                 plan:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       description: Unique identifier for the workout plan.
+ *                       example: 60d5f2e91c9d44000014d2c7
+ *                     plan_name:
+ *                       type: string
+ *                       description: The name of the workout plan.
+ *                       example: "Summer Body Transformation"
+ *                     description:
+ *                       type: string
+ *                       description: A brief description of the workout plan.
+ *                       example: "A comprehensive plan to get in shape for summer."
+ *                     banner_image:
+ *                       type: string
+ *                       description: URL of the banner image for the workout plan.
+ *                       example: "https://example.com/banner.jpg"
+ *                     plan_video:
+ *                       type: string
+ *                       description: URL of the video introducing the workout plan.
+ *                       example: "https://example.com/intro.mp4"
+ *                     workout_keywords:
+ *                       type: string
+ *                       description: Keywords related to the workout plan.
+ *                       example: "cardio, strength"
+ *                     goal_orientation:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       description: Goals that the workout plan is oriented towards.
+ *                       example: ["flexibility", "strength"]
+ *                     target_age_group:
+ *                       type: string
+ *                       description: Target age group for the workout plan.
+ *                       example: "30-40"
+ *                     training_type:
+ *                       type: string
+ *                       description: Type of training included in the plan.
+ *                       example: "HIIT"
+ *                     location:
+ *                       type: string
+ *                       description: Location where the workout can be performed.
+ *                       example: "Home"
+ *                     level:
+ *                       type: string
+ *                       description: Difficulty level of the workout plan.
+ *                       example: "Intermediate"
+ *                     estimated_duration:
+ *                       type: string
+ *                       description: Estimated total duration of the workout plan.
+ *                       example: "6 weeks"
+ *                     rest_between_exercises_seconds:
+ *                       type: integer
+ *                       description: Rest time in seconds between exercises.
+ *                       example: 60
+ *                     average_calories_burned_per_minute:
+ *                       type: number
+ *                       format: float
+ *                       description: Average calories burned per minute during the workout.
+ *                       example: 8.5
+ *                     weeks:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           week:
+ *                             type: integer
+ *                             description: Week number in the workout plan.
+ *                             example: 1
+ *                           days:
+ *                             type: array
+ *                             items:
+ *                               type: object
+ *                               properties:
+ *                                 day:
+ *                                   type: integer
+ *                                   description: Day number in the week.
+ *                                   example: 1
+ *                                 day_name:
+ *                                   type: string
+ *                                   description: Name of the day.
+ *                                   example: "Leg Day"
+ *                                 day_banner_image:
+ *                                   type: string
+ *                                   description: URL of the banner image for the day.
+ *                                   example: "https://example.com/day-banner.jpg"
+ *                                 intro_video:
+ *                                   type: string
+ *                                   description: URL of the introductory video for the day.
+ *                                   example: "https://example.com/day-intro.mp4"
+ *                                 day_of_week:
+ *                                   type: string
+ *                                   description: Day of the week.
+ *                                   example: "Monday"
+ *                                 estimated_duration:
+ *                                   type: string
+ *                                   description: Estimated duration of the day's workout.
+ *                                   example: "45 minutes"
+ *                                 categories:
+ *                                   type: array
+ *                                   items:
+ *                                     type: object
+ *                                     properties:
+ *                                       sub_category:
+ *                                         type: string
+ *                                         description: Sub-category of the workout.
+ *                                         example: "Cardio"
+ *                                       circuit_rest_time:
+ *                                         type: integer
+ *                                         description: Rest time between circuits in seconds.
+ *                                         example: 60
+ *                                       circuit_reps:
+ *                                         type: integer
+ *                                         description: Number of repetitions for the circuit.
+ *                                         example: 3
+ *                                       exercises:
+ *                                         type: array
+ *                                         items:
+ *                                           type: object
+ *                                           properties:
+ *                                             name:
+ *                                               type: string
+ *                                               description: Name of the exercise.
+ *                                               example: "Push-up"
+ *                                             exercise_number:
+ *                                               type: integer
+ *                                               description: Number of the exercise.
+ *                                               example: 1
+ *                                             exercise_type:
+ *                                               type: string
+ *                                               description: Type of exercise.
+ *                                               example: "Strength"
+ *                                             time_based:
+ *                                               type: string
+ *                                               description: Time-based format (if applicable).
+ *                                               example: "30 seconds"
+ *                                             weighted:
+ *                                               type: string
+ *                                               description: Indicates if the exercise is weighted.
+ *                                               example: "No"
+ *                                             sets:
+ *                                               type: integer
+ *                                               description: Number of sets for the exercise.
+ *                                               example: 3
+ *                                             reps:
+ *                                               type: array
+ *                                               items:
+ *                                                 type: integer
+ *                                               description: Number of repetitions for each set.
+ *                                               example: [10, 12, 15]
+ *                                             set_time:
+ *                                               type: string
+ *                                               description: Time duration of each set (if applicable).
+ *                                               example: "1 minute"
+ *                                             superset_names:
+ *                                               type: array
+ *                                               items:
+ *                                                 type: string
+ *                                               description: Names of supersets associated with the exercise.
+ *                                               example: ["Chest Superset"]
+ *                                             rest_time:
+ *                                               type: integer
+ *                                               description: Rest time between sets in seconds.
+ *                                               example: 60
+ *                                             video_url:
+ *                                               type: string
+ *                                               description: URL of the exercise video.
+ *                                               example: "https://example.com/exercise-video.mp4"
+ *                                             image_url:
+ *                                               type: string
+ *                                               description: URL of the exercise image.
+ *                                               example: "https://example.com/exercise-image.jpg"
+ *       '500':
  *         description: Server error
- * components:
- *   schemas:
- *     ExerciseSchema:
- *       type: object
- *       properties:
- *         name:
- *           type: string
- *         exercise_number:
- *           type: number
- *         exercise_type:
- *           type: string
- *         time_based:
- *           type: string
- *         weighted:
- *           type: string
- *         sets:
- *           type: number
- *         reps:
- *           type: array
- *           items:
- *             type: number
- *         set_time:
- *           type: string
- *         superset_names:
- *           type: array
- *           items:
- *             type: string
- *         rest_time:
- *           type: number
- *         video_url:
- *           type: string
- *         image_url:
- *           type: string
- *     CategorySchema:
- *       type: object
- *       properties:
- *         sub_category:
- *           type: string
- *         circuit_rest_time:
- *           type: number
- *         circuit_reps:
- *           type: number
- *         exercises:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/ExerciseSchema'
- *     DaySchema:
- *       type: object
- *       properties:
- *         day:
- *           type: number
- *         day_name:
- *           type: string
- *         day_banner_image:
- *           type: string
- *         intro_video:
- *           type: string
- *         day_of_week:
- *           type: string
- *         estimated_duration:
- *           type: string
- *         categories:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/CategorySchema'
- *     WeekSchema:
- *       type: object
- *       properties:
- *         week:
- *           type: number
- *         days:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/DaySchema'
- *     PlanSchema:
- *       type: object
- *       properties:
- *         plan_name:
- *           type: string
- *         description:
- *           type: string
- *         banner_image:
- *           type: string
- *         plan_video:
- *           type: string
- *         workout_keywords:
- *           type: string
- *         goal_orientation:
- *           type: array
- *           items:
- *             type: string
- *         target_age_group:
- *           type: string
- *         training_type:
- *           type: string
- *         location:
- *           type: string
- *         level:
- *           type: string
- *         estimated_duration:
- *           type: string
- *         rest_between_exercises_seconds:
- *           type: number
- *         average_calories_burned_per_minute:
- *           type: number
- *         weeks:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/WeekSchema'
- *       required:
- *         - workout_name
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.post('/create/json', adminProtect, createJsonWorkoutPlan)
 
@@ -245,6 +498,8 @@ router.get('/fetch', userProtect, fetchWorkoutPlan)
  *     description: Retrieves detailed information about workout plans. Can optionally filter by plan ID.
  *     tags:
  *       - Workout-plan
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: id

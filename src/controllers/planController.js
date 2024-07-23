@@ -21,7 +21,7 @@ async function createJsonWorkoutPlan(req, res) {
     try {
         const body = req.body;
 
-        if (!body) return responseHandler(res, { status: 200, message: "Invalid request body." });
+        if (!body) return responseHandler(res, { status: 400, message: "Invalid request body." });
 
         const data = await createJsonPlan(body);
 
