@@ -16,11 +16,12 @@ const s3Interface = require("./s3Interface");
  *
  * @throws {Error} - If an error occurs during the upload process.
  */
-async function uploadFile(files, type) {
+async function uploadFile(files, type, uid) {
     try {
         const uploadPromises = [];
         let response = null;
         switch (type) {
+
             case 'plan':
                 if (files.plan_video) {
                     const dir = 'workoutPlan/plan_videos';
@@ -33,6 +34,8 @@ async function uploadFile(files, type) {
                 }
 
                 break;
+
+
             case 'day':
                 if (files.intro_video) {
                     const dir = 'workoutPlan/intro_videos';
@@ -45,6 +48,8 @@ async function uploadFile(files, type) {
                 }
 
                 break;
+
+
             case 'exercise':
                 if (files.exe_video) {
                     const dir = 'workoutPlan/exercises/videos';
@@ -57,13 +62,31 @@ async function uploadFile(files, type) {
                 }
 
                 break;
+
+
             case 'profile':
                 if (files.profilePic) {
-                    const dir = 'user/profile_pictures';
+                    const dir = 'users/profile_pictures';
                     uploadPromises.push(s3Interface.uploadToS3(files.profilePic[0], dir))
                 }
 
                 break;
+
+
+            case 'transform':
+                if (files.before) {
+                    const dir = `users/${uid}/transformation`;
+                    uploadPromises.push(s3Interface.uploadToS3(files.before[0], dir))
+                }
+
+                if (files.after) {
+                    const dir = `users/${uid}/transformation`;
+                    uploadPromises.push(s3Interface.uploadToS3(files.after[0], dir))
+                }
+
+                break;
+
+
             default:
                 break;
         }

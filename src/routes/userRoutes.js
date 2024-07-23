@@ -1,5 +1,5 @@
 const express = require('express');
-const { updateUserProfile, fetchUserData, newBookmark, fetchBookmark, deleteBookmark, getUser, newProfilePic } = require('../controllers/userController');
+const { updateUserProfile, fetchUserData, newBookmark, fetchBookmark, deleteBookmark, getUser, newProfilePic, transformationController } = require('../controllers/userController');
 const { userProtect } = require('../middleware/authMiddleware');
 const upload = require('../utils/multerConfig');
 
@@ -302,6 +302,94 @@ router.put('/update', userProtect, updateUserProfile)
  */
 router.put('/profile-pic', userProtect, upload.fields([{ name: 'profilePic' }]), newProfilePic)
 
+/**
+ * @swagger
+ * /image/transformation:
+ *   post:
+ *     summary: Upload transformation images for a user
+ *     description: Allows users to upload 'before' and 'after' transformation images. The images are associated with the user's fitness profile.
+ *     tags:
+ *       - User
+ *     security:
+ *       - bearerAuth: []  # assuming you're using JWT tokens
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               before:
+ *                 type: string
+ *                 format: binary
+ *                 description: The 'before' transformation image file.
+ *               after:
+ *                 type: string
+ *                 format: binary
+ *                 description: The 'after' transformation image file.
+ *           required:
+ *             - before
+ *             - after
+ *     responses:
+ *       '200':
+ *         description: Transformation images uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Transformation added successfully
+ *                 fitnessProfile:
+ *                   type: object
+ *                   properties:
+ *                     userID:
+ *                       type: string
+ *                       example: "60d5f3d9b3e5e40f8c8f5c09"
+ *                     transformations:
+ *                       type: object
+ *                       properties:
+ *                         before:
+ *                           type: string
+ *                           example: "https://example.com/images/before.jpg"
+ *                         after:
+ *                           type: string
+ *                           example: "https://example.com/images/after.jpg"
+ *                         date:
+ *                           type: string
+ *                           format: date-time
+ *                           example: "2024-07-23T18:25:43.511Z"
+ *       '400':
+ *         description: Bad request, invalid user or upload failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: "No user found"
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "An error occurred"
+ */
+router.post('/image/transformation', userProtect, upload.fields([{name: 'before'}, {name: 'after'}]), transformationController)
 
 
 /**

@@ -139,6 +139,45 @@ async function uploadProfilePic(files, id) {
 }
 
 
+/**
+ * Adds a transformation (before and after images) to a user's fitness profile.
+ * 
+ * @function beforeAndAfter
+ * @param {object} files - The uploaded files containing the before and after images.
+ * @param {string} id - The unique identifier of the user whose fitness profile will be updated.
+ * @returns {Promise<{status: number, message: string, fitnessProfile: object}>} - A promise that resolves to an object containing the status code, a message, and the updated fitness profile object.
+ * If the transformation is successfully added, the promise resolves to an object with a status code of 200 and a message indicating success.
+ * If an error occurs during the database operation, the promise rejects with a status code of 500 and an error message.
+ */
+async function beforeAndAfter(files, id) {
+    try {
+        const urls = await uploadFile(files, 'transform');
+
+        const params = {
+            before: urls[0],
+            after: urls[1],
+        }
+
+        const fitnessProfile = await FitnessProfile.findOneAndUpdate(
+            { _id: id },
+            { $set: { transformations: params } },
+            { new: true, upsert: true }
+        )
+
+        return {
+            status: 200,
+            message: "Transformation added successfully",
+            fitnessProfile
+        };
+
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message
+        }
+    }
+
+}
 
 
 
@@ -248,4 +287,6 @@ async function removeBookmark(uid, dayID) {
 
 const bookmarkHelpers = { setBookmark, getBookmarks, removeBookmark }
 
-module.exports = { updateProfile, fetchUser, getUserData, uploadProfilePic, ...bookmarkHelpers }
+const imageHelpers = { beforeAndAfter, uploadProfilePic }
+
+module.exports = { updateProfile, fetchUser, getUserData, ...bookmarkHelpers, ...imageHelpers }

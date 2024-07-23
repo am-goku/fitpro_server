@@ -1,4 +1,4 @@
-const { updateProfile, fetchUser, setBookmark, getBookmarks, removeBookmark, getUserData, uploadProfilePic } = require("../helpers/userHelper");
+const { updateProfile, fetchUser, setBookmark, getBookmarks, removeBookmark, getUserData, uploadProfilePic, beforeAndAfter } = require("../helpers/userHelper");
 const responseHandler = require("../utils/responseHandler");
 
 
@@ -122,7 +122,36 @@ async function newProfilePic(req, res) {
 }
 
 
+/**
+ * Handles the transformation process for user uploaded images.
+ *
+ * @param {Object} req - Express request object containing the user ID and uploaded files in the request properties.
+ * @param {string} req.userID - The unique identifier of the user.
+ * @param {Object} req.files - The uploaded files object containing the images to be transformed.
+ * @param {Object} res - Express response object to send the result of the transformation back to the client.
+ *
+ * @returns {Promise<void>} - Returns a Promise that resolves when the transformation is successfully completed.
+ * If successful, the response will be sent using the responseHandler function with the transformed data.
+ * If an error occurs, the response will be sent using the responseHandler function with a status code of 500 and the error message.
+ *
+ * @throws {Error} - Throws an error if there's an issue during the transformation process.
+ *
+ * @example
+ * // Request
+ * POST /transformation
+ */
+async function transformationController(req, res) {
+    try {
+        const userID = req.userID;
+        const files = req.files;
 
+        const data = await beforeAndAfter(files, userID);
+
+        return responseHandler(res, data);
+    } catch (error) {
+        return responseHandler(res, { status: 500, message: error.message })
+    }
+}
 
 
 
@@ -225,5 +254,5 @@ async function deleteBookmark(req, res) {
 
 
 const bookmarkControllers = { newBookmark, fetchBookmark, deleteBookmark }
-
-module.exports = { updateUserProfile, fetchUserData, getUser, newProfilePic, ...bookmarkControllers }
+const imageControllers = { transformationController, newProfilePic }
+module.exports = { updateUserProfile, fetchUserData, getUser, ...bookmarkControllers, ...imageControllers }

@@ -16,6 +16,24 @@ const FitnessProfileSchema = new mongoose.Schema({
         }
     ],
 
+    transformations: {
+        before: {
+            type: String,
+            required: false
+        },
+
+        after: {
+            type: String,
+            required: false
+        },
+
+        date: {
+            type: Date,
+            required: false,
+            default: Date.now()
+        }
+    }
+
 }, { timestamps: true });
 
 
