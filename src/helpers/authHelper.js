@@ -42,6 +42,45 @@ async function register(email, password) {
 
 
 /**
+ * Sends an OTP (One-Time Password) to the user's email address.
+ * If the user is found in the database, a new OTP is generated and sent to the user's email address.
+ * The OTP is also stored in the user's database record for verification purposes.
+ *
+ * @param {string} email - The email address of the user to whom the OTP will be sent.
+ * @returns {Promise<{status: number, message: string}>} - A promise that resolves to an object containing the status code and a message indicating whether the OTP was sent successfully.
+ * If the user is not found, the promise resolves to an object with a status code of 404 and a message indicating that the user was not found.
+ * If an error occurs during the process, the promise rejects with an object containing a status code of 500 and an error message.
+ */
+async function sendOTP(email) {
+    try {
+        const user = await User.findOne({ email }).select("-password");
+
+        if (!user) {
+            return { status: 404, message: "User not found" }
+        }
+
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+        user.otp = otp.toString();
+        user.otpExpires = otpExpires;
+
+        await user.save();
+
+        await sendOtpEmail(user.email, user.otp);
+
+        return { status: 200, message: "OTP has been sent successfully" }
+
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message
+        }
+    }
+}
+
+
+/**
  * Verifies the OTP sent to the user's email address.
  * If the OTP is valid and has not expired, the user's account is marked as verified and a JWT access token is generated.
  * @param {string} otp - The one-time password entered by the user.
@@ -219,6 +258,7 @@ async function changePassword(email, otp, password) {
 
 module.exports = {
     register,
+    sendOTP,
     verifyOtp,
     login,
     verifyEmail,

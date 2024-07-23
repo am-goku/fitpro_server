@@ -1,5 +1,5 @@
 const responseHandler = require("../utils/responseHandler");
-const { register, verifyOtp, login, verifyEmail, verifyPassChangeOTP, changePassword } = require('../helpers/authHelper')
+const { register, verifyOtp, login, verifyEmail, verifyPassChangeOTP, changePassword, sendOTP } = require('../helpers/authHelper')
 
 
 /**
@@ -28,6 +28,38 @@ async function registerUser(req, res) {
             message: error.message,
         }
         responseHandler(res, data)
+    }
+}
+
+
+/**
+ * Sends a new OTP to the user's email address for verification.
+ * 
+ * @param {Object} req - Express request object containing the user's email address.
+ * @param {Object} res - Express response object to send the OTP result.
+ * @param {String} req.body.email - The user's email address.
+ * 
+ * @returns {Promise<Object>} - A promise that resolves to the OTP result or rejects with an error.
+ * The promise resolves with an object containing the following properties:
+ * * status: The HTTP status code (200 for success, 400 for missing email, 500 for server error).
+ * * message: A message describing the result of the operation.
+ * 
+ * @throws {Error} - If there is an error during the OTP sending process.
+ */
+async function sendNewOTP(req, res) {
+    try {
+        const email = req.body.email;
+
+        if (!email) {
+            return responseHandler(res, { status: 400, message: 'Missing email' });
+        }
+
+        const data = await sendOTP(email);
+
+        return responseHandler(res, data);
+
+    } catch (error) {
+        return responseHandler(res, { status: 500, message: error.message });
     }
 }
 
@@ -205,6 +237,7 @@ async function loginAdmin(req, res) {
 
 module.exports = {
     registerUser,
+    sendNewOTP,
     verifyUserOtp,
     loginUser,
     verifyUserEmail,

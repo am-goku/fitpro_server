@@ -1,5 +1,5 @@
 const express = require('express');
-const { registerUser, verifyUserOtp, loginUser, verifyUserEmail, verifyUserPassChangeOTP, changeUserPassword } = require('../controllers/authController');
+const { registerUser, verifyUserOtp, loginUser, verifyUserEmail, verifyUserPassChangeOTP, changeUserPassword, sendNewOTP } = require('../controllers/authController');
 
 
 const router = express.Router();
@@ -41,6 +41,33 @@ const router = express.Router();
  *         description: Server error
  */
 router.post('/register', registerUser);
+
+/**
+ * @swagger
+ * /api/v1/auth/send-otp:
+ *   post:
+ *     summary: Sends and otp to the email address
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: OTP sent to your email
+ *       400:
+ *         description: Client side error
+ *       500:
+ *         description: Server error
+ */
+router.post('/send-otp', sendNewOTP);
 
 /**
  * @swagger
