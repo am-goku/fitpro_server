@@ -86,6 +86,15 @@ async function uploadFile(files, type, uid) {
 
                 break;
 
+            case 'gallery':
+                if (files.length) {
+                    const dir = `users/${uid}/gallery`;
+                    files?.forEach(file => {
+                        uploadPromises.push(s3Interface.uploadToS3(file, dir));
+                    });
+                }
+
+                break;
 
             default:
                 break;

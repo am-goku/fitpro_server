@@ -1,4 +1,5 @@
 const FitnessProfile = require("../models/FitnessProfile");
+const Gallery = require("../models/Gallery");
 const User = require("../models/User");
 const uploadFile = require("../service/fileUploadService");
 
@@ -154,6 +155,7 @@ async function beforeAndAfter(files, date, id) {
         const params = {
             before: urls[0],
             after: urls[1],
+            before_date: date
         }
 
         const fitnessProfile = await FitnessProfile.findOneAndUpdate(
@@ -172,6 +174,201 @@ async function beforeAndAfter(files, date, id) {
         return {
             status: 500,
             message: error.message
+        }
+    }
+}
+
+
+/**
+ * Creates a new gallery for a user in the database.
+ * 
+ * @function createGallery
+ * @param {object} body - The request body containing the gallery data.
+ * @param {string} uid - The unique identifier of the user for whom the gallery will be created.
+ * @returns {Promise<{status: number, message: string, gallery: object}>} - A promise that resolves to an object containing the status code, a message, and the created gallery object.
+ * If the gallery is successfully created, the promise resolves to an object with a status code of 200 and a message indicating success.
+ * If the user is not found, the promise resolves to an object with a status code of 400 and a message indicating user not found.
+ * If an error occurs during the database operation, the promise rejects with a status code of 500 and an error message.
+ */
+async function createGallery(body, uid) {
+    try {
+        const user = await User.findById(uid);
+
+        if (!user) {
+            return {
+                status: 400,
+                message: "User not found",
+            }
+        }
+
+        const gallery = new Gallery({ user: user._id, ...body });
+
+        await gallery.save();
+
+        return {
+            status: 200,
+            message: "Gallery created successfully",
+            gallery
+        }
+
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message
+        }
+    }
+}
+
+
+/**
+ * Fetches galleries from the database based on the provided gallery ID and user ID.
+ *
+ * @function getGalleries
+ * @param {string} gid - The unique identifier of the gallery to be fetched. If not provided, all galleries will be fetched.
+ * @param {string} uid - The unique identifier of the user whose galleries will be fetched.
+ *
+ * @returns {Promise<{status: number, message: string, galleries: object[]}>}
+ * A promise that resolves to an object containing the status code, a message, and an array of galleries.
+ * If no gallery ID is provided, the promise resolves to an object containing an array of all galleries for the specified user.
+ * If a gallery ID is provided, the promise resolves to an object containing an array with a single gallery.
+ * If an error occurs during the database operation, the promise rejects with a status code of 500 and an error message.
+ */
+async function getGalleries(gid, uid) {
+    try {
+        const query = {
+            user: uid
+        }
+
+        if (gid) {
+            query["_id"] = gid;
+        }
+
+        const gallery = await Gallery.find(query);
+
+        return {
+            status: 200,
+            message: "Galleries fetched successfully",
+            gallery
+        }
+
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message
+        }
+    }
+}
+
+
+/**
+ * Deletes a gallery from the database based on the provided gallery ID and user ID.
+ *
+ * @function deletedGallery
+ * @param {string} gid - The unique identifier of the gallery to be deleted.
+ * @param {string} uid - The unique identifier of the user who owns the gallery.
+ * @returns {Promise<{status: number, message: string}>} - A promise that resolves to an object containing the status code and a message.
+ * If the gallery is successfully deleted, the promise resolves to an object with a status code of 200 and a message indicating success.
+ * If an error occurs during the database operation, the promise resolves to an object with a status code of 200 and a message indicating an internal server error.
+ */
+async function deletedGallery(gid, uid) {
+    try {
+        await Gallery.deleteOne({ _id: gid, user: uid });
+
+        return {
+            status: 200,
+            message: "Gallery deleted successfully",
+        }
+
+    } catch (error) {
+        return {
+            status: 500,
+            message: "Internal server error"
+        }
+    }
+}
+
+
+/**
+ * Uploads images to a user's gallery in the database.
+ *
+ * @function uploadImage
+ * @param {object} files - The uploaded files containing the images to be added to the gallery.
+ * @param {string} gid - The unique identifier of the gallery to which the images will be added.
+ * @param {string} uid - The unique identifier of the user who owns the gallery.
+ * @returns {Promise<{status: number, message: string, gallery: object}>} - A promise that resolves to an object containing the status code, a message, and the updated gallery object.
+ * If the images are successfully uploaded and added to the gallery, the promise resolves to an object with a status code of 200 and a message indicating success.
+ * If the gallery is not found, the promise resolves to an object with a status code of 400 and a message indicating gallery not found.
+ * If an error occurs during the database operation, the promise rejects with a status code of 500 and an error message.
+ */
+async function uploadImage(files, gid, uid) {
+    try {
+        const gallery = await Gallery.findOne({ _id: gid, user: uid });
+
+        if (!gallery) {
+            return {
+                status: 400,
+                message: "Gallery not found"
+            }
+        }
+
+        const urls = await uploadFile(files?.images, 'gallery', uid);
+
+        gallery.images.push(...urls);
+
+        await gallery.save();
+
+        return {
+            status: 200,
+            message: "Image uploaded successfully",
+            gallery
+        }
+
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message
+        }
+    }
+}
+
+
+/**
+ * Deletes one or more images from a user's gallery in the database.
+ *
+ * @function deleteImage
+ * @param {string[]} images - An array of image URLs to be deleted from the gallery.
+ * @param {string} gid - The unique identifier of the gallery from which the images will be deleted.
+ *
+ * @returns {Promise<{status: number, message: string, gallery: object}>} - A promise that resolves to an object containing the status code, a message, and the updated gallery object.
+ * If the images are successfully deleted, the promise resolves to an object with a status code of 200 and a message indicating success.
+ * If the gallery is not found, the promise resolves to an object with a status code of 400 and a message indicating gallery not found.
+ * If an error occurs during the database operation, the promise resolves to an object with a status code of 500 and a message indicating an internal server error.
+ */
+async function deleteImage(images, gid) {
+    try {
+        const gallery = await Gallery.findOneAndUpdate(
+            { _id: gid },
+            { $pull: { images: { $in: images } } },
+            { new: true }
+        );
+
+        if (!gallery) {
+            return {
+                status: 400,
+                message: "Gallery not found"
+            }
+        }
+
+        return {
+            status: 200,
+            message: "Image(s) deleted successfully",
+            gallery
+        }
+
+    } catch (error) {
+        return {
+            status: 500,
+            message: "Internal server error"
         }
     }
 }
@@ -286,4 +483,6 @@ const bookmarkHelpers = { setBookmark, getBookmarks, removeBookmark }
 
 const imageHelpers = { beforeAndAfter, uploadProfilePic }
 
-module.exports = { updateProfile, fetchUser, getUserData, ...bookmarkHelpers, ...imageHelpers }
+const galleryHelpers = { createGallery, getGalleries, deletedGallery, uploadImage, deleteImage }
+
+module.exports = { updateProfile, fetchUser, getUserData, ...bookmarkHelpers, ...imageHelpers, ...galleryHelpers }

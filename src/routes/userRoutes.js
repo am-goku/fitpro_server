@@ -1,5 +1,5 @@
 const express = require('express');
-const { updateUserProfile, fetchUserData, newBookmark, fetchBookmark, deleteBookmark, getUser, newProfilePic, transformationController } = require('../controllers/userController');
+const { updateUserProfile, fetchUserData, newBookmark, fetchBookmark, deleteBookmark, getUser, newProfilePic, transformationController, newGallery, removeGallery, addNewImage, removeImages, fetchGalleries } = require('../controllers/userController');
 const { userProtect } = require('../middleware/authMiddleware');
 const upload = require('../utils/multerConfig');
 
@@ -611,6 +611,363 @@ router.put('/profile-pic', userProtect, upload.fields([{ name: 'profilePic' }]),
  *                   example: Internal server error
  */
 router.post('/image/transformation', userProtect, upload.fields([{ name: 'before' }, { name: 'after' }]), transformationController)
+
+
+/**
+ * @swagger
+ * tags:
+ *   name: Gallery
+ *   description: Routes to user gallery
+ * 
+ * @swagger
+ * components:
+ *   schemas:
+ *     Gallery:
+ *       type: object
+ *       properties:
+ *         title:
+ *           type: string
+ *           description: Title of the gallery
+ *           example: "My Vacation"
+ *         description:
+ *           type: string
+ *           description: Description of the gallery
+ *           example: "Photos from my summer vacation."
+ *         user:
+ *           type: string
+ *           description: ID of the user who created the gallery
+ *           example: "60d0fe4f5311236168a109ca"
+ *         images:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Array of image URLs
+ *           example: ["http://example.com/image1.jpg", "http://example.com/image2.jpg"]
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Timestamp when the gallery was created
+ *           example: "2023-07-24T14:48:00.000Z"
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Timestamp when the gallery was last updated
+ *           example: "2023-07-24T14:48:00.000Z"
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/user/gallery:
+ *   post:
+ *     summary: Create a new gallery
+ *     tags:
+ *       - Gallery
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Title of the gallery
+ *                 example: "My Vacation"
+ *               description:
+ *                 type: string
+ *                 description: Description of the gallery
+ *                 example: "Photos from my summer vacation."
+ *     responses:
+ *       200:
+ *         description: Gallery created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Gallery created successfully"
+ *                 gallery:
+ *                   $ref: '#/components/schemas/Gallery'
+ *       400:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: "User not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+router.post('/gallery', userProtect, newGallery);
+
+/**
+ * @swagger
+ * /api/v1/user/gallery:
+ *   get:
+ *     summary: Fetch user galleries
+ *     tags:
+ *       - Gallery
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: galleryID
+ *         in: query
+ *         schema:
+ *           type: string
+ *         description: ID of the specific gallery to fetch. If not provided, fetches all galleries for the user.
+ *     responses:
+ *       200:
+ *         description: Galleries fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Galleries fetched successfully"
+ *                 gallery:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Gallery'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+router.get('/gallery', userProtect, fetchGalleries);
+
+/**
+ * @swagger
+ * /api/v1/user/gallery/{galleryID}:
+ *   delete:
+ *     summary: Delete a gallery
+ *     tags:
+ *       - Gallery
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: galleryID
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the gallery to delete
+ *     responses:
+ *       200:
+ *         description: Gallery deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Gallery deleted successfully"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+router.delete('/gallery/:galleryID', userProtect, removeGallery);
+
+/**
+ * @swagger
+ * /api/v1/user/gallery/{galleryID}/image:
+ *   post:
+ *     summary: Add a new image to a gallery
+ *     tags:
+ *       - Gallery
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: galleryID
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the gallery to add images to
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 description: Images to upload
+ *     responses:
+ *       200:
+ *         description: Image uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Image uploaded successfully"
+ *                 gallery:
+ *                   $ref: '#/components/schemas/Gallery'
+ *       400:
+ *         description: Gallery not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: "Gallery not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+router.post('/gallery/:galleryID/image', userProtect, upload.fields([{name: 'images'}]), addNewImage);
+
+/**
+ * @swagger
+ * /api/v1/user/gallery/{galleryID}/image:
+ *   delete:
+ *     summary: Delete images from a gallery
+ *     tags:
+ *       - Gallery
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: galleryID
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the gallery from which to delete images
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Array of image URLs to delete
+ *                 example: ["http://example.com/image1.jpg", "http://example.com/image2.jpg"]
+ *     responses:
+ *       200:
+ *         description: Image(s) deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Image(s) deleted successfully"
+ *                 gallery:
+ *                   $ref: '#/components/schemas/Gallery'
+ *       400:
+ *         description: Gallery not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: "Gallery not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+router.delete('/gallery/:galleryID/image', userProtect, removeImages);
+
 
 
 /**
