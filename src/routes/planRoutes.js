@@ -820,7 +820,7 @@ router.get('/fetch', userProtect, fetchWorkoutPlan)
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
- *         name: id
+ *         name: planID
  *         schema:
  *           type: string
  *         description: The ID of the plan to retrieve. If not provided, retrieves all plans.
@@ -891,7 +891,7 @@ router.get('/fetch', userProtect, fetchWorkoutPlan)
  *                         type: array
  *                         items:
  *                           type: string
- *                         description: List of week plan IDs
+ *                           example: ["60d5f2e91c9d44000014d2c8", "60d5f2e91c9d44000014d2c9"]
  *                       isTrending:
  *                         type: boolean
  *                         description: Whether the plan is trending

@@ -749,7 +749,7 @@ router.post('/bookmarks/:dayID', userProtect, newBookmark);
  *                         type: array
  *                         items:
  *                           type: string
- *                         description: List of category IDs associated with the day
+ *                           example: ["60d5f2e91c9d44000014d2c8", "60d5f2e91c9d44000014d2c9"]
  *       '500':
  *         description: Server error
  *         content:
