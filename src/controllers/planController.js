@@ -251,7 +251,7 @@ async function fetchWorkoutPlan(req, res) {
  * // Fetching a workout week plan with ID 123
  * fetchWeekPlan({ params: { id: 123 } }, res);
  */
-async function fetchWeekPlan(res, res) {
+async function fetchWeekPlan(req, res) {
     try {
         const id = req.params.weekID;
         if (!id) {
@@ -287,7 +287,7 @@ async function fetchWeekPlan(res, res) {
  * // Fetching a workout day plan with ID 123
  * fetchDayPlan({ params: { id: 123 } }, res);
  */
-async function fetchDayPlan(res, res) {
+async function fetchDayPlan(req, res) {
     try {
         const id = req.params.dayID;
         if (!id) {
@@ -323,7 +323,7 @@ async function fetchDayPlan(res, res) {
  * // Fetching a workout category with ID 123
  * fetchCategory({ params: { categoryID: 123 } }, res);
  */
-async function fetchCategory(res, res) {
+async function fetchCategory(req, res) {
     try {
         const id = req.params.categoryID;
         if (!id) {
@@ -359,7 +359,7 @@ async function fetchCategory(res, res) {
  * // Fetching a workout exercise with ID 123
  * fetchExercise({ params: { exerciseID: 123 } }, res);
  */
-async function fetchExercise(res, res) {
+async function fetchExercise(req, res) {
     try {
         const id = req.params.exerciseID;
         if (!id) {
