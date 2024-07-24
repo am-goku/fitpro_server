@@ -580,7 +580,7 @@ router.post('/create', adminProtect, upload.fields([{ name: 'plan_video' }, { na
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
- *         name: id
+ *         name: planID
  *         schema:
  *           type: string
  *         description: The ID of the workout plan to fetch
