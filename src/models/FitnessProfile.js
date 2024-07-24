@@ -27,10 +27,9 @@ const FitnessProfileSchema = new mongoose.Schema({
             required: false
         },
 
-        date: {
-            type: Date,
+        before_date: {
+            type: String,
             required: false,
-            default: Date.now()
         }
     }
 

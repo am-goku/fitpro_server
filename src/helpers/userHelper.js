@@ -147,7 +147,7 @@ async function uploadProfilePic(files, id) {
  * If the transformation is successfully added, the promise resolves to an object with a status code of 200 and a message indicating success.
  * If an error occurs during the database operation, the promise rejects with a status code of 500 and an error message.
  */
-async function beforeAndAfter(files, id) {
+async function beforeAndAfter(files, date, id) {
     try {
         const urls = await uploadFile(files, 'transform');
 

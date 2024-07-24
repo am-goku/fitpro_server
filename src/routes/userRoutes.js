@@ -548,9 +548,13 @@ router.put('/profile-pic', userProtect, upload.fields([{ name: 'profilePic' }]),
  *                 type: string
  *                 format: binary
  *                 description: The image of the user's fitness state after transformation.
+ *               before_date:
+ *                 type: string
+ *                 description: The date of image of the user's fitness state before transformation
  *             required:
  *               - before
  *               - after
+ *               - before_date
  *     responses:
  *       '200':
  *         description: Successfully updated fitness profile with transformation images
@@ -606,7 +610,7 @@ router.put('/profile-pic', userProtect, upload.fields([{ name: 'profilePic' }]),
  *                   type: string
  *                   example: Internal server error
  */
-router.post('/image/transformation', userProtect, upload.fields([{name: 'before'}, {name: 'after'}]), transformationController)
+router.post('/image/transformation', userProtect, upload.fields([{ name: 'before' }, { name: 'after' }]), transformationController)
 
 
 /**

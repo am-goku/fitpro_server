@@ -144,8 +144,9 @@ async function transformationController(req, res) {
     try {
         const userID = req.userID;
         const files = req.files;
+        const date = req.body.before_date;
 
-        const data = await beforeAndAfter(files, userID);
+        const data = await beforeAndAfter(files, date, userID);
 
         return responseHandler(res, data);
     } catch (error) {
