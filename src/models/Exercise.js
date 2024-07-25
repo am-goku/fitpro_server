@@ -65,6 +65,6 @@ const ExerciseSchema = new Schema({
     }
 }, { timestamps: true });
 
-
 const Exercise = model('exercise', ExerciseSchema);
+
 module.exports = Exercise;

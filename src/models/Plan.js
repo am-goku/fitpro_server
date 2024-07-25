@@ -112,7 +112,6 @@ const PlanSchema = new mongoose.Schema({
         }
     ]
 
-
 }, { timestamps: true });
 
 

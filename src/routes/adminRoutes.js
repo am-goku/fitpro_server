@@ -1,145 +1,38 @@
+/**
+ * Router for handling admin login requests.
+ *
+ * @module routers/adminAuthRouter
+ * @requires express
+ * @requires controllers/authController
+ */
+
 const express = require('express');
 const { loginAdmin } = require('../controllers/authController');
 
+/**
+ * Express router instance for admin authentication.
+ *
+ * @type {express.Router}
+ */
 const router = express.Router();
 
-
-
 /**
- * @swagger
- * tags:
- *   name: Admin
- *   description: Admin routes
- */
-
-/**
- * @swagger
- * /api/v1/admin/login:
- *   post:
- *     summary: Admin login
- *     description: Allows an admin to log in using their email and password. Only verified admins can log in.
- *     tags:
- *       - Admin
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *                 example: "admin@example.com"
- *               password:
- *                 type: string
- *                 format: password
- *                 example: "securePassword123"
- *     responses:
- *       200:
- *         description: Successfully logged in
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: integer
- *                   example: 200
- *                 message:
- *                   type: string
- *                   example: "Login successful"
- *                 user:
- *                   type: object
- *                   properties:
- *                     _id:
- *                       type: string
- *                       example: "60d5f3c0c15b2c001c8e4c42"
- *                     name:
- *                       type: string
- *                       example: "John Doe"
- *                     email:
- *                       type: string
- *                       example: "admin@example.com"
- *                     profilePic:
- *                       type: string
- *                       example: "https://example.com/profile-pic.jpg"
- *                     isVerified:
- *                       type: boolean
- *                       example: true
- *                     role:
- *                       type: string
- *                       example: "admin"
- *                 accessToken:
- *                   type: string
- *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNjEyMzQ1NjAwLCJleHBpcmF0aW9uIjp0cnVlfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
- *       400:
- *         description: Bad request due to invalid credentials or account status
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: integer
- *                   example: 400
- *                 message:
- *                   type: string
- *                   example: "Invalid email address" # or "Invalid password", "Unauthorized access", "Missing or invalid credentials"
- *       401:
- *         description: Unauthorized access
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: integer
- *                   example: 401
- *                 message:
- *                   type: string
- *                   example: "Unauthorized access"
- *       403:
- *         description: Forbidden due to unverified account
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: integer
- *                   example: 403
- *                 message:
- *                   type: string
- *                   example: "Account is not verified"
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: integer
- *                   example: 500
- *                 message:
- *                   type: string
- *                   example: "Internal Server Error"
- *     components:
- *       securitySchemes:
- *         BearerAuth:
- *           type: http
- *           scheme: bearer
- *           bearerFormat: JWT
+ * POST request handler for admin login.
+ *
+ * This function is responsible for handling admin login requests. It expects
+ * a JSON body with 'username' and 'password' fields. Upon successful login,
+ * it returns a JSON object with a 'token' field containing the JWT token.
+ *
+ * @name post/login
+ * @function
+ * @memberof module:routers/adminAuthRouter
+ * @param {express.Request} req - Express request object.
+ * @param {express.Response} res - Express response object.
+ * @param {express.NextFunction} next - Express next middleware function.
+ * @returns {express.Response} - Express response object with JSON body.
+ * @returns {express.Response.json} - JSON response with 'token' field if successful.
+ * @returns {express.Response.status} - Status 401 if login fails.
  */
 router.post('/login', loginAdmin);
-
-
-
-
-
-
-
-
 
 module.exports = router;

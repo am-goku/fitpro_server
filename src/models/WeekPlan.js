@@ -34,3 +34,6 @@ const WeekSchema = new Schema({
 
 const WeekPlan = model('weekPlan', WeekSchema);
 module.exports = WeekPlan;
+
+
+

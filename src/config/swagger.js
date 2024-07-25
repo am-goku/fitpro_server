@@ -34,7 +34,7 @@ const swaggerSpec = swaggerJsDoc({
             }
         ],
     },
-    apis: ['./src/routes/*.js'] // Paths to files where you have documented your API routes,
+    apis: ['./src/**/*.js'] // Paths to files where you have documented your API routes,
 });
 
 

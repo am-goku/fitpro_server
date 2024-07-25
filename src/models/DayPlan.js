@@ -52,4 +52,5 @@ const DaySchema = new Schema({
 
 
 const DayPlan = model('dayPlan', DaySchema);
+
 module.exports = DayPlan;

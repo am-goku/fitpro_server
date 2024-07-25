@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-
 const FitnessProfileSchema = new mongoose.Schema({
 
     userID: {
@@ -31,7 +30,134 @@ const FitnessProfileSchema = new mongoose.Schema({
             type: String,
             required: false,
         }
-    }
+    },
+
+    progressCards: [
+        {
+            image: {
+                type: String,
+                required: true
+            },
+
+            date: {
+                type: String,
+                required: true
+            }
+        }
+    ],
+
+
+
+    // USER MEASUREMENTS
+    weight: [
+        {
+            unit: {
+                type: String,
+                required: true,
+                enum: ["kg", "lb"]
+            },
+            value: {
+                type: Number,
+                required: true
+            },
+            date: {
+                type: String,
+                required: true
+            }
+        }
+    ],
+
+
+    height: [
+        {
+            unit: {
+                type: String,
+                required: true,
+                enum: ["cm", "ft"]
+            },
+            value: {
+                type: Number,
+                required: true
+            },
+            date: {
+                type: String,
+                required: true
+            }
+        }
+    ],
+
+    biceps: [
+        {
+            unit: {
+                type: String,
+                required: true,
+                enum: ["cm", "inch"]
+            },
+            value: {
+                type: Number,
+                required: true
+            },
+            date: {
+                type: String,
+                required: true
+            }
+        }
+    ],
+
+    waist: [
+        {
+            unit: {
+                type: String,
+                required: true,
+                enum: ["cm", "inch"]
+            },
+            value: {
+                type: Number,
+                required: true
+            },
+            date: {
+                type: String,
+                required: true
+            }
+        }
+    ],
+
+    chest: [
+        {
+            unit: {
+                type: String,
+                required: true,
+                enum: ["cm", "inch"]
+            },
+            value: {
+                type: Number,
+                required: true
+            },
+            date: {
+                type: String,
+                required: true
+            }
+        }
+    ],
+
+    thigh: [
+        {
+            unit: {
+                type: String,
+                required: true,
+                enum: ["cm", "inch"]
+            },
+            value: {
+                type: Number,
+                required: true
+            },
+            date: {
+                type: String,
+                required: true
+            }
+        }
+    ],
+
 
 }, { timestamps: true });
 
