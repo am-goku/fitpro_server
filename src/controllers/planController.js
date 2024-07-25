@@ -219,9 +219,9 @@ async function createExercise(req, res) {
  */
 async function fetchWorkoutPlan(req, res) {
     try {
-        const id = req.query.planID;
+        const { planID, ...filterBody } = req.query;
 
-        const data = await fetchPlan(id);
+        const data = await fetchPlan(planID, filterBody);
 
         return responseHandler(res, data);
 
@@ -397,9 +397,9 @@ async function fetchExercise(req, res) {
  */
 async function fetchWorkoutOverview(req, res) {
     try {
-        const id = req.query.planID;
+        const { planID, ...filterBody } = req.query;
 
-        const data = await fetchPlanOverview(id);
+        const data = await fetchPlanOverview(planID, filterBody);
 
         return responseHandler(res, data);
 

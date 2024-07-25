@@ -2,6 +2,7 @@ const express = require('express');
 const { adminProtect, userProtect } = require('../middleware/authMiddleware');
 const { fetchWorkoutPlan, updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise, fetchWorkoutOverview, createJsonWorkoutPlan, createWorkoutPlan, addFeaturedPlan, fetchFeaturedPlans, addTrendingPlan, fetchTrendingPlans, createWeekPlan, createDayPlan, createCategory, createExercise, fetchWeekPlan, fetchDayPlan, fetchCategory, fetchExercise } = require('../controllers/planController');
 const upload = require('../utils/multerConfig');
+const { uploadNewFile } = require('../controllers/imageController');
 
 const router = express.Router();
 
@@ -586,6 +587,26 @@ router.post('/create', adminProtect, upload.fields([{ name: 'plan_video' }, { na
  *         description: The ID of the workout plan to fetch
  *         required: false
  *         example: "60d5f2e91c9d44000014d2c7"
+ *       - in: query
+ *         name: location
+ *         schema:
+ *           type: string
+ *         description: Filter by location where the training can be performed (e.g., Home)
+ *       - in: query
+ *         name: level
+ *         schema:
+ *           type: string
+ *         description: Filter by difficulty level of the plan (e.g., Beginner)
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *         description: Filter by type of training (e.g., strength, cardio)
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search by keywords related to the workout or plan name
  *     responses:
  *       '200':
  *         description: Plans fetched successfully
@@ -813,7 +834,7 @@ router.get('/fetch', userProtect, fetchWorkoutPlan)
  * /api/v1/plan/overview:
  *   get:
  *     summary: Fetches plan overview details
- *     description: Retrieves detailed information about workout plans. Can optionally filter by plan ID.
+ *     description: Retrieves detailed information about workout plans. Can optionally filter by various parameters.
  *     tags:
  *       - Workout-plan
  *     security:
@@ -824,6 +845,26 @@ router.get('/fetch', userProtect, fetchWorkoutPlan)
  *         schema:
  *           type: string
  *         description: The ID of the plan to retrieve. If not provided, retrieves all plans.
+ *       - in: query
+ *         name: location
+ *         schema:
+ *           type: string
+ *         description: Filter by location where the training can be performed (e.g., Home)
+ *       - in: query
+ *         name: level
+ *         schema:
+ *           type: string
+ *         description: Filter by difficulty level of the plan (e.g., Beginner)
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *         description: Filter by type of training (e.g., strength, cardio)
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search by keywords related to the workout or plan name
  *     responses:
  *       '200':
  *         description: Successfully fetched plan details
@@ -3114,6 +3155,68 @@ router.post('/trending/:planID', adminProtect, addTrendingPlan);
  */
 router.get('/trending', userProtect, fetchTrendingPlans);
 
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////// FILE UPLOAD SECTION /////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+/**
+ * @swagger
+ * /api/v1/plan/files/upload:
+ *   post:
+ *     summary: Upload a new file and returns url
+ *     tags:
+ *       - FILES
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 required: true
+ *     responses:
+ *       '200':
+ *         description: Workout plan created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: File uploaded successfully
+ *                 url:
+ *                   type: string
+ *                   example: "http://example.com/file.jpg"
+ *       '500':
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+router.post('/files/upload', upload.fields([{name: 'file'}]), uploadNewFile);
 
 
 module.exports = router;

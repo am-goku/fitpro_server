@@ -139,12 +139,32 @@ async function createPlan(files, planBody) {
  * If the plan is not found, the promise resolves to an object with a status of 400 and a message indicating the plan not found.
  * If an error occurs during the fetch process, the promise rejects with an object containing a status of 500 and the error message.
  */
-async function fetchPlan(id) {
+async function fetchPlan(id, filterBody) {
     try {
+        const regxFun = (key) => {
+            return new RegExp(key.split('').join('\\s*'), 'i');
+        }
+
         const query = {}
 
         if (id) {
             query["_id"] = id;
+        }
+
+        if (filterBody.search) {
+            query.plan_name = regxFun(filterBody.search);
+        }
+
+        if(filterBody.location) {
+            query.location = regxFun(filterBody.location);
+        }
+
+        if(filterBody.type){
+            query.type = regxFun(filterBody.type);
+        }
+
+        if(filterBody.level){
+            query.level = regxFun(filterBody.level);
         }
 
         const plans = await Plan.find(query).populate({
@@ -188,12 +208,32 @@ async function fetchPlan(id) {
  * If the plan is not found, the promise resolves to an object with a status of 400 and a message indicating the plan not found.
  * If an error occurs during the fetch process, the promise rejects with an object containing a status of 500 and the error message.
  */
-async function fetchPlanOverview(id) {
+async function fetchPlanOverview(id, filterBody) {
     try {
+        const regxFun = (key) => {
+            return new RegExp(key.split('').join('\\s*'), 'i');
+        }
+
         const query = {}
 
         if (id) {
             query["_id"] = id;
+        }
+
+        if (filterBody.search) {
+            query.plan_name = regxFun(filterBody.search);
+        }
+
+        if(filterBody.location) {
+            query.location = regxFun(filterBody.location);
+        }
+
+        if(filterBody.type){
+            query.type = regxFun(filterBody.type);
+        }
+
+        if(filterBody.level){
+            query.level = regxFun(filterBody.level);
         }
 
         const plans = await Plan.find(query);
