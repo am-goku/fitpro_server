@@ -1551,6 +1551,12 @@
  *         schema:
  *           type: string
  *         description: The ID of the category to fetch
+ *       - in: query
+ *         name: populate
+ *         required: false
+ *         schema:
+ *           type: boolean
+ *         description: Pass it as true if the response need to be populated.
  *     responses:
  *       200:
  *         description: Category fetched successfully
