@@ -597,7 +597,7 @@ async function getCategory(id, populate) {
         let category = null
 
         if (populate) {
-            category = await Category.findById(id).populate("days");
+            category = await Category.findById(id).populate("exercises");
         } else {
             category = await Category.findById(id);
         }
