@@ -642,3 +642,71 @@
  *           example: false
  *       timestamps: true
  */
+
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     UserWorkout:
+ *           type: object
+ *           properties:
+ *             _id:
+ *               type: string
+ *             user:
+ *               type: string
+ *             plan:
+ *               type: string
+ *             weeks:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/UserWeekProgress'
+ *             completedExercises:
+ *               type: number
+ *             totalExercises:
+ *               type: number
+ *             completionPercentage:
+ *               type: number
+ *     UserWeekProgress:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         week:
+ *           type: string
+ *         days:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/UserDayProgress'
+ *     UserDayProgress:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         day:
+ *           type: string
+ *         categories:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/UserCategoryProgress'
+ *     UserCategoryProgress:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         category:
+ *           type: string
+ *         exercises:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/UserExerciseProgress'
+ *     UserExerciseProgress:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         exercise:
+ *           type: string
+ *         completed:
+ *           type: boolean
+ */

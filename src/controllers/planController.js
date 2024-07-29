@@ -326,10 +326,11 @@ async function fetchDayPlan(req, res) {
 async function fetchCategory(req, res) {
     try {
         const id = req.params.categoryID;
+        const populate = req.query.populate;
         if (!id) {
             return responseHandler(res, { status: 400, message: "Invalid parameter" })
         }
-        const data = await getCategory(id);
+        const data = await getCategory(id, populate);
 
         return responseHandler(res, data);
 

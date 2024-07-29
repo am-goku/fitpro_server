@@ -2816,3 +2816,97 @@
 
 
 
+
+/**
+ * @swagger
+ * /api/v1/workout/select-plan/{planID}:
+ *   post:
+ *     summary: Select a workout plan
+ *     tags: [Workout]
+ *     parameters:
+ *       - in: path
+ *         name: planID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the workout plan
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       201:
+ *         description: Workout plan selected successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserWorkout'
+ *       400:
+ *         description: Plan not found
+ *       500:
+ *         description: Server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/workout/update-progress/{exerciseID}:
+ *   put:
+ *     summary: Update exercise completion
+ *     tags: [Workout]
+ *     parameters:
+ *       - in: path
+ *         name: exerciseID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the exercise to be marked as completed
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully updated exercise completion
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserWorkout'
+ *       400:
+ *         description: User workout plan not found
+ *       500:
+ *         description: Server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/workout:
+ *   get:
+ *     summary: Fetch workout progress
+ *     tags: [Workout]
+ *     parameters:
+ *       - in: query
+ *         name: planID
+ *         schema:
+ *           type: string
+ *         description: The ID of the workout plan to filter progress
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Workout progress retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Workout progress retrieved successfully
+ *                 plans:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/UserWorkout'
+ *       400:
+ *         description: User workout plan not found
+ *       500:
+ *         description: Server error
+ */

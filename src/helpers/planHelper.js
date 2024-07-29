@@ -592,9 +592,15 @@ async function addCategory(dayID, catBody) {
  * If the category is not found, the promise resolves to an object with a status of 400 and a message indicating the category not found.
  * If an error occurs during the fetch process, the promise rejects with an object containing a status of 500 and the error message.
  */
-async function getCategory(id) {
+async function getCategory(id, populate) {
     try {
-        const category = await Category.findById(id);
+        let category = null
+
+        if (populate) {
+            category = await Category.findById(id).populate("days");
+        } else {
+            category = await Category.findById(id);
+        }
 
         if (!category) {
             return { status: 400, message: "Category not found" }
