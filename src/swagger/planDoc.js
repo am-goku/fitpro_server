@@ -225,6 +225,71 @@
 
 /**
  * @swagger
+ * /api/v1/plan/create/json:
+ *   post:
+ *     summary: Create a workout plan using JSON
+ *     description: Uploads a JSON file to create a workout plan with nested weeks, days, categories, and exercises.
+ *     tags:
+ *       - Workout-plan
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               planData:
+ *                 type: string
+ *                 format: binary
+ *                 description: JSON file containing the workout plan data
+ *     responses:
+ *       200:
+ *         description: Workout plan saved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Workout plan saved successfully
+ *                 plan:
+ *                   $ref: '#/components/schemas/Plan'
+ *       400:
+ *         description: No JSON file provided
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: No JSON file provided
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
+/**
+ * @swagger
  * /api/v1/plan/fetch:
  *   get:
  *     summary: Fetches workout plans

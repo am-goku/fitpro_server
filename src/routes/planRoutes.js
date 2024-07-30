@@ -22,7 +22,8 @@ const {
     createJsonWorkoutPlan, addFeaturedPlan,
     fetchFeaturedPlans, addTrendingPlan,
     fetchTrendingPlans, fetchWeekPlan,
-    fetchDayPlan, fetchCategory, fetchExercise
+    fetchDayPlan, fetchCategory, fetchExercise,
+    createUsingJSON
 } = require('../controllers/planController');
 const upload = require('../utils/multerConfig');
 const { uploadNewFile } = require('../controllers/imageController');
@@ -42,6 +43,20 @@ const router = express.Router();
  * @param {createJsonWorkoutPlan} controller - Controller function for creating a workout plan from JSON
  */
 router.post('/create', adminProtect, createJsonWorkoutPlan);
+
+/**
+ * Route for creating a new workout plan from a JSON file.
+ *
+ * @function createJsonWorkoutPlanRoute
+ * @memberof module:routes/planRoutes
+ * @param {string} path - Express path '/create/json'
+ * @param {adminProtect} middleware - Admin authentication middleware
+ * @param {upload.single} middleware - Multer middleware for handling a single file upload with the field name 'planData'
+ * @param {createUsingJSON} controller - Controller function for creating a workout plan from JSON
+ *
+ * @returns {function} - Express route handler function
+ */
+router.post('/create/json', adminProtect, upload.single('planData'), createUsingJSON)
 
 /**
  * Route for fetching all workout plans.
