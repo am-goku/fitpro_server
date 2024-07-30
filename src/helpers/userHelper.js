@@ -113,7 +113,7 @@ async function uploadProfilePic(files, id) {
     try {
         const user = await User.findById(id);
 
-        if(!user) {
+        if (!user) {
             return { status: 404, message: "User not found" }
         }
 
@@ -479,10 +479,95 @@ async function removeBookmark(uid, dayID) {
 
 
 
+/**
+ * Updates the measurements for a user's fitness profile.
+ *
+ * @function updateMeasurements
+ * @param {string} userID - The unique identifier of the user whose fitness profile will be updated.
+ * @param {object} body - The request body containing the new measurements to be updated.
+ *
+ * @returns {Promise<{status: number, message: string, fitnessProfile: object}>}
+ * A promise that resolves to an object containing the status code, a message, and the updated fitness profile object.
+ * If the measurements are successfully updated, the promise resolves to an object with a status code of 200 and a message indicating success.
+ * If an error occurs during the database operation, the promise rejects with a status code of 500 and an error message.
+ */
+async function updateMeasurements(userID, body) {
+    try {
+        let fitnessProfile = await FitnessProfile.findOne({ userID });
+
+        if (!fitnessProfile) {
+            const newProfile = new FitnessProfile({
+                userID
+            });
+
+            fitnessProfile = await newProfile.save();
+        }
+
+        for (const key in body) {
+            if (!Array.isArray(fitnessProfile[key])) {
+                fitnessProfile[key] = [body[key]];
+            } else {
+                fitnessProfile[key].unshift(body[key]);
+            }
+        }
+
+        await fitnessProfile.save();
+
+        return {
+            status: 200,
+            message: "Measurements updated successfully",
+            fitnessProfile
+        }
+
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message
+        }
+    }
+}
+
+
+/**
+ * Fetches the fitness profile of a user from the database.
+ *
+ * @function fetchFitnessProfile
+ * @param {string} userID - The unique identifier of the user whose fitness profile will be fetched.
+ *
+ * @returns {Promise<{status: number, message: string, fitnessProfile: object}>}
+ * A promise that resolves to an object containing the status code, a message, and the fetched fitness profile object.
+ * If the fitness profile is successfully fetched, the promise resolves to an object with a status code of 200 and a message indicating success.
+ * If an error occurs during the database operation, the promise rejects with a status code of 500 and an error message.
+ */
+async function fetchFitnessProfile(userID) {
+    try {
+        const fitnessProfile = await FitnessProfile.findOne({ userID });
+
+        const data = {
+            status: 200,
+            message: "Fitness profile fetched succesfully",
+            fitnessProfile
+        }
+
+        return data;
+
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message
+        }
+    }
+}
+
+
+
+
+const fitnessHelper = { updateMeasurements, fetchFitnessProfile }
+
 const bookmarkHelpers = { setBookmark, getBookmarks, removeBookmark }
 
 const imageHelpers = { beforeAndAfter, uploadProfilePic }
 
 const galleryHelpers = { createGallery, getGalleries, deletedGallery, uploadImage, deleteImage }
 
-module.exports = { updateProfile, fetchUser, getUserData, ...bookmarkHelpers, ...imageHelpers, ...galleryHelpers }
+module.exports = { updateProfile, fetchUser, getUserData, ...bookmarkHelpers, ...imageHelpers, ...galleryHelpers, ...fitnessHelper }

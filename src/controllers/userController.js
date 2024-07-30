@@ -1,4 +1,4 @@
-const { updateProfile, fetchUser, setBookmark, getBookmarks, removeBookmark, getUserData, uploadProfilePic, beforeAndAfter, uploadImage, deleteImage, createGallery, deletedGallery, getGalleries } = require("../helpers/userHelper");
+const { updateProfile, fetchUser, setBookmark, getBookmarks, removeBookmark, getUserData, uploadProfilePic, beforeAndAfter, uploadImage, deleteImage, createGallery, deletedGallery, getGalleries, updateMeasurements, fetchFitnessProfile } = require("../helpers/userHelper");
 const responseHandler = require("../utils/responseHandler");
 
 
@@ -423,7 +423,80 @@ async function deleteBookmark(req, res) {
 }
 
 
+/**
+ * Updates a user's measurements in the database.
+ *
+ * @function update_Measurements
+ * @param {Object} req - Express request object containing the user ID and measurement data in the request body.
+ * @param {string} req.userID - The unique identifier of the user whose measurements will be updated.
+ * @param {Object} req.body - The measurement data to be stored in the database.
+ * @param {Object} res - Express response object to send the result of the measurement update back to the client.
+ *
+ * @returns {Promise<void>} - Returns a Promise that resolves when the measurements are successfully updated.
+ * If successful, the response will be sent using the responseHandler function with the updated measurement data.
+ * If an error occurs, the response will be sent using the responseHandler function with a status code of 500 and the error message.
+ *
+ * @throws {Error} - Throws an error if there's an issue updating the measurements.
+ *
+ * @example
+ * // Request
+ * PUT /user/measurements
+ */
+async function update_Measurements(req, res) {
+    try {
+        const body = req.body;
+        const userID = req.userID;
+        if (!body) {
+            const data = {
+                status: 400,
+                message: "Invalid request body"
+            }
 
+            return responseHandler(res, data)
+        }
+        const data = await updateMeasurements(userID, body);
+
+        return responseHandler(res, data);
+
+    } catch (error) {
+        return responseHandler(res, { status: 500, message: error.message })
+    }
+}
+
+
+/**
+ * Fetches a user's fitness profile from the database based on the provided user ID.
+ *
+ * @function fetch_fitnessProfile
+ * @param {Object} req - Express request object containing the user ID in the request parameters.
+ * @param {string} req.userID - The unique identifier of the user whose fitness profile will be fetched.
+ * @param {Object} res - Express response object to send the result of the fitness profile fetch back to the client.
+ *
+ * @returns {Promise<void>} - Returns a Promise that resolves when the fitness profile is successfully fetched.
+ * If successful, the response will be sent using the responseHandler function with the fetched fitness profile data.
+ * If an error occurs, the response will be sent using the responseHandler function with a status code of 500 and the error message.
+ *
+ * @throws {Error} - Throws an error if there's an issue fetching the fitness profile.
+ *
+ * @example
+ * // Request
+ * GET /user/fitness-profile
+ */
+async function fetch_fitnessProfile(req, res) {
+    try {
+        const userID = req.userID;
+
+        const data = await fetchFitnessProfile(userID);
+
+        return responseHandler(res, data);
+
+    } catch (error) {
+        return responseHandler(res, { status: 500, message: error.message })
+    }
+}
+
+
+const fitnessProfileController = { update_Measurements, fetch_fitnessProfile }
 const bookmarkControllers = { newBookmark, fetchBookmark, deleteBookmark }
 const imageControllers = { transformationController, newProfilePic, addNewImage, newGallery, fetchGalleries, removeGallery, removeImages }
-module.exports = { updateUserProfile, fetchUserData, getUser, ...bookmarkControllers, ...imageControllers }
+module.exports = { updateUserProfile, fetchUserData, getUser, ...bookmarkControllers, ...imageControllers, ...fitnessProfileController }

@@ -122,6 +122,24 @@ const FitnessProfileSchema = new mongoose.Schema({
         }
     ],
 
+    wrist: [
+        {
+            unit: {
+                type: String,
+                required: true,
+                enum: ["cm", "inch"]
+            },
+            value: {
+                type: Number,
+                required: true
+            },
+            date: {
+                type: String,
+                required: true
+            }
+        }
+    ],
+
     chest: [
         {
             unit: {

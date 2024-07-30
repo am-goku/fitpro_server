@@ -4,7 +4,7 @@
  */
 
 const express = require('express');
-const { updateUserProfile, fetchUserData, newBookmark, fetchBookmark, deleteBookmark, getUser, newProfilePic, transformationController, newGallery, removeGallery, addNewImage, removeImages, fetchGalleries } = require('../controllers/userController');
+const { updateUserProfile, fetchUserData, newBookmark, fetchBookmark, deleteBookmark, getUser, newProfilePic, transformationController, newGallery, removeGallery, addNewImage, removeImages, fetchGalleries, update_Measurements, fetch_fitnessProfile } = require('../controllers/userController');
 const { userProtect } = require('../middleware/authMiddleware');
 const upload = require('../utils/multerConfig');
 const { create_TODO, fetch_TODO, update_TODO, remove_TODO, add_GOAL, fetch_GOALS, update_GOAL, delete_GOAL } = require('../controllers/todoController');
@@ -136,5 +136,18 @@ router.put('/goal/:goalID', userProtect, update_GOAL);
  * Requires user authentication and accepts a 'goalID' parameter.
  */
 router.delete('/goal/:goalID', userProtect, delete_GOAL);
+
+/**
+ * POST route for updating user measurements with userID and request body.
+ * Requires user authentication and accepts a request body with measurements.
+ */
+router.post('/measurements', userProtect, update_Measurements);
+
+/**
+ * GET route for fetching user fitness profile with userID.
+ * Requires user authentication.
+ */
+router.get('/fitness-profile', userProtect, fetch_fitnessProfile);
+
 
 module.exports = router;

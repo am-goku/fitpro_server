@@ -1710,3 +1710,203 @@
  */
 
 
+/**
+ * @swagger
+ * /api/v1/user/measurements:
+ *   post:
+ *     summary: Update user measurements
+ *     description: Updates the fitness profile measurements for the authenticated user.
+ *     tags:
+ *       - FitnessProfile
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               weight:
+ *                   type: object
+ *                   properties:
+ *                     unit:
+ *                       type: string
+ *                       enum: ["kg", "lb"]
+ *                       example: "kg"
+ *                     value:
+ *                       type: number
+ *                       example: 70.5
+ *                     date:
+ *                       type: string
+ *                       format: date
+ *                       example: "2024-07-30"
+ *               height:
+ *                   type: object
+ *                   properties:
+ *                     unit:
+ *                       type: string
+ *                       enum: ["cm", "ft"]
+ *                       example: "cm"
+ *                     value:
+ *                       type: number
+ *                       example: 175
+ *                     date:
+ *                       type: string
+ *                       format: date
+ *                       example: "2024-07-30"
+ *               biceps:
+ *                   type: object
+ *                   properties:
+ *                     unit:
+ *                       type: string
+ *                       enum: ["cm", "inch"]
+ *                       example: "cm"
+ *                     value:
+ *                       type: number
+ *                       example: 30
+ *                     date:
+ *                       type: string
+ *                       format: date
+ *                       example: "2024-07-30"
+ *               waist:
+ *                   type: object
+ *                   properties:
+ *                     unit:
+ *                       type: string
+ *                       enum: ["cm", "inch"]
+ *                       example: "cm"
+ *                     value:
+ *                       type: number
+ *                       example: 80
+ *                     date:
+ *                       type: string
+ *                       format: date
+ *                       example: "2024-07-30"
+ *               wrist:
+ *                   type: object
+ *                   properties:
+ *                     unit:
+ *                       type: string
+ *                       enum: ["cm", "inch"]
+ *                       example: "cm"
+ *                     value:
+ *                       type: number
+ *                       example: 15
+ *                     date:
+ *                       type: string
+ *                       format: date
+ *                       example: "2024-07-30"
+ *               chest:
+ *                   type: object
+ *                   properties:
+ *                     unit:
+ *                       type: string
+ *                       enum: ["cm", "inch"]
+ *                       example: "cm"
+ *                     value:
+ *                       type: number
+ *                       example: 100
+ *                     date:
+ *                       type: string
+ *                       format: date
+ *                       example: "2024-07-30"
+ *               thigh:
+ *                   type: object
+ *                   properties:
+ *                     unit:
+ *                       type: string
+ *                       enum: ["cm", "inch"]
+ *                       example: "cm"
+ *                     value:
+ *                       type: number
+ *                       example: 55
+ *                     date:
+ *                       type: string
+ *                       format: date
+ *                       example: "2024-07-30"
+ *     responses:
+ *       200:
+ *         description: Measurements updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Measurements updated successfully
+ *                 fitnessProfile:
+ *                   $ref: '#/components/schemas/FitnessProfile'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/user/fitness-profile:
+ *   get:
+ *     summary: Fetch the fitness profile of the authenticated user
+ *     tags: 
+ *       - FitnessProfile
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Fitness profile fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Fitness profile fetched successfully"
+ *                 fitnessProfile:
+ *                   $ref: '#/components/schemas/FitnessProfile'
+ *       404:
+ *         description: Fitness profile not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: "Fitness profile not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+
