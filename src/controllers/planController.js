@@ -2,7 +2,6 @@ const { fetchPlan, updatePlan, deletePlan, updateWeek, updateDay, updateCategory
 const responseHandler = require("../utils/responseHandler");
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////CREATE PLANS SECTION//////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -27,168 +26,6 @@ async function createJsonWorkoutPlan(req, res) {
 
         return responseHandler(res, data);
 
-    } catch (error) {
-        const data = {
-            status: 500,
-            message: error.message,
-        }
-
-        return responseHandler(res, data);
-    }
-}
-
-
-/**
- * Creates a new workout plan in the database.
- *
- * @function createWorkoutPlan
- * @param {Object} req - The request object containing the plan data.
- * @param {Object} res - The response object to send the response.
- * @returns {Promise<Object>} - A promise that resolves to the response object with status and data.
- *
- * @throws Will throw an error if the request body is invalid.
- * @throws Will throw an error if there is a problem with the database operation.
- */
-async function createWorkoutPlan(req, res) {
-    try {
-        const body = req.body;
-        const files = req.files;
-
-        if (!body) return responseHandler(res, { status: 200, message: "Invalid request body." });
-
-        const data = await createPlan(files, body);
-
-        return responseHandler(res, data);
-
-    } catch (error) {
-        const data = {
-            status: 500,
-            message: error.message,
-        }
-
-        return responseHandler(res, data);
-    }
-}
-
-
-/**
- * Creates a new week plan within a specific workout plan.
- *
- * @function createWeekPlan
- * @param {Object} req - The request object containing the planID and the week data.
- * @param {Object} req.params - The parameters object containing the planID.
- * @param {number} req.params.planID - The ID of the workout plan.
- * @param {Object} req.body - The body object containing the week data.
- * @param {Object} res - The response object to send the response.
- * @returns {Promise<Object>} - A promise that resolves to the response object with status and data.
- * @throws Will throw an error if there is a problem with the database operation.
- */
-async function createWeekPlan(req, res) {
-    try {
-        const planID = req.params.planID;
-        const body = req.body;
-
-        const data = await addWeek(planID, body);
-
-        return responseHandler(res, data);
-    } catch (error) {
-        const data = {
-            status: 500,
-            message: error.message,
-        }
-
-        return responseHandler(res, data);
-    }
-}
-
-
-/**
- * Creates a new day plan within a specific week.
- *
- * @function createDayPlan
- * @param {Object} req - The request object containing the weekID, day data, and file data.
- * @param {Object} res - The response object to send the response.
- * @returns {Promise<Object>} - A promise that resolves to the response object with status and data.
- *
- * @throws Will throw an error if the weekID is not provided.
- * @throws Will throw an error if the request body is invalid.
- * @throws Will throw an error if there is a problem with the database operation.
- */
-async function createDayPlan(req, res) {
-    try {
-        const weekID = req.params.weekID;
-        const body = req.body;
-        const files = req.files;
-
-        const data = await addDay(weekID, body, files);
-
-        return responseHandler(res, data);
-    } catch (error) {
-        const data = {
-            status: 500,
-            message: error.message,
-        }
-
-        return responseHandler(res, data);
-    }
-}
-
-
-/**
- * Creates a new category within a specific day of a workout plan.
- *
- * @function createCategory
- * @param {Object} req - The request object containing the dayID and category data.
- * @param {number} req.params.dayID - The ID of the day within the workout plan.
- * @param {Object} req.body - The data for the new category.
- * @param {Object} res - The response object to send the response.
- * @returns {Promise<Object>} - A promise that resolves to the response object with status and data.
- *
- * @throws Will throw an error if the dayID or category data is not provided.
- * @throws Will throw an error if there is a problem with the database operation.
- */
-async function createCategory(req, res) {
-    try {
-        const dayID = req.params.dayID;
-        const body = req.body;
-
-        const data = await addCategory(dayID, body);
-
-        return responseHandler(res, data);
-    } catch (error) {
-        const data = {
-            status: 500,
-            message: error.message,
-        }
-
-        return responseHandler(res, data);
-    }
-}
-
-
-/**
- * Creates a new exercise in a workout plan category.
- *
- * @function createExercise
- * @param {Object} req - The request object containing the categoryID, exercise data, and files.
- * @param {number} req.params.categoryID - The ID of the category where the exercise will be created.
- * @param {Object} req.body - The exercise data to be created.
- * @param {Object} req.files - The files associated with the exercise.
- * @param {Object} res - The response object to send the response.
- * @returns {Promise<Object>} - A promise that resolves to the response object with status and data.
- *
- * @throws Will throw an error if the categoryID, exercise data, or files are not provided.
- * @throws Will throw an error if there is a problem with the database operation.
- */
-async function createExercise(req, res) {
-    try {
-        const categoryID = req.params.categoryID;
-        const body = req.body;
-        const files = req.files;
-
-        const data = await addExercise(categoryID, body, files);
-
-        return responseHandler(res, data);
     } catch (error) {
         const data = {
             status: 500,
@@ -602,7 +439,7 @@ async function updateWorkoutExercise(req, res) {
         if (Object.keys(body).length === 0) {
             return responseHandler(res, { status: 400, message: "Request body cannot be empty." });
         }
-        
+
         const data = await updateExercise(id, body);
 
         return responseHandler(res, data);
@@ -793,7 +630,7 @@ async function fetchFeaturedPlans(req, res) {
  *
  * @module controllers/planController
  */
-const workoutCreate = { createJsonWorkoutPlan, createWorkoutPlan, createWeekPlan, createDayPlan, createCategory, createExercise }
+const workoutCreate = { createJsonWorkoutPlan }
 const workoutFetch = { fetchWorkoutPlan, fetchWorkoutOverview, fetchWeekPlan, fetchDayPlan, fetchCategory, fetchExercise }
 const specialPlans = { addFeaturedPlan, addTrendingPlan, fetchFeaturedPlans, fetchTrendingPlans }
 const workoutUpdate = { updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise }

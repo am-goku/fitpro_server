@@ -14,7 +14,16 @@
 
 const express = require('express');
 const { adminProtect, userProtect } = require('../middleware/authMiddleware');
-const { fetchWorkoutPlan, updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise, fetchWorkoutOverview, createJsonWorkoutPlan, createWorkoutPlan, addFeaturedPlan, fetchFeaturedPlans, addTrendingPlan, fetchTrendingPlans, createWeekPlan, createDayPlan, createCategory, createExercise, fetchWeekPlan, fetchDayPlan, fetchCategory, fetchExercise } = require('../controllers/planController');
+const {
+    fetchWorkoutPlan, updateWorkoutPlan,
+    deleteWorkoutPlan, updateWorkoutWeekPlan,
+    updateWorkoutDayPlan, updateWorkoutCategory,
+    updateWorkoutExercise, fetchWorkoutOverview,
+    createJsonWorkoutPlan, addFeaturedPlan,
+    fetchFeaturedPlans, addTrendingPlan,
+    fetchTrendingPlans, fetchWeekPlan,
+    fetchDayPlan, fetchCategory, fetchExercise
+} = require('../controllers/planController');
 const upload = require('../utils/multerConfig');
 const { uploadNewFile } = require('../controllers/imageController');
 
@@ -25,32 +34,14 @@ const router = express.Router();
 /**
  * Route for creating a new workout plan from a JSON file.
  *
- * @name POST/create/json
+ * @name POST/create
  * @function
  * @memberof module:routes/planRoutes
  * @param {string} path - Express path
  * @param {adminProtect} middleware - Admin authentication middleware
  * @param {createJsonWorkoutPlan} controller - Controller function for creating a workout plan from JSON
  */
-router.post('/create/json', adminProtect, createJsonWorkoutPlan);
-
-/**
- * Route for creating a new workout plan.
- *
- * @name POST/create
- * @function
- * @memberof module:routes/planRoutes
- * @param {string} path - Express path
- * @param {adminProtect} middleware - Admin authentication middleware
- * @param {upload.fields} middleware - Multer middleware for handling file uploads
- * @param {createWorkoutPlan} controller - Controller function for creating a workout plan
- */
-router.post('/create', adminProtect, upload.fields(
-    [
-        { name: 'plan_video' },
-        { name: 'banner_image' }
-    ]
-), createWorkoutPlan);
+router.post('/create', adminProtect, createJsonWorkoutPlan);
 
 /**
  * Route for fetching all workout plans.
@@ -102,17 +93,6 @@ router.delete('/:planID', adminProtect, deleteWorkoutPlan);
 
 
 /////////////////////// WORKOUT WEEKS //////////////////////
-/**
- * Route for creating a new workout week for a specific plan.
- *
- * @name POST/:planID/week
- * @function
- * @memberof module:routes/planRoutes
- * @param {string} path - Express path
- * @param {adminProtect} middleware - Admin authentication middleware
- * @param {createWeekPlan} controller - Controller function for creating a workout week
- */
-router.post('/:planID/week', adminProtect, createWeekPlan);
 
 /**
  * Route for fetching a specific workout week.
@@ -140,23 +120,6 @@ router.put('/week/:weekID', adminProtect, updateWorkoutWeekPlan);
 
 
 /////////////////////// WORKOUT DAYS ///////////////////////
-/**
- * Route for creating a new workout day for a specific week.
- *
- * @name POST/week/:weekID/day
- * @function
- * @memberof module:routes/planRoutes
- * @param {string} path - Express path
- * @param {adminProtect} middleware - Admin authentication middleware
- * @param {upload.fields} middleware - Multer middleware for handling file uploads
- * @param {createDayPlan} controller - Controller function for creating a workout day
- */
-router.post('/week/:weekID/day', adminProtect, upload.fields(
-    [
-        { name: 'intro_video' },
-        { name: 'day_banner_image' }
-    ]
-), createDayPlan);
 
 /**
  * Route for fetching a specific workout day.
@@ -184,17 +147,6 @@ router.put('/day/:dayID', adminProtect, updateWorkoutDayPlan);
 
 
 /////////////////////// WORKOUT CATEGORY //////////////////////
-/**
- * Route for creating a new workout category for a specific day.
- *
- * @name POST/day/:dayID/category
- * @function
- * @memberof module:routes/planRoutes
- * @param {string} path - Express path
- * @param {adminProtect} middleware - Admin authentication middleware
- * @param {createCategory} controller - Controller function for creating a workout category
- */
-router.post('/day/:dayID/category', adminProtect, createCategory);
 
 /**
  * Route for fetching a specific workout category.
@@ -222,23 +174,6 @@ router.put('/category/:categoryID', adminProtect, updateWorkoutCategory);
 
 
 /////////////////////// WORKOUT EXERCISE //////////////////////
-/**
- * Route for creating a new workout exercise for a specific category.
- *
- * @name POST/category/:categoryID/exercise
- * @function
- * @memberof module:routes/planRoutes
- * @param {string} path - Express path
- * @param {adminProtect} middleware - Admin authentication middleware
- * @param {upload.fields} middleware - Multer middleware for handling file uploads
- * @param {createExercise} controller - Controller function for creating a workout exercise
- */
-router.post('/category/:categoryID/exercise', adminProtect, upload.fields(
-    [
-        { name: 'exe_video' },
-        { name: 'exe_image' }
-    ]
-), createExercise);
 
 /**
  * Route for fetching a specific workout exercise.
