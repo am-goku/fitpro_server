@@ -6,6 +6,46 @@ const responseHandler = require("../utils/responseHandler");
 ///////////////////////////////CREATE PLANS SECTION//////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
+
+/**
+ * Creates a new workout plan using JSON data provided in a file.
+ *
+ * @param {Object} req - The request object containing the uploaded file.
+ * @param {Object} res - The response object to send the response.
+ * @returns {Promise<Object>} - A promise that resolves to the response object with status and data.
+ *
+ * @throws Will throw an error if no JSON file is provided.
+ * @throws Will throw an error if there is a problem with the database operation.
+ */
+async function createUsingJSON(req, res) {
+    try {
+        const file = req.file;
+        if (!file) {
+            return responseHandler(
+                res,
+                { status: 400, message: "No JSON file provided" }
+            )
+        }
+
+        const bufferBody = file.buffer.toString();
+
+        const body = JSON.parse(bufferBody);
+
+        const data = await createJsonPlan(body);
+
+        return responseHandler(res, data);
+
+    } catch (error) {
+        const data = {
+            status: 500,
+            message: error.message
+        }
+
+        return responseHandler(res, data)
+    }
+}
+
+
 /**
  * Creates a new workout plan.
  *
@@ -630,7 +670,7 @@ async function fetchFeaturedPlans(req, res) {
  *
  * @module controllers/planController
  */
-const workoutCreate = { createJsonWorkoutPlan }
+const workoutCreate = { createJsonWorkoutPlan, createUsingJSON }
 const workoutFetch = { fetchWorkoutPlan, fetchWorkoutOverview, fetchWeekPlan, fetchDayPlan, fetchCategory, fetchExercise }
 const specialPlans = { addFeaturedPlan, addTrendingPlan, fetchFeaturedPlans, fetchTrendingPlans }
 const workoutUpdate = { updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise }

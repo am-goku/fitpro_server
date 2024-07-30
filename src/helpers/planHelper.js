@@ -67,12 +67,25 @@ async function createJsonPlan({ weeks, ...planBody }) {
             ...planBody
         });
 
-        await newPlan.save();
+        const savedPlan = await newPlan.save()
+
+        const updatedPlan = await savedPlan.populate({
+            path: 'weeks',
+            populate: {
+                path: 'days',
+                populate: {
+                    path: 'categories',
+                    populate: {
+                        path: 'exercises'
+                    }
+                }
+            }
+        });
 
         const data = {
             status: 200,
             message: "Workout plan saved successfully",
-            plan: newPlan
+            plan: updatedPlan
         }
 
         return data;
@@ -116,15 +129,15 @@ async function fetchPlan(id, filterBody) {
             query.plan_name = regxFun(filterBody.search);
         }
 
-        if(filterBody.location) {
+        if (filterBody.location) {
             query.location = regxFun(filterBody.location);
         }
 
-        if(filterBody.type){
+        if (filterBody.type) {
             query.type = regxFun(filterBody.type);
         }
 
-        if(filterBody.level){
+        if (filterBody.level) {
             query.level = regxFun(filterBody.level);
         }
 
@@ -185,15 +198,15 @@ async function fetchPlanOverview(id, filterBody) {
             query.plan_name = regxFun(filterBody.search);
         }
 
-        if(filterBody.location) {
+        if (filterBody.location) {
             query.location = regxFun(filterBody.location);
         }
 
-        if(filterBody.type){
+        if (filterBody.type) {
             query.type = regxFun(filterBody.type);
         }
 
-        if(filterBody.level){
+        if (filterBody.level) {
             query.level = regxFun(filterBody.level);
         }
 
