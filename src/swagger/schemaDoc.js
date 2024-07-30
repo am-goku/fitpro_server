@@ -643,70 +643,63 @@
  *       timestamps: true
  */
 
-
 /**
  * @swagger
  * components:
  *   schemas:
  *     UserWorkout:
- *           type: object
- *           properties:
- *             _id:
- *               type: string
- *             user:
- *               type: string
- *             plan:
- *               type: string
- *             weeks:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/UserWeekProgress'
- *             completedExercises:
- *               type: number
- *             totalExercises:
- *               type: number
- *             completionPercentage:
- *               type: number
- *     UserWeekProgress:
  *       type: object
  *       properties:
  *         _id:
  *           type: string
- *         week:
+ *           example: 60d0fe4f5311236168a109ca
+ *         user:
  *           type: string
- *         days:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/UserDayProgress'
- *     UserDayProgress:
- *       type: object
- *       properties:
- *         _id:
+ *           description: The ID of the user
+ *           example: 60d0fe4f5311236168a109cb
+ *         plan:
  *           type: string
- *         day:
- *           type: string
- *         categories:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/UserCategoryProgress'
- *     UserCategoryProgress:
- *       type: object
- *       properties:
- *         _id:
- *           type: string
- *         category:
- *           type: string
+ *           description: The ID of the workout plan
+ *           example: 60d0fe4f5311236168a109cc
  *         exercises:
  *           type: array
  *           items:
- *             $ref: '#/components/schemas/UserExerciseProgress'
- *     UserExerciseProgress:
- *       type: object
- *       properties:
- *         _id:
+ *             type: object
+ *             properties:
+ *               exerciseID:
+ *                 type: string
+ *                 description: The ID of the exercise
+ *                 example: 60d0fe4f5311236168a109cd
+ *               completed:
+ *                 type: boolean
+ *                 description: Completion status of the exercise
+ *                 example: false
+ *               completion_date:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Date when the exercise was completed
+ *                 example: null
+ *         completedExercises:
+ *           type: number
+ *           description: Number of completed exercises
+ *           example: 0
+ *         totalExercises:
+ *           type: number
+ *           description: Total number of exercises in the workout plan
+ *           example: 10
+ *         completionPercentage:
+ *           type: number
+ *           format: float
+ *           description: Percentage of completed exercises
+ *           example: 0
+ *         createdAt:
  *           type: string
- *         exercise:
+ *           format: date-time
+ *           description: Timestamp of when the document was created
+ *           example: 2021-06-22T07:48:15.352Z
+ *         updatedAt:
  *           type: string
- *         completed:
- *           type: boolean
+ *           format: date-time
+ *           description: Timestamp of when the document was last updated
+ *           example: 2021-06-22T07:48:15.352Z
  */
