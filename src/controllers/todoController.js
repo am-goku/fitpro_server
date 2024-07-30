@@ -1,4 +1,4 @@
-const { createTODO, getTODO, updateTODO, deleteTODO } = require("../helpers/todoHelper");
+const { createTODO, getTODO, updateTODO, deleteTODO, createGoal, getGoals, updateGoal, deleteGoal } = require("../helpers/todoHelper");
 const responseHandler = require("../utils/responseHandler");
 
 
@@ -107,4 +107,77 @@ async function remove_TODO(req, res) {
     }
 }
 
-module.exports = { create_TODO, fetch_TODO, update_TODO, remove_TODO }
+
+
+
+/**
+ * LIFE GOALS SECTION
+ */
+
+async function add_GOAL(req, res) {
+    try {
+        const userID = req.userID;
+        const body = req.body;
+
+        const data = await createGoal(userID, body);
+
+        return responseHandler(res, data);
+
+    } catch (error) {
+        return responseHandler(res, { status: 500, message: error.message });
+    }
+}
+
+
+async function fetch_GOALS(req, res) {
+    try {
+        const goalID = req.query.goalID;
+        const userID = req.userID;
+
+        const data = await getGoals(userID, goalID);
+
+        return responseHandler(res, data);
+
+    } catch (error) {
+        return responseHandler(res, { status: 500, message: error.message })
+    }
+}
+
+
+async function update_GOAL(req, res) {
+    try {
+        const goalID = req.params.goalID;
+        const userID = req.userID;
+        const body = req.body;
+
+        const data = await updateGoal(userID, goalID, body);
+
+        return responseHandler(res, data);
+
+    } catch (error) {
+        return responseHandler(res, { status: 500, message: error.message });
+    }
+}
+
+
+async function delete_GOAL(req, res) {
+    try {
+        const goalID = req.params.goalID;
+        const userID = req.userID;
+
+        const data = await deleteGoal(userID, goalID);
+
+        return responseHandler(res, data);
+
+    } catch (error) {
+        return responseHandler(res, { status: 500, message: error.message })
+    }
+}
+
+
+
+const todoControllers = { create_TODO, fetch_TODO, update_TODO, remove_TODO };
+
+const goalControllers = { add_GOAL, fetch_GOALS, update_GOAL, delete_GOAL };
+
+module.exports = { ...todoControllers, ...goalControllers }

@@ -7,7 +7,7 @@ const express = require('express');
 const { updateUserProfile, fetchUserData, newBookmark, fetchBookmark, deleteBookmark, getUser, newProfilePic, transformationController, newGallery, removeGallery, addNewImage, removeImages, fetchGalleries } = require('../controllers/userController');
 const { userProtect } = require('../middleware/authMiddleware');
 const upload = require('../utils/multerConfig');
-const { create_TODO, fetch_TODO, update_TODO, remove_TODO } = require('../controllers/todoController');
+const { create_TODO, fetch_TODO, update_TODO, remove_TODO, add_GOAL, fetch_GOALS, update_GOAL, delete_GOAL } = require('../controllers/todoController');
 
 const router = express.Router();
 
@@ -63,7 +63,7 @@ router.delete('/gallery/:galleryID', userProtect, removeGallery);
  * POST route for adding new images to a gallery.
  * Requires user authentication and accepts multiple 'images' files.
  */
-router.post('/gallery/:galleryID/image', userProtect, upload.fields([{name: 'images'}]), addNewImage);
+router.post('/gallery/:galleryID/image', userProtect, upload.fields([{ name: 'images' }]), addNewImage);
 
 /**
  * DELETE route for removing images from a gallery.
@@ -96,7 +96,7 @@ router.delete('/bookmarks/:dayID', userProtect, deleteBookmark);
 router.post('/todo', userProtect, create_TODO);
 
 /**
- * GET route for fetching all TODO tasks.
+ * GET route for fetching all TODO tasks or a single one.
  * Requires user authentication.
  */
 router.get('/todo', userProtect, fetch_TODO);
@@ -112,5 +112,29 @@ router.put('/todo/:todoID', userProtect, update_TODO);
  * Requires user authentication and accepts a 'todoID' parameter.
  */
 router.delete('/todo/:todoID', userProtect, remove_TODO);
+
+/**
+ * POST route for creating a new LIFE GOAL.
+ * Requires user authentication.
+ */
+router.post('/goal', userProtect, add_GOAL);
+
+/**
+ * GET route for fetching all LIFE GOALS or a single one.
+ * Requires user authentication.
+ */
+router.get('/goal', userProtect, fetch_GOALS);
+
+/**
+ * PUT route for updating a LIFE GOAL by its ID.
+ * Requires user authentication and accepts a 'goalID' parameter.
+ */
+router.put('/goal/:goalID', userProtect, update_GOAL);
+
+/**
+ * DELETE route for removing a LIFE GOAL by its ID.
+ * Requires user authentication and accepts a 'goalID' parameter.
+ */
+router.delete('/goal/:goalID', userProtect, delete_GOAL);
 
 module.exports = router;

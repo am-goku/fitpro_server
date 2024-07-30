@@ -1412,3 +1412,301 @@
  *                   type: string
  *                   example: Internal Server Error
  */
+
+
+
+
+/**
+ * @swagger
+ * /api/v1/user/goal:
+ *   post:
+ *     summary: Create a new life goal
+ *     description: Creates a new life goal for the authenticated user.
+ *     tags:
+ *       - LifeGoals
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Title of the life goal
+ *                 example: Learn to play guitar
+ *               description:
+ *                 type: string
+ *                 description: Description of the life goal
+ *                 example: I want to learn to play acoustic guitar within a year.
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   description: Tags associated with the life goal
+ *                   example: music, personal development
+ *               priority:
+ *                 type: integer
+ *                 description: Priority level of the life goal (1 is highest, 3 is lowest)
+ *                 enum: [1, 2, 3]
+ *                 example: 2
+ *               deadline:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Deadline for achieving the life goal
+ *                 example: 2024-12-31T23:59:59.000Z
+ *               completed:
+ *                 type: boolean
+ *                 description: Completion status of the life goal
+ *                 example: false
+ *     responses:
+ *       201:
+ *         description: Goal created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: Goal created successfully
+ *                 goal:
+ *                   $ref: '#/components/schemas/LifeGoal'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/user/goal:
+ *   get:
+ *     summary: Fetch life goals for a user
+ *     description: Retrieves life goals for the authenticated user, optionally filtered by goal ID.
+ *     tags:
+ *       - LifeGoals
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: goalID
+ *         schema:
+ *           type: string
+ *         description: ID of the specific goal to retrieve (optional)
+ *     responses:
+ *       200:
+ *         description: Goals fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Goals fetched successfully
+ *                 goals:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/LifeGoal'
+ *       400:
+ *         description: No goals found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: No goals found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/user/goal/{goalID}:
+ *   put:
+ *     summary: Update a life goal
+ *     description: Updates the details of an existing life goal for the authenticated user.
+ *     tags:
+ *       - LifeGoals
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: goalID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the goal to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Title of the life goal
+ *                 example: Learn to play guitar
+ *               description:
+ *                 type: string
+ *                 description: Description of the life goal
+ *                 example: I want to learn to play acoustic guitar within a year.
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   description: Tags associated with the life goal
+ *                   example: music, personal development
+ *               priority:
+ *                 type: integer
+ *                 description: Priority level of the life goal (1 is highest, 3 is lowest)
+ *                 enum: [1, 2, 3]
+ *                 example: 2
+ *               deadline:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Deadline for achieving the life goal
+ *                 example: 2024-12-31T23:59:59.000Z
+ *               completed:
+ *                 type: boolean
+ *                 description: Completion status of the life goal
+ *                 example: false
+ *     responses:
+ *       200:
+ *         description: Goal updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Goal updated successfully
+ *                 goal:
+ *                   $ref: '#/components/schemas/LifeGoal'
+ *       400:
+ *         description: Goal not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: Goal not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/user/goal/{goalID}:
+ *   delete:
+ *     summary: Delete a life goal
+ *     description: Deletes a life goal for the authenticated user.
+ *     tags:
+ *       - LifeGoals
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: goalID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the goal to delete
+ *     responses:
+ *       200:
+ *         description: Goal deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Goal deleted successfully
+ *       404:
+ *         description: Goal not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: Invalid parameter. Goal not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
+

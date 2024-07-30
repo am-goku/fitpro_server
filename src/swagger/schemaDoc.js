@@ -703,3 +703,58 @@
  *           description: Timestamp of when the document was last updated
  *           example: 2021-06-22T07:48:15.352Z
  */
+
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     LifeGoal:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           example: 60d0fe4f5311236168a109ca
+ *         user:
+ *           type: string
+ *           description: The ID of the user
+ *           example: 60d0fe4f5311236168a109cb
+ *         title:
+ *           type: string
+ *           description: Title of the life goal
+ *           example: Learn to play guitar
+ *         description:
+ *           type: string
+ *           description: Description of the life goal
+ *           example: I want to learn to play acoustic guitar within a year.
+ *         tags:
+ *           type: array
+ *           items:
+ *             type: string
+ *             description: Tags associated with the life goal
+ *             example: music, personal development
+ *         priority:
+ *           type: integer
+ *           description: Priority level of the life goal (1 is highest, 3 is lowest)
+ *           enum: [1, 2, 3]
+ *           example: 2
+ *         deadline:
+ *           type: string
+ *           format: date-time
+ *           description: Deadline for achieving the life goal
+ *           example: 2024-12-31T23:59:59.000Z
+ *         completed:
+ *           type: boolean
+ *           description: Completion status of the life goal
+ *           example: false
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Timestamp of when the document was created
+ *           example: 2023-07-30T07:48:15.352Z
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Timestamp of when the document was last updated
+ *           example: 2023-07-30T07:48:15.352Z
+ */

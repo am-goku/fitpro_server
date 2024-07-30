@@ -1,4 +1,4 @@
-const Todo = require("../models/TodoSchema");
+const { Todo, LifeGoals } = require("../models/TodoSchema");
 
 
 /**
@@ -23,7 +23,7 @@ async function createTODO(userID, body) {
             message: 'Todo created successfully',
             todo,
         }
-        
+
     } catch (error) {
         return {
             status: 500,
@@ -131,4 +131,123 @@ async function deleteTODO(userID, id) {
 }
 
 
-module.exports = { createTODO, getTODO, updateTODO, deleteTODO }
+
+/**
+ * LIFE GOALS SECTION
+ */
+
+
+async function createGoal(userID, body) {
+    try {
+        const goal = new LifeGoals({
+            user: userID,
+            ...body,
+        });
+
+        await goal.save();
+
+        return {
+            status: 201,
+            message: 'Goal created successfully',
+            goal,
+        }
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message,
+        }
+    }
+}
+
+
+async function getGoals(userID, id) {
+    try {
+        const query = { user: userID };
+
+        if (id) query._id = id;
+
+        const goals = await LifeGoals.find(query);
+
+        if (!goals.length) {
+            return {
+                status: 400,
+                message: 'No goals found'
+            }
+        }
+
+        return {
+            status: 200,
+            message: 'Goals fetched successfully',
+            goals,
+        }
+
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message,
+        }
+    }
+}
+
+
+async function updateGoal(userID, id, body) {
+    try {
+        const goal = await LifeGoals.findOneAndUpdate(
+            {
+                user: userID,
+                _id: id
+            },
+            {
+                $set: {
+                    ...body
+                }
+            },
+            {
+                new: true
+            }
+        );
+
+        if (!goal) {
+            return {
+                status: 400,
+                message: 'Goal not found'
+            }
+        }
+
+        return {
+            status: 200,
+            message: 'Goal updated successfully',
+            goal
+        }
+
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message,
+        }
+    }
+}
+
+
+async function deleteGoal(userID, id) {
+    try {
+        if (!id) return { status: 404, message: 'Invalid parameter. Goal not found' }
+        await LifeGoals.deleteOne({ _id: id, user: userID });
+
+        return {
+            status: 200,
+            message: 'Goal deleted successfully',
+        }
+
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message,
+        }
+    }
+}
+
+
+const todoHelpers = { createTODO, getTODO, updateTODO, deleteTODO };
+const goalHelpers = { createGoal, getGoals, updateGoal, deleteGoal };
+module.exports = { ...todoHelpers, ...goalHelpers }
