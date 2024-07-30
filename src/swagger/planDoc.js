@@ -1864,8 +1864,6 @@
  *                   example: "Internal Server Error"
  */
 
-
-
 /**
  * @swagger
  * /api/v1/plan/exercise/{exerciseID}:
@@ -1969,7 +1967,6 @@
  *                   type: string
  *                   example: "Internal Server Error"
  */
-
 
 /**
  * @swagger
@@ -2137,14 +2134,13 @@
  */
 
 
+/** ---------------- FEATURED WORKOUT SECTION ---------------- */
 /**
  * @swagger
  * tags:
  *   name: Featured
  *   description: Routes for managing featured plans
  */
-
-
 
 /**
  * @swagger
@@ -2454,6 +2450,7 @@
  */
 
 
+/** ---------------- TRENDING WORKOUT SECTION ---------------- */
 /**
  * @swagger
  * tags:
@@ -2578,8 +2575,6 @@
  *           scheme: bearer
  *           bearerFormat: JWT
  */
-
-
 
 /**
  * @swagger
@@ -2767,6 +2762,8 @@
  */
 
 
+/** ---------------- IMAGE UPLOAD ---------------------------- */
+
 /**
  * @swagger
  * /api/v1/plan/files/upload:
@@ -2820,79 +2817,243 @@
  */
 
 
-
-
+/** ---------------- USER WORKOUT SECTION -------------------- */
 
 /**
  * @swagger
  * /api/v1/workout/select-plan/{planID}:
  *   post:
- *     summary: Select a workout plan
- *     tags: [Workout]
+ *     summary: Select a workout plan for a user
+ *     description: Assigns a workout plan to a user and initializes their exercises.
+ *     tags:
+ *       - Workout
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: planID
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
- *         description: The ID of the workout plan
- *     security:
- *       - bearerAuth: []
+ *         description: ID of the workout plan to select
  *     responses:
  *       201:
  *         description: Workout plan selected successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/UserWorkout'
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: Workout plan selected successfully
+ *                 userWorkout:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: 60d0fe4f5311236168a109ca
+ *                     user:
+ *                       type: string
+ *                       example: 60d0fe4f5311236168a109cb
+ *                     plan:
+ *                       type: string
+ *                       example: 60d0fe4f5311236168a109cc
+ *                     exercises:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           exerciseID:
+ *                             type: string
+ *                             example: 60d0fe4f5311236168a109cd
+ *                           completed:
+ *                             type: boolean
+ *                             example: false
+ *                           completion_date:
+ *                             type: string
+ *                             format: date-time
+ *                             example: null
+ *                     completedExercises:
+ *                       type: integer
+ *                       example: 0
+ *                     totalExercises:
+ *                       type: integer
+ *                       example: 10
+ *                     completionPercentage:
+ *                       type: number
+ *                       format: float
+ *                       example: 0
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: 2021-06-22T07:48:15.352Z
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: 2021-06-22T07:48:15.352Z
  *       400:
  *         description: Plan not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: Plan not found
  *       500:
- *         description: Server error
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
  */
 
 /**
  * @swagger
  * /api/v1/workout/update-progress/{exerciseID}:
  *   put:
- *     summary: Update exercise completion
- *     tags: [Workout]
+ *     summary: Update exercise completion status
+ *     description: Updates the completion status of a specific exercise for a user and recalculates the workout completion percentage.
+ *     tags:
+ *       - Workout
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: exerciseID
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
- *         description: The ID of the exercise to be marked as completed
- *     security:
- *       - bearerAuth: []
+ *         description: ID of the exercise to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: boolean
+ *                 description: Completion status of the exercise
+ *                 example: true
  *     responses:
  *       200:
- *         description: Successfully updated exercise completion
+ *         description: Exercise status updated successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/UserWorkout'
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Exercise status updated successfully
+ *                 userWorkout:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: 60d0fe4f5311236168a109ca
+ *                     user:
+ *                       type: string
+ *                       example: 60d0fe4f5311236168a109cb
+ *                     plan:
+ *                       type: string
+ *                       example: 60d0fe4f5311236168a109cc
+ *                     exercises:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           exerciseID:
+ *                             type: string
+ *                             example: 60d0fe4f5311236168a109cd
+ *                           completed:
+ *                             type: boolean
+ *                             example: true
+ *                           completion_date:
+ *                             type: string
+ *                             format: date-time
+ *                             example: null
+ *                     completedExercises:
+ *                       type: integer
+ *                       example: 5
+ *                     totalExercises:
+ *                       type: integer
+ *                       example: 10
+ *                     completionPercentage:
+ *                       type: number
+ *                       format: float
+ *                       example: 50
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: 2021-06-22T07:48:15.352Z
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: 2021-06-22T07:48:15.352Z
  *       400:
- *         description: User workout plan not found
+ *         description: No matching document found to update
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: No matching document found to update
  *       500:
- *         description: Server error
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
  */
 
 /**
  * @swagger
  * /api/v1/workout:
  *   get:
- *     summary: Fetch workout progress
- *     tags: [Workout]
+ *     summary: Get workout progress for a user
+ *     description: Retrieves the workout progress for a user, optionally filtered by plan ID.
+ *     tags:
+ *       - Workout
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: planID
  *         schema:
  *           type: string
- *         description: The ID of the workout plan to filter progress
- *     security:
- *       - bearerAuth: []
+ *         description: ID of the workout plan to filter by (optional)
  *     responses:
  *       200:
  *         description: Workout progress retrieved successfully
@@ -2910,9 +3071,36 @@
  *                 plans:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/UserWorkout'
+ *                     $ref: '#/components/schemas/Plan'
  *       400:
  *         description: User workout plan not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: User workout plan not found
  *       500:
- *         description: Server error
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
  */
+
+
+
+
+

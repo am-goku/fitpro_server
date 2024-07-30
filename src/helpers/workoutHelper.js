@@ -1,8 +1,20 @@
 const Plan = require("../models/Plan");
-const { UserWorkout, UserExerciseProgress } = require("../models/Workout");
+const { UserWorkout } = require("../models/Workout");
 
 
-
+/**
+ * Selects a workout plan for a user and populates the exercises.
+ * 
+ * @param {string} planID - The ID of the workout plan to select.
+ * @param {string} userID - The ID of the user selecting the plan.
+ * 
+ * @returns {Object} An object containing the status code, message, and user workout data.
+ * * status: The HTTP status code (201 for success, 400 for plan not found, 500 for server error).
+ * * message: A message describing the outcome of the operation.
+ * * userWorkout: The created UserWorkout document, or null if an error occurred.
+ * 
+ * @throws Will throw an error if the plan is not found or if there is a server error.
+ */
 async function selectWorkoutPlan(planID, userID) {
     try {
         const plan = await Plan.findById(planID).populate({
@@ -30,10 +42,21 @@ async function selectWorkoutPlan(planID, userID) {
             }, 0);
         }, 0);
 
+        const exercises = plan.weeks.map((week) => {
+            return week.days.map((day) => {
+                return day.categories.map((category) => {
+                    return category.exercises.map((exercise) => {
+                        return { exercise: exercise._id, completed: false };
+                    });
+                });
+            });
+        })
+
         const userWorkout = new UserWorkout({
             user: userID,
             plan: planID,
-            totalExercises
+            totalExercises,
+            exercises: exercises.flat(3)
         });
 
         await userWorkout.save();
@@ -53,40 +76,92 @@ async function selectWorkoutPlan(planID, userID) {
 }
 
 
-async function updateExerciseCompletion(exerciseID, userID) {
+/**
+ * Updates the completion status of an exercise for a user's workout plan.
+ *
+ * @param {string} exerciseID - The ID of the exercise to update.
+ * @param {string} userID - The ID of the user whose workout plan to update.
+ * @param {boolean} status - The new completion status for the exercise.
+ *
+ * @returns {Object} An object containing the status code, message, and updated user workout data.
+ * * status: The HTTP status code (200 for success, 500 for server error).
+ * * message: A message describing the outcome of the operation.
+ * * userWorkout: The updated UserWorkout document, or null if an error occurred.
+ *
+ * @throws Will throw an error if there is a server error or if no matching document is found to update.
+ */
+async function updateExerciseCompletion(exerciseID, userID, status) {
     try {
-        const userWorkout = await UserWorkout.findOne({ user: userID, 'weeks.days.categories.exercises.exercise': exerciseID });
-
-        if (!userWorkout) {
-            return { status: 400, message: 'User workout plan not found' }
-        }
-
-        const exerciseProgress = await UserExerciseProgress.findOneAndUpdate(
-            { exercise: exerciseID },
-            { completed: true },
-            { new: true, upsert: true }
+        // Perform the update operation
+        const updateResult = await UserWorkout.updateOne(
+            {
+                user: userID,
+                exercises: { $elemMatch: { exercise: exerciseID } }
+            },
+            {
+                $set: {
+                    'exercises.$.completed': status
+                }
+            }
         );
 
-        userWorkout.completedExercises += 1;
-        userWorkout.completionPercentage = (userWorkout.completedExercises / userWorkout.totalExercises) * 100;
 
-        await userWorkout.save();
+        // Check if any documents were matched and modified
+        if (updateResult.matchedCount === 0) {
+            throw new Error('No matching document found to update');
+        }
+
+        // Fetch the updated document
+        const updatedUserWorkout = await UserWorkout.findOne({
+            user: userId,
+            exercises: { $elemMatch: { exercise: exerciseId } }
+        });
+
+        if (!updatedUserWorkout) {
+            throw new Error('Updated workout not found');
+        }
+
+        // Recalculate the completed exercises count and completion percentage
+        const completedExercises = updatedUserWorkout.exercises.filter(e => e.completed).length;
+        const totalExercises = updatedUserWorkout.exercises.length;
+        const completionPercentage = (completedExercises / totalExercises) * 100;
+
+        // Update the fields in the user workout document
+        updatedUserWorkout.completedExercises = completedExercises;
+        updatedUserWorkout.completionPercentage = completionPercentage;
+
+        // Save the updated document
+        await updatedUserWorkout.save();
 
         return {
             status: 200,
-            message: 'Exercise completed successfully',
-            exerciseProgress
-        }
+            message: 'Exercise status updated successfully',
+            userWorkout: updatedUserWorkout
+        };
 
     } catch (error) {
+        console.error('Error updating exercise completion:', error);
         return {
             status: 500,
-            message: error.message,
-        }
+            message: error.message
+        };
     }
 }
 
 
+/**
+ * Retrieves the workout progress for a user, optionally filtering by a specific plan.
+ *
+ * @param {string} userID - The ID of the user whose workout progress to retrieve.
+ * @param {string} [planID] - (Optional) The ID of the workout plan to filter by. If not provided, all plans for the user will be retrieved.
+ *
+ * @returns {Object} An object containing the status code, message, and user workout progress data.
+ * * status: The HTTP status code (200 for success, 400 for plan not found, 500 for server error).
+ * * message: A message describing the outcome of the operation.
+ * * plans: An array of UserWorkout documents, or an empty array if no matching documents were found.
+ *
+ * @throws Will throw an error if there is a server error or if no matching document is found.
+ */
 async function getWorkoutProgress(userID, planID) {
     try {
 
@@ -97,13 +172,16 @@ async function getWorkoutProgress(userID, planID) {
         }
 
         const userWorkoutProgress = await UserWorkout.find(query).populate({
-            path: 'weeks',
+            path: 'plan',
             populate: {
-                path: 'days',
+                path: 'weeks',
                 populate: {
-                    path: 'categories',
+                    path: 'days',
                     populate: {
-                        path: 'exercises'
+                        path: 'categories',
+                        populate: {
+                            path: 'exercises'
+                        }
                     }
                 }
             }
