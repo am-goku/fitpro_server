@@ -1910,3 +1910,674 @@
  *                   example: "Internal server error"
  */
 
+
+
+
+/**
+ * @swagger
+ * /api/v1/user/challenge/task:
+ *   post:
+ *     summary: Create a new task for a user's challenge
+ *     tags:
+ *       - Challenge Tasks
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: The title of the task
+ *                 example: "Workout 45 minutes"
+ *               duration:
+ *                 type: object
+ *                 properties:
+ *                   value:
+ *                     type: number
+ *                     description: The duration value for the task
+ *                     example: 45
+ *                   unit:
+ *                     type: string
+ *                     enum: ['mins', 'seconds', 'hours', 'litre', 'steps', 'pages']
+ *                     description: The unit of the duration value
+ *                     example: "mins"
+ *     responses:
+ *       201:
+ *         description: Task created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: "Task created successfully"
+ *                 task:
+ *                   $ref: '#/components/schemas/Task'
+ *       400:
+ *         description: Bad request, validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: "Title and duration are required"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error: [error message]"
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/user/challenge/task:
+ *   get:
+ *     summary: Fetch tasks for a user's challenge
+ *     tags:
+ *       - Challenge Tasks
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: taskID
+ *         schema:
+ *           type: string
+ *         description: The ID of the specific task to fetch. If not provided, all tasks for the user will be returned.
+ *         example: "64cbf6f72f5c1b001ebae578"
+ *     responses:
+ *       200:
+ *         description: Task(s) fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Task fetched successfully"
+ *                 tasks:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Task'
+ *       400:
+ *         description: Bad request, invalid parameters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: "Invalid task ID"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error: [error message]"
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/user/challenge/task/{taskID}:
+ *   put:
+ *     summary: Update a task for a user's challenge
+ *     tags:
+ *       - Challenge Tasks
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: taskID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the task to update
+ *         example: "64cbf6f72f5c1b001ebae578"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: The updated title of the task
+ *                 example: "Updated Workout 45 minutes"
+ *               duration:
+ *                 type: object
+ *                 properties:
+ *                   value:
+ *                     type: number
+ *                     description: The updated duration value for the task
+ *                     example: 50
+ *                   unit:
+ *                     type: string
+ *                     enum: ['mins', 'seconds', 'hours', 'litre', 'steps', 'pages']
+ *                     description: The updated unit of the duration value
+ *                     example: "mins"
+ *     responses:
+ *       200:
+ *         description: Task updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Task updated successfully"
+ *                 task:
+ *                   $ref: '#/components/schemas/Task'
+ *       404:
+ *         description: Task not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: "Task not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error: [error message]"
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/user/challenge/task/{taskID}:
+ *   patch:
+ *     summary: Update progress for a specific task on the current day
+ *     tags:
+ *       - Challenge Tasks
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: taskID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the task to update progress for
+ *         example: "64cbf6f72f5c1b001ebae578"
+ *     responses:
+ *       200:
+ *         description: Progress updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Progress updated successfully"
+ *                 task:
+ *                   $ref: '#/components/schemas/Task'
+ *       400:
+ *         description: Bad request, task not found or invalid progress update
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: "Cannot update previous or future progress"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error: [error message]"
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/user/challenge/task/{taskID}:
+ *   delete:
+ *     summary: Delete a specific task for a user's challenge
+ *     tags:
+ *       - Challenge Tasks
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: taskID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the task to delete
+ *         example: "64cbf6f72f5c1b001ebae578"
+ *     responses:
+ *       200:
+ *         description: Task deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Task deleted successfully"
+ *       400:
+ *         description: Bad request, task not found or invalid task ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: "Task not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error: [error message]"
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/user/challenge:
+ *   post:
+ *     summary: Create a new challenge for a user
+ *     tags:
+ *       - Challenges
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "30-Day Fitness Challenge"
+ *               duration:
+ *                 type: number
+ *                 example: 30
+ *               tasks:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   example: "64cbf6f72f5c1b001ebae578"
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-08-01"
+ *     responses:
+ *       200:
+ *         description: Challenge created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Challenge created successfully"
+ *                 challenge:
+ *                   $ref: '#/components/schemas/Challenge'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error: [error message]"
+ */
+
+/**
+ * @swagger
+ * /api/v1/user/challenge:
+ *   get:
+ *     summary: Retrieve challenges for a user
+ *     tags:
+ *       - Challenges
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: challengeID
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: The ID of a specific challenge to retrieve
+ *         example: "64cbf6f72f5c1b001ebae578"
+ *     responses:
+ *       200:
+ *         description: Challenges retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Challenges retrieved successfully"
+ *                 challenges:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Challenge'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error: [error message]"
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/user/challenge/{challengeID}:
+ *   put:
+ *     summary: Update a specific challenge for a user
+ *     tags:
+ *       - Challenges
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: challengeID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the challenge to update
+ *         example: "64cbf6f72f5c1b001ebae578"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "Updated Fitness Challenge"
+ *               duration:
+ *                 type: number
+ *                 example: 45
+ *               tasks:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   example: "64cbf6f72f5c1b001ebae579"
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-08-05"
+ *     responses:
+ *       200:
+ *         description: Challenge updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Challenge updated successfully"
+ *                 challenge:
+ *                   $ref: '#/components/schemas/Challenge'
+ *       404:
+ *         description: Challenge not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: "Challenge not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error: [error message]"
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/user/challenge/{challengeID}/activate:
+ *   patch:
+ *     summary: Activate a specific challenge for a user
+ *     tags:
+ *       - Challenges
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: challengeID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the challenge to activate
+ *         example: "64cbf6f72f5c1b001ebae578"
+ *     responses:
+ *       200:
+ *         description: Challenge activated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Challenge activated successfully"
+ *                 challenge:
+ *                   $ref: '#/components/schemas/Challenge'
+ *       404:
+ *         description: Challenge not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: "Challenge not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error: [error message]"
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/user/challenge/{challengeID}:
+ *   delete:
+ *     summary: Delete a specific challenge for a user
+ *     tags:
+ *       - Challenges
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: challengeID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the challenge to delete
+ *         example: "64cbf6f72f5c1b001ebae578"
+ *     responses:
+ *       200:
+ *         description: Challenge deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Challenge deleted successfully"
+ *       404:
+ *         description: Challenge not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: "Challenge not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error: [error message]"
+ */
+
+
+
+

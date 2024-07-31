@@ -2,6 +2,11 @@ const { default: mongoose } = require("mongoose");
 
 
 const TaskSchema = mongoose.Schema({
+    userID: {
+        type: mongoose.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     title: {
         type: String,
         required: true
@@ -16,28 +21,41 @@ const TaskSchema = mongoose.Schema({
             enum: ['mins', 'seconds', 'hours', 'litre', 'steps', 'pages'],
             required: true
         }
-    }, // in minutes or pages
+    },
+
+    progress: [
+        {
+            status: {
+                type: Boolean,
+                required: true,
+                default: false
+            },
+
+            date: {
+                type: String,
+                required: true,
+            }
+        }
+    ],
+
     completed: {
         type: Boolean,
         default: false
     },
-
     score: {
         type: Number,
         default: 0
     },
-
     percentage: {
         type: Number,
         default: 0
     }
-
-})
+}, { timestamps: true })
 
 
 const ChallengeSchema = new mongoose.Schema({
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
+    userID: {
+        type: mongoose.Types.ObjectId,
         ref: 'User', required: true
     },
     title: {
@@ -50,13 +68,14 @@ const ChallengeSchema = new mongoose.Schema({
     }, // in days
     tasks: [
         {
-            type: mongoose.Schema.Types.ObjectId,
+            type: mongoose.Types.ObjectId,
             ref: 'Task',
             required: true
         }
     ],
     startDate: {
         type: Date,
+        set: value => new Date(value),
         required: true
     },
     endDate: {
@@ -71,32 +90,36 @@ const ChallengeSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-
     beforeAndAfter: {
-        before: {
-            image: {
-                type: String,
-                required: true
+        type: {
+            before: {
+                image: {
+                    type: String,
+                    required: true
+                },
+                date: {
+                    type: Date,
+                    required: true
+                }
             },
-            date: {
-                type: Date,
-                required: true
+    
+            after: {
+                image: {
+                    type: String,
+                    required: true
+                },
+                date: {
+                    type: Date,
+                    required: true
+                }
             }
         },
-
-        after: {
-            image: {
-                type: String,
-                required: true
-            },
-            date: {
-                type: Date,
-                required: true
-            }
-        }
+        required: false
     },
 
 }, { timestamps: true });
+
+
 
 ChallengeSchema.methods.calculateEndDate = function () {
     this.endDate = new Date(this.startDate);
@@ -120,55 +143,8 @@ ChallengeSchema.methods.activateChallenge = async function () {
 
 
 
-const ChallengeProgressSchema = mongoose.Schema({
-    challengeId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Challenge',
-        required: true
-    },
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    tasksCompleted: [
-        {
-            tasks: [
-                {
-                    taskId: {
-                        type: mongoose.Schema.Types.ObjectId,
-                        ref: 'Task',
-                        required: true
-                    },
-                    completed: {
-                        type: Boolean,
-                        default: false
-                    }
-                }
-            ],
-            date: {
-                type: Date,
-                required: true,
-                default: () => new Date()
-            },
-            note: {
-                type: String,
-                required: false
-            }
-        }
-    ],
-    totalTasks: {
-        type: Number,
-        required: true
-    },
-}, { timestamps: true })
-
-
-
 const Task = mongoose.model('Task', TaskSchema);
 
 const Challenges = mongoose.model('Challenge', ChallengeSchema);
 
-const ChallengeProgress = mongoose.model('ChallengeProgress', ChallengeProgressSchema);
-
-module.exports = { Challenges, ChallengeProgress, Task };
+module.exports = { Challenges, Task };

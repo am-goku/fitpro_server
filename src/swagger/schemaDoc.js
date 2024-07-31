@@ -758,3 +758,133 @@
  *           description: Timestamp of when the document was last updated
  *           example: 2023-07-30T07:48:15.352Z
  */
+
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Task:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: The unique identifier for the task
+ *         userID:
+ *           type: string
+ *           description: The ID of the user who created the task
+ *         title:
+ *           type: string
+ *           description: The title of the task
+ *         duration:
+ *           type: object
+ *           properties:
+ *             value:
+ *               type: number
+ *               description: The duration value for the task
+ *             unit:
+ *               type: string
+ *               enum: ['mins', 'seconds', 'hours', 'litre', 'steps', 'pages']
+ *               description: The unit of the duration value
+ *         progress:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: boolean
+ *                 description: The status of the task for the given date
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *                 description: The date the progress was recorded
+ *         completed:
+ *           type: boolean
+ *           description: Whether the task is completed
+ *         score:
+ *           type: number
+ *           description: The score for the task
+ *         percentage:
+ *           type: number
+ *           description: The percentage of task completion
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the task was created
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the task was last updated
+ */
+
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Challenge:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: The unique identifier for the challenge
+ *         userID:
+ *           type: string
+ *           description: The ID of the user who created the challenge
+ *         title:
+ *           type: string
+ *           description: The title of the challenge
+ *         duration:
+ *           type: number
+ *           description: The duration of the challenge in days
+ *         tasks:
+ *           type: array
+ *           items:
+ *             type: string
+ *             description: The IDs of the tasks associated with the challenge
+ *         startDate:
+ *           type: string
+ *           format: date-time
+ *           description: The start date of the challenge
+ *         endDate:
+ *           type: string
+ *           format: date-time
+ *           description: The end date of the challenge
+ *         active:
+ *           type: boolean
+ *           description: Whether the challenge is currently active
+ *         completed:
+ *           type: boolean
+ *           description: Whether the challenge has been completed
+ *         beforeAndAfter:
+ *           type: object
+ *           properties:
+ *             before:
+ *               type: object
+ *               properties:
+ *                 image:
+ *                   type: string
+ *                   description: The URL of the before image
+ *                 date:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The date the before image was taken
+ *             after:
+ *               type: object
+ *               properties:
+ *                 image:
+ *                   type: string
+ *                   description: The URL of the after image
+ *                 date:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The date the after image was taken
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the challenge was created
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the challenge was last updated
+ */

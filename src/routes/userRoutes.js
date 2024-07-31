@@ -1,3 +1,5 @@
+const challengeRouter = require('./challengesRouter');
+
 /**
  * @fileoverview Router configuration for the Express application.
  * Defines routes for user management, image transformations, gallery management, bookmarks, and TODO tasks.
@@ -10,6 +12,8 @@ const upload = require('../utils/multerConfig');
 const { create_TODO, fetch_TODO, update_TODO, remove_TODO, add_GOAL, fetch_GOALS, update_GOAL, delete_GOAL } = require('../controllers/todoController');
 
 const router = express.Router();
+
+router.use('/challenge', challengeRouter)
 
 /**
  * GET route for retrieving user information.
