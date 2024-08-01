@@ -179,8 +179,6 @@ async function addNewImage(req, res) {
         const userID = req.userID;
         const files = req.files;
 
-        console.log(files)
-
         const data = await uploadImage(files, galleryID, userID);
 
         return responseHandler(res, data);

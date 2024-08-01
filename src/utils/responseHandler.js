@@ -1,3 +1,5 @@
+const sanitizeData = require("./sanitizeData");
+
 /**
  * Handles the response by setting the appropriate HTTP status code and sending the response data.
  *

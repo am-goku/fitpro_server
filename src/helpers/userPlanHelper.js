@@ -1,5 +1,5 @@
 const Plan = require("../models/Plan");
-const { UserPlan } = require("../models/UserPlan");
+const UserPlan = require("../models/UserPlan");
 
 
 /**
@@ -52,19 +52,19 @@ async function selectWorkoutPlan(planID, userID) {
             });
         })
 
-        const UserPlan = new UserPlan({
+        const newUserPlan = new UserPlan({
             user: userID,
             plan: planID,
             totalExercises,
             exercises: exercises.flat(3)
         });
 
-        await UserPlan.save();
+        await newUserPlan.save();
 
         return {
             status: 201,
             message: 'Workout plan selected successfully',
-            UserPlan
+            UserPlan: newUserPlan
         }
 
     } catch (error) {

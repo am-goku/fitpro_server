@@ -55,24 +55,28 @@ async function deleteWorkoutController(req, res) {
 async function createUserWorkoutController(req, res) {
     const { workoutID } = req.params;
     const userID = req.userID
-    const result = await createUserWorkout(userID, workoutID);
-    responseHandler(res, result);
+    const data = await createUserWorkout(userID, workoutID);
+    return responseHandler(res, data);
 }
 
 async function readUserWorkoutController(req, res) {
-    const { workoutID } = req.query;
+    const { workoutID, populate } = req.query;
     const userID = req.userID;
-    const { populate } = req.query; // Convert to boolean as needed
-    const result = await readUserWorkout(userID, workoutID, populate === 'true');
-    responseHandler(res, result);
+
+    try {
+        const data = await readUserWorkout(userID, workoutID, populate);
+        responseHandler(res, data);
+    } catch (error) {
+        responseHandler(res, { status: 500, message: error.message });
+    }
 }
 
 async function updateExerciseCompletionController(req, res) {
     const { workoutID, exerciseID } = req.params;
     const userID = req.userID;
     const { completed, completionDate } = req.body;
-    const result = await updateExerciseCompletion(userID, workoutID, exerciseID, completed, completionDate);
-    responseHandler(res, result);
+    const data = await updateExerciseCompletion(userID, workoutID, exerciseID, completed, completionDate);
+    return responseHandler(res, data);
 }
 
 

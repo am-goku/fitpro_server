@@ -127,7 +127,14 @@ async function deleteWorkout(workoutID) {
 async function createUserWorkout(userID, workoutID) {
     try {
         // Validate the workout exists
-        const workout = await Workout.findById(workoutID);
+        const workout = await Workout.findById(workoutID).populate(
+            {
+                path: 'categories',
+                populate: {
+                    path: 'exercises',
+                }
+            }
+        );
         if (!workout) {
             return {
                 status: 404,
@@ -143,8 +150,8 @@ async function createUserWorkout(userID, workoutID) {
         const userWorkout = new UserWorkout({
             user: userID,
             workout: workoutID,
-            exercises: exercises.map(exerciseID => ({
-                exerciseID,
+            exercises: exercises.map(ex => ({
+                exerciseID: ex._id,
                 completed: false,
             })),
             totalExercises
@@ -168,16 +175,21 @@ async function createUserWorkout(userID, workoutID) {
 
 async function readUserWorkout(userID, workoutID, populate = false) {
     try {
-        let query = UserWorkout.findOne({ user: userID, workout: workoutID });
-
-        if (populate) {
-            query = query.populate({
-                path: 'exercises.exerciseID',
-                select: 'name' // Select fields as needed
-            });
+        const query = {
+            user: userID
+        }
+        
+        if(workoutID){
+            query.workout = workoutID
         }
 
-        const userWorkout = await query.exec();
+        let userWorkout;
+
+        if(populate === 'true') {
+            userWorkout = await UserWorkout.find(query).populate("exercises.exerciseID")
+        } else {
+            userWorkout = await UserWorkout.find(query);
+        }
 
         if (!userWorkout) {
             return {
@@ -191,6 +203,7 @@ async function readUserWorkout(userID, workoutID, populate = false) {
             message: 'User workout fetched successfully',
             userWorkout
         };
+
     } catch (error) {
         return {
             status: 500,

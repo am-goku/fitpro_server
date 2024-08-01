@@ -2879,7 +2879,7 @@
  *     parameters:
  *       - in: query
  *         name: workoutID
- *         required: true
+ *         required: false
  *         schema:
  *           type: string
  *         description: The ID of the workout

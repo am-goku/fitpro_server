@@ -13,7 +13,7 @@ const UserPlanSchema = new Schema({
     },
     exercises: [
         {
-            exerciseID: {
+            exercise: {
                 type: mongoose.Types.ObjectId,
                 ref: 'exercise',
                 required: true
@@ -45,4 +45,4 @@ const UserPlanSchema = new Schema({
 
 const UserPlan = mongoose.model('UserPlan', UserPlanSchema);
 
-module.exports = { UserPlan };
+module.exports = UserPlan;
