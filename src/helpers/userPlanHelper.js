@@ -90,7 +90,7 @@ async function selectWorkoutPlan(planID, userID) {
  *
  * @throws Will throw an error if there is a server error or if no matching document is found to update.
  */
-async function updateExerciseCompletion(exerciseID, userID, status) {
+async function updateExerciseCompletion(exerciseID, userID, status, setData) {
     try {
         // Perform the update operation
         const updateResult = await UserPlan.updateOne(
@@ -100,7 +100,8 @@ async function updateExerciseCompletion(exerciseID, userID, status) {
             },
             {
                 $set: {
-                    'exercises.$.completed': status
+                    'exercises.$.completed': status,
+                    'exercises.$.setData': setData,
                 }
             }
         );

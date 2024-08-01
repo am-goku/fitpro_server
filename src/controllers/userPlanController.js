@@ -45,8 +45,9 @@ async function updateProgress(req, res) {
         const exerciseID = req.params.exerciseID;
         const userID = req.userID;
         const status = req.body.status;
+        const setData = req.body.setData;
 
-        const data = await updateExerciseCompletion(exerciseID, userID, status);
+        const data = await updateExerciseCompletion(exerciseID, userID, status, setData);
 
         return responseHandler(res, data);
     } catch (error) {

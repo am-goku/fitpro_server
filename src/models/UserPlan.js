@@ -18,12 +18,26 @@ const UserPlanSchema = new Schema({
                 ref: 'exercise',
                 required: true
             },
+            setData: [
+                {
+                    set: {
+                        type: Number,
+                    },
+                    weight: {
+                        type: Number
+                    },
+                    reps: {
+                        type: Number
+                    }
+                }
+            ],
             completed: {
                 type: Boolean,
                 default: false
             },
             completion_date: {
                 type: Date,
+                default: () => new Date(),
                 required: false,
             }
         }

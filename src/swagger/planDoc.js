@@ -2399,6 +2399,20 @@
  *                 type: boolean
  *                 description: Completion status of the exercise
  *                 example: true
+ *               setData:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     set:
+ *                       type: number
+ *                       example: 1
+ *                     weight:
+ *                       type: number
+ *                       example: 53
+ *                     reps:
+ *                       type: number
+ *                       example: 5
  *     responses:
  *       200:
  *         description: Exercise status updated successfully
