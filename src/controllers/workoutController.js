@@ -20,7 +20,7 @@ async function createWorkoutController(req, res) {
 // Controller function to fetch a workout or all workouts
 async function fetchWorkoutController(req, res) {
     try {
-        const workoutID = req.params.workoutID || null; // Assumes ID is passed in the route parameters
+        const workoutID = req.query.workoutID || null; // Assumes ID is passed in the route parameters
         const populate = req.query.populate === 'true'; // Assumes populate is passed as a query parameter
         const result = await fetchWorkout(workoutID, populate);
 
@@ -60,7 +60,7 @@ async function createUserWorkoutController(req, res) {
 }
 
 async function readUserWorkoutController(req, res) {
-    const { workoutID } = req.params;
+    const { workoutID } = req.query;
     const userID = req.userID;
     const { populate } = req.query; // Convert to boolean as needed
     const result = await readUserWorkout(userID, workoutID, populate === 'true');

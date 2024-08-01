@@ -2698,7 +2698,7 @@
 
 /**
  * @swagger
- * /api/v1/workouts/{workoutID}:
+ * /api/v1/workouts:
  *   get:
  *     summary: Fetch a specific workout or all workouts
  *     description: Fetches a specific workout by ID or all workouts if no ID is provided. Optionally populates related categories and exercises.
@@ -2707,7 +2707,7 @@
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
+ *       - in: query
  *         name: workoutID
  *         required: false
  *         schema:
@@ -2868,7 +2868,7 @@
 
 /**
  * @swagger
- * /api/v1/workouts/user-workouts/{workoutID}:
+ * /api/v1/workouts/user-workouts:
  *   get:
  *     summary: Get user workout details
  *     description: Fetches the details of a specific user workout, optionally populating exercise details.
@@ -2877,7 +2877,7 @@
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
+ *       - in: query
  *         name: workoutID
  *         required: true
  *         schema:

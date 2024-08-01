@@ -7,14 +7,14 @@ const { createWorkoutController, fetchWorkoutController, deleteWorkoutController
 router.post('/', createWorkoutController);
 
 // Route to fetch a specific workout by ID or all workouts
-router.get('/:workoutID?', fetchWorkoutController);
+router.get('/', fetchWorkoutController);
 
 // Route to delete a workout by ID
 router.delete('/:workoutID', deleteWorkoutController);
 
 router.post('/user-workouts/:workoutID', createUserWorkoutController);
 
-router.get('/user-workouts/:workoutID', readUserWorkoutController);
+router.get('/user-workouts', readUserWorkoutController);
 
 router.patch('/user-workouts/:workoutID/exercises/:exerciseID', updateExerciseCompletionController);
 
