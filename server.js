@@ -72,7 +72,7 @@ app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/plan', planRoutes);
 app.use('/api/v1/user-plan', userPlanRoutes);
-app.user('/api/v1/workouts', workoutRoutes)
+app.use('/api/v1/workouts', workoutRoutes)
 
 /**
  * This function retrieves the server's port number from the environment variable 'PORT' or defaults to 5000 if not specified.
