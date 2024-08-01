@@ -3,7 +3,7 @@
 /**
  * @swagger
  * tags:
- *   name: Workout-plan
+ *   name: Plans
  *   description: Routes for admin to update workout plans
  */
 
@@ -14,7 +14,7 @@
  *     summary: Creates a workout plan from JSON data
  *     description: Creates and saves a new workout plan using the provided JSON data, including weeks, days, categories, and exercises. The route is protected and requires admin privileges.
  *     tags:
- *       - Workout-plan
+ *       - Plans
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -230,7 +230,7 @@
  *     summary: Create a workout plan using JSON
  *     description: Uploads a JSON file to create a workout plan with nested weeks, days, categories, and exercises.
  *     tags:
- *       - Workout-plan
+ *       - Plans
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -295,7 +295,7 @@
  *     summary: Fetches workout plans
  *     description: Fetches workout plans based on the provided ID. If no ID is provided, it fetches all plans. This endpoint is protected and requires user authentication.
  *     tags:
- *       - Workout-plan
+ *       - Plans
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -367,7 +367,7 @@
  *     summary: Fetches plan overview details
  *     description: Retrieves detailed information about workout plans. Can optionally filter by various parameters.
  *     tags:
- *       - Workout-plan
+ *       - Plans
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -500,7 +500,7 @@
  *     summary: Update a workout plan
  *     description: Updates the details of an existing workout plan by plan ID. This endpoint is protected and requires admin authentication.
  *     tags:
- *       - Workout-plan
+ *       - Plans
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -702,7 +702,7 @@
  *     summary: Delete a workout plan
  *     description: Deletes a workout plan by plan ID. This endpoint is protected and requires admin authentication.
  *     tags:
- *       - Workout-plan
+ *       - Plans
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -765,7 +765,7 @@
  *     summary: Fetch week plan
  *     description: Retrieves the details of a specific week plan by its ID. This endpoint is protected and requires user authentication.
  *     tags:
- *       - Workout-plan - WEEK
+ *       - Plans - WEEK
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -845,7 +845,7 @@
  *     summary: Update a week plan
  *     description: Updates the details of a specific week plan by its ID. This endpoint is protected and requires admin authentication.
  *     tags:
- *       - Workout-plan - WEEK
+ *       - Plans - WEEK
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -936,7 +936,7 @@
 *   get:
 *     summary: Fetch a specific day plan by ID
 *     tags: 
-*       - Workout-plan - DAY
+*       - Plans - DAY
 *     security:
 *       - bearerAuth: []
 *     parameters:
@@ -1023,7 +1023,7 @@
  *   put:
  *     summary: Update a specific day plan by ID
  *     tags: 
- *       - Workout-plan - DAY
+ *       - Plans - DAY
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -1138,7 +1138,7 @@
  *   get:
  *     summary: Fetch a category by ID
  *     tags: 
- *       - Workout-plan - CATEGORY
+ *       - CATEGORY
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -1222,7 +1222,7 @@
  *   put:
  *     summary: Update a category by ID
  *     tags:
- *       - Workout-plan - CATEGORY
+ *       - CATEGORY
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -1318,7 +1318,7 @@
  *   get:
  *     summary: Fetch an exercise by its ID
  *     tags:
- *       - Workout-plan - EXERCISE
+ *       - EXERCISE
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -1422,7 +1422,7 @@
  *   put:
  *     summary: Update an exercise
  *     tags:
- *       - Workout-plan - EXERCISE
+ *       - EXERCISE
  *     security:
  *       - bearerAuth: []
  *     description: Updates the details of a specific exercise.
@@ -2269,12 +2269,12 @@
 
 /**
  * @swagger
- * /api/v1/workout/select-plan/{planID}:
+ * /api/v1/user-plan/select-plan/{planID}:
  *   post:
  *     summary: Select a workout plan for a user
  *     description: Assigns a workout plan to a user and initializes their exercises.
  *     tags:
- *       - Workout
+ *       - User - Plans
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -2298,7 +2298,7 @@
  *                 message:
  *                   type: string
  *                   example: Workout plan selected successfully
- *                 userWorkout:
+ *                 UserPlan:
  *                   type: object
  *                   properties:
  *                     _id:
@@ -2373,12 +2373,12 @@
 
 /**
  * @swagger
- * /api/v1/workout/update-progress/{exerciseID}:
+ * /api/v1/user-plan/update-progress/{exerciseID}:
  *   put:
  *     summary: Update exercise completion status
  *     description: Updates the completion status of a specific exercise for a user and recalculates the workout completion percentage.
  *     tags:
- *       - Workout
+ *       - User - Plans
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -2413,7 +2413,7 @@
  *                 message:
  *                   type: string
  *                   example: Exercise status updated successfully
- *                 userWorkout:
+ *                 UserPlan:
  *                   type: object
  *                   properties:
  *                     _id:
@@ -2488,12 +2488,12 @@
 
 /**
  * @swagger
- * /api/v1/workout:
+ * /api/v1/user-plan:
  *   get:
  *     summary: Get workout progress for a user
  *     description: Retrieves the workout progress for a user, optionally filtered by plan ID.
  *     tags:
- *       - Workout
+ *       - User - Plans
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -2547,7 +2547,6 @@
  *                   type: string
  *                   example: Internal server error
  */
-
 
 
 

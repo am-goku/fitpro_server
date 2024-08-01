@@ -647,7 +647,7 @@
  * @swagger
  * components:
  *   schemas:
- *     UserWorkout:
+ *     UserPlan:
  *       type: object
  *       properties:
  *         _id:
@@ -888,3 +888,105 @@
  *           format: date-time
  *           description: The timestamp when the challenge was last updated
  */
+
+
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Workout:
+ *       type: object
+ *       properties:
+ *         workout_name:
+ *           type: string
+ *         description:
+ *           type: string
+ *         banner_image:
+ *           type: string
+ *         workout_video:
+ *           type: string
+ *         workout_keywords:
+ *           type: string
+ *         goal_orientation:
+ *           type: string
+ *         target_age_group:
+ *           type: string
+ *         training_type:
+ *           type: string
+ *         location:
+ *           type: string
+ *         level:
+ *           type: string
+ *         estimated_duration:
+ *           type: string
+ *         rest_between_exercises_seconds:
+ *           type: number
+ *         average_calories_burned_per_minute:
+ *           type: number
+ *         categories:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Category'
+ */
+
+
+/** 
+ * @swagger
+ * components:
+ *  schemas:
+ *    UserWorkout:
+ *      type: object
+ *      properties:
+ *        _id:
+ *          type: string
+ *          description: The unique identifier of the user workout
+ *        user:
+ *          type: string
+ *          description: The ID of the user
+ *        workout:
+ *          type: string
+ *          description: The ID of the workout
+ *        exercises:
+ *          type: array
+ *          items:
+ *            type: object
+ *            properties:
+ *              exerciseID:
+ *                type: string
+ *                description: The ID of the exercise
+ *              completed:
+ *                type: boolean
+ *                description: Indicates if the exercise has been completed
+ *              completion_date:
+ *                type: string
+ *                format: date-time
+ *                description: The date when the exercise was completed
+ *        completedExercises:
+ *          type: integer
+ *          description: The number of completed exercises
+ *        totalExercises:
+ *          type: integer
+ *          description: The total number of exercises in the workout
+ *        completionPercentage:
+ *          type: number
+ *          format: float
+ *          description: The percentage of completion for the workout
+ *        createdAt:
+ *          type: string
+ *          format: date-time
+ *          description: The date and time when the user workout was created
+ *        updatedAt:
+ *          type: string
+ *          format: date-time
+ *          description: The date and time when the user workout was last updated
+ *      required:
+ *        - user
+ *        - workout
+ *        - totalExercises
+ */
+
+
+
+
+

@@ -1,71 +1,43 @@
-const Plan = require("../models/Plan");
-const { UserWorkout } = require("../models/Workout");
+const Category = require("../models/Category");
+const Exercise = require("../models/Exercise");
+const Workout = require("../models/Workout");
+const UserWorkout = require('../models/UserWorkout'); // Adjust the path if needed
 
-
-/**
- * Selects a workout plan for a user and populates the exercises.
- * 
- * @param {string} planID - The ID of the workout plan to select.
- * @param {string} userID - The ID of the user selecting the plan.
- * 
- * @returns {Object} An object containing the status code, message, and user workout data.
- * * status: The HTTP status code (201 for success, 400 for plan not found, 500 for server error).
- * * message: A message describing the outcome of the operation.
- * * userWorkout: The created UserWorkout document, or null if an error occurred.
- * 
- * @throws Will throw an error if the plan is not found or if there is a server error.
- */
-async function selectWorkoutPlan(planID, userID) {
+async function createWorkout(workoutData) {
     try {
-        const plan = await Plan.findById(planID).populate({
-            path: 'weeks',
-            populate: {
-                path: 'days',
-                populate: {
-                    path: 'categories',
-                    populate: {
-                        path: 'exercises'
-                    }
-                }
-            }
-        });
+        // Create exercises first
+        const createdCategories = await Promise.all(
+            workoutData.categories.map(async (categoryData) => {
+                const createdExercises = await Promise.all(
+                    categoryData.exercises.map(async (exerciseData) => {
+                        const exercise = new Exercise(exerciseData);
+                        await exercise.save();
+                        return exercise._id; // Return the ID for the created exercise
+                    })
+                );
 
-        if (!plan) {
-            return { status: 400, message: 'Plan not found' }
-        }
-
-        const totalExercises = plan.weeks.reduce((total, week) => {
-            return total + week.days.reduce((dayTotal, day) => {
-                return dayTotal + day.categories.reduce((catTotal, category) => {
-                    return catTotal + category.exercises.length;
-                }, 0);
-            }, 0);
-        }, 0);
-
-        const exercises = plan.weeks.map((week) => {
-            return week.days.map((day) => {
-                return day.categories.map((category) => {
-                    return category.exercises.map((exercise) => {
-                        return { exercise: exercise._id, completed: false };
-                    });
+                // Create category with the exercise IDs
+                const category = new Category({
+                    ...categoryData,
+                    exercises: createdExercises
                 });
-            });
-        })
+                await category.save();
+                return category._id; // Return the ID for the created category
+            })
+        );
 
-        const userWorkout = new UserWorkout({
-            user: userID,
-            plan: planID,
-            totalExercises,
-            exercises: exercises.flat(3)
+        // Create workout with the category IDs
+        const workout = new Workout({
+            ...workoutData,
+            categories: createdCategories
         });
 
-        await userWorkout.save();
-
+        await workout.save();
         return {
-            status: 201,
-            message: 'Workout plan selected successfully',
-            userWorkout
-        }
+            status: 200,
+            message: "Workout created successfully",
+            workout
+        }; // Return the created workout object
 
     } catch (error) {
         return {
@@ -76,71 +48,116 @@ async function selectWorkoutPlan(planID, userID) {
 }
 
 
-/**
- * Updates the completion status of an exercise for a user's workout plan.
- *
- * @param {string} exerciseID - The ID of the exercise to update.
- * @param {string} userID - The ID of the user whose workout plan to update.
- * @param {boolean} status - The new completion status for the exercise.
- *
- * @returns {Object} An object containing the status code, message, and updated user workout data.
- * * status: The HTTP status code (200 for success, 500 for server error).
- * * message: A message describing the outcome of the operation.
- * * userWorkout: The updated UserWorkout document, or null if an error occurred.
- *
- * @throws Will throw an error if there is a server error or if no matching document is found to update.
- */
-async function updateExerciseCompletion(exerciseID, userID, status) {
+async function fetchWorkout(workoutID = null, populate = false) {
     try {
-        // Perform the update operation
-        const updateResult = await UserWorkout.updateOne(
-            {
-                user: userID,
-                exercises: { $elemMatch: { exercise: exerciseID } }
-            },
-            {
-                $set: {
-                    'exercises.$.completed': status
+        let query;
+
+        if (workoutID) {
+            // Fetch a specific workout by ID
+            query = Workout.findById(workoutID);
+        } else {
+            // Fetch all workouts if no ID is provided
+            query = Workout.find();
+        }
+
+        if (populate) {
+            query = query.populate({
+                path: 'categories',
+                populate: {
+                    path: 'exercises',
                 }
-            }
-        );
-
-
-        // Check if any documents were matched and modified
-        if (updateResult.matchedCount === 0) {
-            throw new Error('No matching document found to update');
+            });
         }
 
-        // Fetch the updated document
-        const updatedUserWorkout = await UserWorkout.findOne({
-            user: userId,
-            exercises: { $elemMatch: { exercise: exerciseId } }
-        });
+        const workout = await query.exec();
 
-        if (!updatedUserWorkout) {
-            throw new Error('Updated workout not found');
+        if (!workout) {
+            return { message: 'Workout not found' };
         }
-
-        // Recalculate the completed exercises count and completion percentage
-        const completedExercises = updatedUserWorkout.exercises.filter(e => e.completed).length;
-        const totalExercises = updatedUserWorkout.exercises.length;
-        const completionPercentage = (completedExercises / totalExercises) * 100;
-
-        // Update the fields in the user workout document
-        updatedUserWorkout.completedExercises = completedExercises;
-        updatedUserWorkout.completionPercentage = completionPercentage;
-
-        // Save the updated document
-        await updatedUserWorkout.save();
 
         return {
             status: 200,
-            message: 'Exercise status updated successfully',
-            userWorkout: updatedUserWorkout
+            message: 'Workout fetched successfully',
+            workout,
         };
 
     } catch (error) {
-        console.error('Error updating exercise completion:', error);
+        return {
+            status: 500,
+            message: error.message,
+        }
+    }
+}
+
+
+async function deleteWorkout(workoutID) {
+    try {
+        // Find the workout and populate categories and exercises
+        const workout = await Workout.findById(workoutID).populate({
+            path: 'categories',
+            populate: {
+                path: 'exercises',
+            }
+        });
+
+        if (!workout) {
+            return { status: 404, message: 'Workout not found' };
+        }
+
+        // Delete exercises associated with each category
+        const exercisesToDelete = workout.categories.flatMap(category => category.exercises);
+        await Exercise.deleteMany({ _id: { $in: exercisesToDelete } });
+
+        // Delete categories
+        await Category.deleteMany({ _id: { $in: workout.categories.map(category => category._id) } });
+
+        // Delete the workout
+        await Workout.findByIdAndDelete(workoutID);
+
+        return { status: 200, message: 'Workout and related data deleted successfully' };
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message,
+        }
+    }
+}
+
+
+async function createUserWorkout(userID, workoutID) {
+    try {
+        // Validate the workout exists
+        const workout = await Workout.findById(workoutID);
+        if (!workout) {
+            return {
+                status: 404,
+                message: 'Workout not found'
+            };
+        }
+
+        // Get exercises from the workout and create an initial UserWorkout entry
+        const exercises = workout.categories.flatMap(category => category.exercises);
+        const totalExercises = exercises.length;
+
+        // Create UserWorkout entry
+        const userWorkout = new UserWorkout({
+            user: userID,
+            workout: workoutID,
+            exercises: exercises.map(exerciseID => ({
+                exerciseID,
+                completed: false,
+            })),
+            totalExercises
+        });
+
+        await userWorkout.save();
+
+        return {
+            status: 200,
+            message: 'User workout created successfully',
+            userWorkout
+        };
+    } catch (error) {
         return {
             status: 500,
             message: error.message
@@ -149,65 +166,88 @@ async function updateExerciseCompletion(exerciseID, userID, status) {
 }
 
 
-/**
- * Retrieves the workout progress for a user, optionally filtering by a specific plan.
- *
- * @param {string} userID - The ID of the user whose workout progress to retrieve.
- * @param {string} [planID] - (Optional) The ID of the workout plan to filter by. If not provided, all plans for the user will be retrieved.
- *
- * @returns {Object} An object containing the status code, message, and user workout progress data.
- * * status: The HTTP status code (200 for success, 400 for plan not found, 500 for server error).
- * * message: A message describing the outcome of the operation.
- * * plans: An array of UserWorkout documents, or an empty array if no matching documents were found.
- *
- * @throws Will throw an error if there is a server error or if no matching document is found.
- */
-async function getWorkoutProgress(userID, planID) {
+async function readUserWorkout(userID, workoutID, populate = false) {
     try {
+        let query = UserWorkout.findOne({ user: userID, workout: workoutID });
 
-        const query = { user: userID };
-
-        if (planID) {
-            query.plan = planID;
+        if (populate) {
+            query = query.populate({
+                path: 'exercises.exerciseID',
+                select: 'name' // Select fields as needed
+            });
         }
 
-        const userWorkoutProgress = await UserWorkout.find(query).populate({
-            path: 'plan',
-            populate: {
-                path: 'weeks',
-                populate: {
-                    path: 'days',
-                    populate: {
-                        path: 'categories',
-                        populate: {
-                            path: 'exercises'
-                        }
-                    }
-                }
-            }
-        });
+        const userWorkout = await query.exec();
 
-        if (!userWorkoutProgress) {
-            return { status: 400, message: 'User workout plan not found' }
+        if (!userWorkout) {
+            return {
+                status: 404,
+                message: 'User workout not found'
+            };
         }
 
         return {
             status: 200,
-            message: 'Workout progress retrieved successfully',
-            plans: userWorkoutProgress
-        }
-
+            message: 'User workout fetched successfully',
+            userWorkout
+        };
     } catch (error) {
         return {
             status: 500,
-            message: error.message,
-        }
+            message: error.message
+        };
     }
 }
 
 
-module.exports = {
-    selectWorkoutPlan,
-    updateExerciseCompletion,
-    getWorkoutProgress
-};
+async function updateExerciseCompletion(userID, workoutID, exerciseID, completed, completionDate) {
+    try {
+        // Find the UserWorkout entry
+        const userWorkout = await UserWorkout.findOne({ user: userID, workout: workoutID });
+
+        if (!userWorkout) {
+            return {
+                status: 404,
+                message: 'User workout not found'
+            };
+        }
+
+        // Find the exercise in the user's workout
+        const exercise = userWorkout.exercises.find(ex => ex.exerciseID.toString() === exerciseID.toString());
+
+        if (!exercise) {
+            return {
+                status: 404,
+                message: 'Exercise not found in user workout'
+            };
+        }
+
+        // Update completion status
+        exercise.completed = completed;
+        exercise.completion_date = completed ? completionDate : null;
+
+        // Update completed exercises count and completion percentage
+        const completedExercises = userWorkout.exercises.filter(ex => ex.completed).length;
+        const completionPercentage = (completedExercises / userWorkout.totalExercises) * 100;
+
+        userWorkout.completedExercises = completedExercises;
+        userWorkout.completionPercentage = completionPercentage;
+
+        await userWorkout.save();
+
+        return {
+            status: 200,
+            message: 'Exercise completion status updated successfully',
+            userWorkout
+        };
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message
+        };
+    }
+}
+
+
+
+module.exports = { createWorkout, fetchWorkout, deleteWorkout, createUserWorkout, readUserWorkout, updateExerciseCompletion }

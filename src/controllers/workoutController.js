@@ -1,85 +1,88 @@
-const { selectWorkoutPlan, updateExerciseCompletion, getWorkoutProgress } = require("../helpers/workoutHelper");
-const responseHandler = require("../utils/responseHandler");
+const { createUserWorkout, readUserWorkout, updateExerciseCompletion } = require('../helpers/workoutHelper'); // Adjust the path if needed
+const { createWorkout, fetchWorkout, deleteWorkout } = require('../helpers/workoutHelper');
+const responseHandler = require('../utils/responseHandler');
 
-
-/**
- * Selects a workout plan for a user.
- *
- * @param {Object} req - The request object containing parameters and user information.
- * @param {string} req.params.planID - The ID of the workout plan to select.
- * @param {string} req.userID - The ID of the user selecting the plan.
- * @param {Object} res - The response object to send the result.
- *
- * @returns {Promise} - A promise that resolves to the response data.
- * @throws Will throw an error if the plan selection fails.
- */
-async function selectPlan(req, res) {
+// Controller function to create a new workout
+async function createWorkoutController(req, res) {
     try {
-        const planID = req.params.planID;
-        const userID = req.userID;
+        const workoutData = req.body; // Assumes workout data is sent in the request body
+        const result = await createWorkout(workoutData);
 
-        const data = await selectWorkoutPlan(planID, userID);
-
-        return responseHandler(res, data);
+        return responseHandler(res, result);
     } catch (error) {
-        return responseHandler(res, { status: 500, message: error.message });
+        return responseHandler(res, {
+            status: 500,
+            message: error.message
+        });
+    }
+}
+
+// Controller function to fetch a workout or all workouts
+async function fetchWorkoutController(req, res) {
+    try {
+        const workoutID = req.params.workoutID || null; // Assumes ID is passed in the route parameters
+        const populate = req.query.populate === 'true'; // Assumes populate is passed as a query parameter
+        const result = await fetchWorkout(workoutID, populate);
+
+        return responseHandler(res, result);
+    } catch (error) {
+        return responseHandler(res, {
+            status: 500,
+            message: error.message
+        });
+    }
+}
+
+// Controller function to delete a workout
+async function deleteWorkoutController(req, res) {
+    try {
+        const workoutID = req.params.workoutID; // Assumes ID is passed in the route parameters
+        const result = await deleteWorkout(workoutID);
+
+        return responseHandler(res, result);
+    } catch (error) {
+        return responseHandler(res, {
+            status: 500,
+            message: error.message
+        });
     }
 }
 
 
-/**
- * Updates the completion status of an exercise for a user.
- *
- * @param {Object} req - The request object containing parameters and user information.
- * @param {string} req.params.exerciseID - The ID of the exercise to update.
- * @param {string} req.userID - The ID of the user updating the exercise status.
- * @param {Object} req.body - The request body containing the new status.
- * @param {string} req.body.status - The new completion status of the exercise.
- * @param {Object} res - The response object to send the result.
- *
- * @returns {Promise} - A promise that resolves to the response data.
- * @throws Will throw an error if the exercise status update fails.
- */
-async function updateProgress(req, res) {
-    try {
-        const exerciseID = req.params.exerciseID;
-        const userID = req.userID;
-        const status = req.body.status;
 
-        const data = await updateExerciseCompletion(exerciseID, userID, status);
 
-        return responseHandler(res, data);
-    } catch (error) {
-        return responseHandler(res, { status: 500, message: error.message });
-    }
+
+async function createUserWorkoutController(req, res) {
+    const { workoutID } = req.params;
+    const userID = req.userID
+    const result = await createUserWorkout(userID, workoutID);
+    responseHandler(res, result);
+}
+
+async function readUserWorkoutController(req, res) {
+    const { workoutID } = req.params;
+    const userID = req.userID;
+    const { populate } = req.query; // Convert to boolean as needed
+    const result = await readUserWorkout(userID, workoutID, populate === 'true');
+    responseHandler(res, result);
+}
+
+async function updateExerciseCompletionController(req, res) {
+    const { workoutID, exerciseID } = req.params;
+    const userID = req.userID;
+    const { completed, completionDate } = req.body;
+    const result = await updateExerciseCompletion(userID, workoutID, exerciseID, completed, completionDate);
+    responseHandler(res, result);
 }
 
 
-/**
- * Fetches the progress of a user for a specific workout plan.
- *
- * @param {Object} req - The request object containing parameters and user information.
- * @param {string} req.params.planID - The ID of the workout plan to fetch progress for.
- * @param {string} req.userID - The ID of the user fetching the progress.
- * @param {Object} res - The response object to send the result.
- *
- * @returns {Promise} - A promise that resolves to the response data.
- * The response data will contain the progress information for the specified workout plan and user.
- * If an error occurs during the fetch operation, the promise will reject with an error object.
- * The error object will contain a status code (500) and a message indicating the error.
- */
-async function fetchProgress(req, res) {
-    try {
-        const planID = req.params.planID;
-        const userID = req.userID;
-
-        const data = await getWorkoutProgress(userID, planID);
-
-        return responseHandler(res, data);
-    } catch (error) {
-        return responseHandler(res, { status: 500, message: error.message });
-    }
-}
 
 
-module.exports = { selectPlan, updateProgress, fetchProgress };
+module.exports = {
+    createWorkoutController,
+    fetchWorkoutController,
+    deleteWorkoutController,
+    createUserWorkoutController,
+    readUserWorkoutController,
+    updateExerciseCompletionController
+};

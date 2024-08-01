@@ -9,7 +9,7 @@ const oAuthRoutes = require('./src/routes/oAuthRoute');
 const userRoutes = require('./src/routes/userRoutes');
 const adminRoutes = require('./src/routes/adminRoutes');
 const planRoutes = require('./src/routes/planRoutes');
-const workoutRoutes = require('./src/routes/workoutRoutes');
+const userPlanRoutes = require('./src/routes/userPlanRoutes');
 
 /**
  * Loads environment variables from a `.env` file.
@@ -70,7 +70,7 @@ app.use('/api/v1/oauth', oAuthRoutes);
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/plan', planRoutes);
-app.use('/api/v1/workout', workoutRoutes)
+app.use('/api/v1/user-plan', userPlanRoutes);
 
 /**
  * This function retrieves the server's port number from the environment variable 'PORT' or defaults to 5000 if not specified.

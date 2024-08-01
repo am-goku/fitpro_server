@@ -2581,3 +2581,426 @@
 
 
 
+/**
+ * @swagger
+ * /api/v1/workouts:
+ *   post:
+ *     summary: Create a new workout
+ *     description: Creates a new workout along with its categories and exercises.
+ *     tags:
+ *       - Workouts
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               workout_name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               banner_image:
+ *                 type: string
+ *               workout_video:
+ *                 type: string
+ *               workout_keywords:
+ *                 type: string
+ *               goal_orientation:
+ *                 type: string
+ *               target_age_group:
+ *                 type: string
+ *               training_type:
+ *                 type: string
+ *               location:
+ *                 type: string
+ *               level:
+ *                 type: string
+ *               estimated_duration:
+ *                 type: string
+ *               rest_between_exercises_seconds:
+ *                 type: number
+ *               average_calories_burned_per_minute:
+ *                 type: number
+ *               categories:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     sub_category:
+ *                       type: string
+ *                     circuit_rest_time:
+ *                       type: number
+ *                     circuit_reps:
+ *                       type: number
+ *                     exercises:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           name:
+ *                             type: string
+ *                           exercise_number:
+ *                             type: number
+ *                           exercise_type:
+ *                             type: string
+ *                           time_based:
+ *                             type: string
+ *                           weighted:
+ *                             type: string
+ *                           sets:
+ *                             type: number
+ *                           reps:
+ *                             type: array
+ *                             items:
+ *                               type: number
+ *                           set_time:
+ *                             type: string
+ *                           superset_names:
+ *                             type: array
+ *                             items:
+ *                               type: string
+ *                           rest_time:
+ *                             type: number
+ *                           video_url:
+ *                             type: string
+ *                           image_url:
+ *                             type: string
+ *     responses:
+ *       200:
+ *         description: Workout created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ *                 workout:
+ *                   $ref: '#/components/schemas/Workout'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/workouts/{workoutID}:
+ *   get:
+ *     summary: Fetch a specific workout or all workouts
+ *     description: Fetches a specific workout by ID or all workouts if no ID is provided. Optionally populates related categories and exercises.
+ *     tags:
+ *       - Workouts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: workoutID
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: ID of the workout to fetch. Omit this parameter to fetch all workouts.
+ *       - in: query
+ *         name: populate
+ *         schema:
+ *           type: boolean
+ *         description: Whether to populate related categories and exercises.
+ *     responses:
+ *       200:
+ *         description: Workout fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ *                 workout:
+ *                   $ref: '#/components/schemas/Workout'
+ *       404:
+ *         description: Workout not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/workouts/{workoutID}:
+ *   delete:
+ *     summary: Delete a workout
+ *     description: Deletes a specific workout by ID along with its related categories and exercises.
+ *     tags:
+ *       - Workouts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: workoutID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the workout to delete.
+ *     responses:
+ *       200:
+ *         description: Workout and related data deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ *       404:
+ *         description: Workout not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/workouts/user-workouts/{workoutID}:
+ *   post:
+ *     summary: Create a new user workout
+ *     description: Creates a new user workout entry associating a user with a workout and initializing exercise details.
+ *     tags:
+ *       - UserWorkouts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: workoutID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the workout
+ *     responses:
+ *       200:
+ *         description: User workout created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ *                 userWorkout:
+ *                   $ref: '#/components/schemas/UserWorkout'
+ *       404:
+ *         description: Workout not found or other error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ */
+
+/**
+ * @swagger
+ * /api/v1/workouts/user-workouts/{workoutID}:
+ *   get:
+ *     summary: Get user workout details
+ *     description: Fetches the details of a specific user workout, optionally populating exercise details.
+ *     tags:
+ *       - UserWorkouts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: workoutID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the workout
+ *       - in: query
+ *         name: populate
+ *         schema:
+ *           type: boolean
+ *         description: Whether to populate related exercises
+ *     responses:
+ *       200:
+ *         description: User workout details fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ *                 userWorkout:
+ *                   $ref: '#/components/schemas/UserWorkout'
+ *       404:
+ *         description: User workout not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ */
+
+/**
+ * @swagger
+ * /api/v1/workouts/user-workouts/{workoutID}/exercises/{exerciseID}:
+ *   patch:
+ *     summary: Update exercise completion status
+ *     description: Updates the completion status of a specific exercise in the user’s workout.
+ *     tags:
+ *       - UserWorkouts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: workoutID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the workout
+ *       - in: path
+ *         name: exerciseID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the exercise
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               completed:
+ *                 type: boolean
+ *               completionDate:
+ *                 type: string
+ *                 format: date-time
+ *     responses:
+ *       200:
+ *         description: Exercise completion status updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ *                 userWorkout:
+ *                   $ref: '#/components/schemas/UserWorkout'
+ *       404:
+ *         description: User workout or exercise not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ */
+
+
+
+
+
+

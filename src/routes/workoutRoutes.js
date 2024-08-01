@@ -1,44 +1,22 @@
-/**
- * Router configuration for workout-related endpoints.
- *
- * @module routers/workoutRouter
- * @requires express
- * @requires middleware/authMiddleware
- * @requires controllers/workoutController
- */
+const express = require('express');
+const router = express.Router();
+const { createUserWorkoutController, readUserWorkoutController, updateExerciseCompletionController } = require('../controllers/workoutController'); // Adjust the path if needed
+const { createWorkoutController, fetchWorkoutController, deleteWorkoutController } = require('../controllers/workoutController'); // Adjust the path if needed
 
-const { Router } = require('express');
-const { userProtect } = require('../middleware/authMiddleware');
-const { selectPlan, updateProgress, fetchProgress } = require('../controllers/workoutController');
-const router = Router();
+// Route to create a new workout
+router.post('/', createWorkoutController);
 
-/**
- * POST request to select a workout plan.
- *
- * @name POST/select-plan/:planID
- * @function
- * @param {string} planID - The ID of the workout plan to select.
- * @returns {void}
- */
-router.post('/select-plan/:planID', userProtect, selectPlan);
+// Route to fetch a specific workout by ID or all workouts
+router.get('/:workoutID?', fetchWorkoutController);
 
-/**
- * PUT request to update the progress of an exercise.
- *
- * @name PUT/update-progress/:exerciseID
- * @function
- * @param {string} exerciseID - The ID of the exercise to update progress for.
- * @returns {void}
- */
-router.put('/update-progress/:exerciseID', userProtect, updateProgress);
+// Route to delete a workout by ID
+router.delete('/:workoutID', deleteWorkoutController);
 
-/**
- * GET request to fetch the progress of the logged-in user.
- *
- * @name GET/
- * @function
- * @returns {object} - The progress of the logged-in user.
- */
-router.get('/', userProtect, fetchProgress);
+router.post('/user-workouts/:workoutID', createUserWorkoutController);
+
+router.get('/user-workouts/:workoutID', readUserWorkoutController);
+
+router.patch('/user-workouts/:workoutID/exercises/:exerciseID', updateExerciseCompletionController);
+
 
 module.exports = router;
