@@ -54,8 +54,9 @@ async function deleteWorkoutController(req, res) {
 
 async function createUserWorkoutController(req, res) {
     const { workoutID } = req.params;
+    const {populateExercise, populateWorkout} = req.query
     const userID = req.userID
-    const data = await createUserWorkout(userID, workoutID);
+    const data = await createUserWorkout(userID, workoutID, populateWorkout, populateExercise);
     return responseHandler(res, data);
 }
 

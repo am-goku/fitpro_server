@@ -952,7 +952,7 @@
  *          items:
  *            type: object
  *            properties:
- *              exerciseID:
+ *              exercise:
  *                type: string
  *                description: The ID of the exercise
  *              completed:

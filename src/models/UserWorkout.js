@@ -14,7 +14,7 @@ const UserWorkoutSchema = new Schema({
     },
     exercises: [
         {
-            exerciseID: {
+            exercise: {
                 type: mongoose.Types.ObjectId,
                 ref: 'exercise',
                 required: true

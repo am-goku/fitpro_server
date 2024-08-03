@@ -2828,6 +2828,18 @@
  *         schema:
  *           type: string
  *         description: The ID of the workout
+ *       - in: query
+ *         name: populateExercise
+ *         required: false
+ *         schema:
+ *           type: boolean
+ *         description: Make it true if you need the exercises populated in response
+ *       - in: query
+ *         name: populateWorkout
+ *         required: false
+ *         schema:
+ *           type: boolean
+ *         description: Make it true if you need the workout key populated in response
  *     responses:
  *       200:
  *         description: User workout created successfully

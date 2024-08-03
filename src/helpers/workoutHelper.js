@@ -125,8 +125,18 @@ async function deleteWorkout(workoutID) {
 }
 
 
-async function createUserWorkout(userID, workoutID) {
+async function createUserWorkout(userID, workoutID, populateWorkout, populateExercise) {
     try {
+
+        const isExist = await UserWorkout.findOne({ user: userID, workout: workoutID });
+
+        if(isExist) {
+            return {
+                status: 409,
+                message: 'User has already started or completed this workout'
+            };
+        }
+
         // Validate the workout exists
         const workout = await Workout.findById(workoutID).populate(
             {
@@ -152,13 +162,21 @@ async function createUserWorkout(userID, workoutID) {
             user: userID,
             workout: workoutID,
             exercises: exercises.map(ex => ({
-                exerciseID: ex._id,
+                exercise: ex._id,
                 completed: false,
             })),
             totalExercises
         });
 
         await userWorkout.save();
+
+        if(populateExercise === 'true') {
+            await userWorkout.populate("exercises.exercise");
+        }
+
+        if(populateWorkout === 'true') {
+            await userWorkout.populate("workout");
+        }
 
         return {
             status: 200,
@@ -187,7 +205,7 @@ async function readUserWorkout(userID, workoutID, populate = false) {
         let userWorkout;
 
         if (populate === 'true') {
-            userWorkout = await UserWorkout.find(query).populate("exercises.exerciseID")
+            userWorkout = await UserWorkout.find(query).populate("exercises.exercise")
         } else {
             userWorkout = await UserWorkout.find(query);
         }
@@ -228,7 +246,7 @@ async function updateExerciseCompletion(userID, workoutID, exerciseID, completed
         }
 
         // Find the exercise in the user's workout
-        const exercise = userWorkout.exercises.find(ex => ex.exerciseID.toString() === exerciseID.toString());
+        const exercise = userWorkout.exercises.find(ex => ex.exercise.toString() === exerciseID.toString());
 
         if (!exercise) {
             return {
