@@ -1,16 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { createUserWorkoutController, readUserWorkoutController, updateExerciseCompletionController } = require('../controllers/workoutController'); // Adjust the path if needed
+const { createUserWorkoutController, readUserWorkoutController, updateExerciseCompletionController, updateImagInWorkout } = require('../controllers/workoutController'); // Adjust the path if needed
 const { createWorkoutController, fetchWorkoutController, deleteWorkoutController } = require('../controllers/workoutController'); // Adjust the path if needed
 const { adminProtect, userProtect } = require('../middleware/authMiddleware');
+const upload = require('../utils/multerConfig');
 
-// Route to create a new workout
+
 router.post('/', adminProtect, createWorkoutController);
 
-// Route to fetch a specific workout by ID or all workouts
 router.get('/', userProtect, fetchWorkoutController);
 
-// Route to delete a workout by ID
 router.delete('/:workoutID', adminProtect, deleteWorkoutController);
 
 router.post('/user-workouts/:workoutID', userProtect, createUserWorkoutController);
@@ -18,6 +17,8 @@ router.post('/user-workouts/:workoutID', userProtect, createUserWorkoutControlle
 router.get('/user-workouts', userProtect, readUserWorkoutController);
 
 router.patch('/user-workouts/:workoutID/exercises/:exerciseID', userProtect, updateExerciseCompletionController);
+
+router.patch('/user-workouts/:workoutID', userProtect, upload.single('image'), updateImagInWorkout);
 
 
 module.exports = router;

@@ -1,4 +1,4 @@
-const { createUserWorkout, readUserWorkout, updateExerciseCompletion } = require('../helpers/workoutHelper'); // Adjust the path if needed
+const { createUserWorkout, readUserWorkout, updateExerciseCompletion, updateWorkoutImage } = require('../helpers/workoutHelper'); // Adjust the path if needed
 const { createWorkout, fetchWorkout, deleteWorkout } = require('../helpers/workoutHelper');
 const responseHandler = require('../utils/responseHandler');
 
@@ -74,9 +74,23 @@ async function readUserWorkoutController(req, res) {
 async function updateExerciseCompletionController(req, res) {
     const { workoutID, exerciseID } = req.params;
     const userID = req.userID;
-    const { completed, completionDate } = req.body;
-    const data = await updateExerciseCompletion(userID, workoutID, exerciseID, completed, completionDate);
+    const { completed, completionDate, minutes } = req.body;
+    console.log(req.body);
+    
+
+    const data = await updateExerciseCompletion(userID, workoutID, exerciseID, completed, completionDate, minutes);
     return responseHandler(res, data);
+}
+
+
+async function updateImagInWorkout(req, res) {
+    const file = req.file;
+    const workoutID = req.params.workoutID;
+    const userID = req.userID;
+
+    const data = await updateWorkoutImage(userID, workoutID, file);
+
+    return responseHandler(res, data)
 }
 
 
@@ -88,5 +102,6 @@ module.exports = {
     deleteWorkoutController,
     createUserWorkoutController,
     readUserWorkoutController,
-    updateExerciseCompletionController
+    updateExerciseCompletionController,
+    updateImagInWorkout
 };

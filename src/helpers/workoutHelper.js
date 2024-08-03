@@ -2,6 +2,7 @@ const Category = require("../models/Category");
 const Exercise = require("../models/Exercise");
 const Workout = require("../models/Workout");
 const UserWorkout = require('../models/UserWorkout'); // Adjust the path if needed
+const s3Interface = require("../service/s3Interface");
 
 async function createWorkout(workoutData) {
     try {
@@ -178,14 +179,14 @@ async function readUserWorkout(userID, workoutID, populate = false) {
         const query = {
             user: userID
         }
-        
-        if(workoutID){
+
+        if (workoutID) {
             query.workout = workoutID
         }
 
         let userWorkout;
 
-        if(populate === 'true') {
+        if (populate === 'true') {
             userWorkout = await UserWorkout.find(query).populate("exercises.exerciseID")
         } else {
             userWorkout = await UserWorkout.find(query);
@@ -213,10 +214,11 @@ async function readUserWorkout(userID, workoutID, populate = false) {
 }
 
 
-async function updateExerciseCompletion(userID, workoutID, exerciseID, completed, completionDate) {
+async function updateExerciseCompletion(userID, workoutID, exerciseID, completed, completionDate, minutes) {
     try {
         // Find the UserWorkout entry
         const userWorkout = await UserWorkout.findOne({ user: userID, workout: workoutID });
+        const workout = await Workout.findById(workoutID);
 
         if (!userWorkout) {
             return {
@@ -242,9 +244,12 @@ async function updateExerciseCompletion(userID, workoutID, exerciseID, completed
         // Update completed exercises count and completion percentage
         const completedExercises = userWorkout.exercises.filter(ex => ex.completed).length;
         const completionPercentage = (completedExercises / userWorkout.totalExercises) * 100;
+        const calories = workout.average_calories_burned_per_minute * minutes;
+
 
         userWorkout.completedExercises = completedExercises;
         userWorkout.completionPercentage = completionPercentage;
+        userWorkout.calories = calories;
 
         await userWorkout.save();
 
@@ -262,5 +267,39 @@ async function updateExerciseCompletion(userID, workoutID, exerciseID, completed
 }
 
 
+async function updateWorkoutImage(userID, workoutID, file) {
+    try {
+        const userWorkout = await UserWorkout.findOne({user: userID, workout: workoutID});
 
-module.exports = { createWorkout, fetchWorkout, deleteWorkout, createUserWorkout, readUserWorkout, updateExerciseCompletion }
+        if (!userWorkout) {
+            return {
+                status: 400,
+                message: "Workout Status not found in user Colletion"
+            }
+        }
+
+        const dir = `users/${userID}/workout_images`;
+
+        const url = await s3Interface.uploadToS3(file, dir);
+
+        userWorkout.image = url;
+
+        await userWorkout.save();
+
+        return {
+            status: 200,
+            message: 'Exercise completion updated and image uploaded successfully',
+            userWorkout
+        }
+
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message
+        }
+    }
+}
+
+
+
+module.exports = { createWorkout, fetchWorkout, deleteWorkout, createUserWorkout, readUserWorkout, updateExerciseCompletion, updateWorkoutImage }

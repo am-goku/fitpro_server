@@ -29,6 +29,18 @@ const UserWorkoutSchema = new Schema({
             }
         }
     ],
+    calories: {
+        type: Number,
+        requires: false,
+    },
+    minutes: {
+        type: Number,
+        requires: false,
+    },
+    image: {
+        type: String,
+        required: false,
+    },
     completedExercises: {
         type: Number,
         default: 0

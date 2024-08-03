@@ -20,7 +20,8 @@ async function googleLogin(body) {
             status: 200,
             message: "Login successful",
             user: null,
-            accessToken: null
+            accessToken: null,
+            newUser: false
         }
 
         data.user = await User.findOne({ email: body.email }).select("-password");
@@ -35,6 +36,7 @@ async function googleLogin(body) {
 
             data.user = await newUser.save();
             data.message = "Account created successfully";
+            data.newUser = true;
 
         }
 

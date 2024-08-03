@@ -2901,7 +2901,9 @@
  *                 message:
  *                   type: string
  *                 userWorkout:
- *                   $ref: '#/components/schemas/UserWorkout'
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/UserWorkout'
  *       404:
  *         description: User workout not found
  *         content:
@@ -2930,37 +2932,38 @@
  * @swagger
  * /api/v1/workouts/user-workouts/{workoutID}/exercises/{exerciseID}:
  *   patch:
- *     summary: Update exercise completion status
- *     description: Updates the completion status of a specific exercise in the user’s workout.
- *     tags:
- *       - UserWorkouts
+ *     summary: Update exercise completion status and optionally upload an image
+ *     tags: 
+ *        - UserWorkouts
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: workoutID
- *         required: true
  *         schema:
  *           type: string
- *         description: The ID of the workout
+ *         required: true
+ *         description: ID of the workout
  *       - in: path
  *         name: exerciseID
- *         required: true
  *         schema:
  *           type: string
- *         description: The ID of the exercise
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               completed:
- *                 type: boolean
- *               completionDate:
- *                 type: string
- *                 format: date-time
+ *         required: true
+ *         description: ID of the exercise
+ *       - in: body
+ *         name: body
+ *         description: Exercise completion details
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             completed:
+ *               type: boolean
+ *             completionDate:
+ *               type: string
+ *               format: date-time
+ *             minutes:
+ *               type: number
  *     responses:
  *       200:
  *         description: Exercise completion status updated successfully
@@ -2977,30 +2980,49 @@
  *                   $ref: '#/components/schemas/UserWorkout'
  *       404:
  *         description: User workout or exercise not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: number
- *                 message:
- *                   type: string
  *       500:
  *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: number
- *                 message:
- *                   type: string
  */
 
 
-
-
+/**
+ * @swagger
+ * /api/v1/workouts/user-workouts/{workoutID}:
+ *   patch:
+ *     summary: Update the image in a user's workout
+ *     tags: 
+ *       - UserWorkouts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: workoutID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the workout
+ *       - in: formData
+ *         name: image
+ *         type: file
+ *         description: Image file to upload
+ *     responses:
+ *       200:
+ *         description: Workout image updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ *                 userWorkout:
+ *                   $ref: '#/components/schemas/UserWorkout'
+ *       400:
+ *         description: Workout status not found in user collection
+ *       500:
+ *         description: Internal server error
+ */
 
 

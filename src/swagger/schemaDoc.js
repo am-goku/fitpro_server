@@ -962,6 +962,15 @@
  *                type: string
  *                format: date-time
  *                description: The date when the exercise was completed
+ *        minutes:
+ *          type: integer
+ *          description: The time spent on the exercise
+ *        calories:
+ *          type: integer
+ *          description: The calories that the user have burned
+ *        image:
+ *          type: string
+ *          description: Image of the user after workout
  *        completedExercises:
  *          type: integer
  *          description: The number of completed exercises
