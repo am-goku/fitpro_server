@@ -23,22 +23,25 @@ async function createJsonPlan({ weeks, ...planBody }) {
     try {
         const weekDocs = await Promise.all(weeks.map(async (week) => {
             const dayDocs = await Promise.all(week.days.map(async (day) => {
-                const categoryDocs = await Promise.all(day.categories.map(async (category) => {
-                    const exerciseDocs = await Promise.all(category.exercises.map(async (exercise) => {
-                        const newExercise = new Exercise(exercise);
-                        await newExercise.save();
-                        return newExercise._id;
-                    }));
+                let categoryDocs = null
+                if (day.categories && day.categories.length > 0) {
+                    categoryDocs = await Promise.all(day.categories.map(async (category) => {
+                        const exerciseDocs = await Promise.all(category.exercises.map(async (exercise) => {
+                            const newExercise = new Exercise(exercise);
+                            await newExercise.save();
+                            return newExercise._id;
+                        }));
 
-                    const newCategory = new Category({
-                        sub_category: category.sub_category,
-                        circuit_rest_time: category.circuit_rest_time,
-                        circuit_reps: category.circuit_reps,
-                        exercises: exerciseDocs
-                    });
-                    await newCategory.save();
-                    return newCategory._id;
-                }));
+                        const newCategory = new Category({
+                            sub_category: category.sub_category,
+                            circuit_rest_time: category.circuit_rest_time,
+                            circuit_reps: category.circuit_reps,
+                            exercises: exerciseDocs
+                        });
+                        await newCategory.save();
+                        return newCategory._id;
+                    }));
+                }
 
                 const newDay = new DayPlan({
                     day: day.day,
@@ -91,6 +94,8 @@ async function createJsonPlan({ weeks, ...planBody }) {
         return data;
 
     } catch (error) {
+        console.log(error);
+        
         const data = {
             status: 500,
             message: error.message,

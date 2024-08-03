@@ -11,6 +11,7 @@ const adminRoutes = require('./src/routes/adminRoutes');
 const planRoutes = require('./src/routes/planRoutes');
 const userPlanRoutes = require('./src/routes/userPlanRoutes');
 const workoutRoutes = require('./src/routes/workoutRoutes');
+const upload = require('./src/utils/multerConfig');
 
 /**
  * Loads environment variables from a `.env` file.
@@ -72,7 +73,30 @@ app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/plan', planRoutes);
 app.use('/api/v1/user-plan', userPlanRoutes);
-app.use('/api/v1/workouts', workoutRoutes)
+app.use('/api/v1/workouts', workoutRoutes);
+
+
+
+
+app.post('/upload-json', upload.single('jsonFile'), (req, res) => {
+    try {
+        // Extract the JSON data from the request body
+        const JSONFile = req.file;
+
+        // Respond to the client
+        res.status(200).json({ data: JSON.parse(JSONFile.buffer.toString()) });
+    } catch (error) {
+        console.log(error);
+        
+        res.status(500).json({status: 500, message:error.message})
+    }
+});
+
+
+
+
+
+
 
 /**
  * This function retrieves the server's port number from the environment variable 'PORT' or defaults to 5000 if not specified.

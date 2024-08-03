@@ -29,9 +29,27 @@ async function createUsingJSON(req, res) {
 
         const bufferBody = file.buffer.toString();
 
-        const body = JSON.parse(bufferBody);
+        const plan = JSON.parse(bufferBody);
 
-        const data = await createJsonPlan(body);
+        const { weeks, ...planBody } = plan;
+        const newWeeks = []; // Initialize an empty array for the weeks
+
+        weeks.forEach(weekObj => {
+            weekObj.week.forEach(weekNumber => {
+                const weekData = {
+                    week: weekNumber,
+                    days: weekObj.days // Clone each day object
+                };
+                newWeeks.push(weekData);
+            });
+        });
+
+        const newPlan = {
+            ...planBody,
+            weeks: newWeeks
+        }
+
+        const data = await createJsonPlan(newPlan);
 
         return responseHandler(res, data);
 
