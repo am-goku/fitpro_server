@@ -3042,7 +3042,7 @@
 
 /**
  * @swagger
- * /api/v1/workouts/user-workouts/{workoutID}/categories/{categoryID}:
+ * /api/v1/workouts/user-workouts/categories/{categoryID}:
  *   post:
  *     summary: Update the category in a user's workout
  *     tags: 
