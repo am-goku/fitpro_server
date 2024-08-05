@@ -3051,12 +3051,6 @@
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: workoutID
- *         schema:
- *           type: string
- *         required: true
- *         description: ID of the workout
- *       - in: path
  *         name: categoryID
  *         type: string
  *         description: ID of the category that has been completed
@@ -3088,20 +3082,13 @@
 
 /**
  * @swagger
- * /api/v1/workouts/user-workouts/{workoutID}/completed-categories:
+ * /api/v1/workouts/user-workouts/completed-categories:
  *   get:
  *     summary: Fetch the completed categories in a user's workout
  *     tags: 
  *       - Test APIs
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: workoutID
- *         schema:
- *           type: string
- *         required: true
- *         description: ID of the workout
  *     responses:
  *       200:
  *         description: Completed categories fetched successfully

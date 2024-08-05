@@ -100,7 +100,7 @@ async function updateImagInWorkout(req, res) {
 // TODO: Need to remove this function and related APIs after use
 async function updateCategories(req, res) {
     try {
-        const { workoutID, categoryID } = req.params;
+        const { categoryID } = req.params;
         const userID = req.userID;
 
         const fetchData = false;
@@ -109,7 +109,7 @@ async function updateCategories(req, res) {
             fetchData = true;
         }
 
-        const data = await updateCompletedCategories(userID, workoutID, categoryID, fetchData);
+        const data = await updateCompletedCategories(userID, categoryID, fetchData);
 
         return responseHandler(res, data);
 

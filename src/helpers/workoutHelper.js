@@ -3,6 +3,7 @@ const Exercise = require("../models/Exercise");
 const Workout = require("../models/Workout");
 const UserWorkout = require('../models/UserWorkout'); // Adjust the path if needed
 const s3Interface = require("../service/s3Interface");
+const User = require("../models/User");
 
 async function createWorkout(workoutData) {
     try {
@@ -322,17 +323,16 @@ async function updateWorkoutImage(userID, workoutID, file) {
 
 // Temporary functions for testing and client side development
 // TODO: Need to remove this function and related APIs after use
-async function updateCompletedCategories(userID, workoutID, categoryID, fetchData) {
+async function updateCompletedCategories(userID, categoryID, fetchData) {
     try {
-        let userWorkout = null;
+        let user = null;
 
         if (fetchData) {
-            userWorkout = await UserWorkout.findOne({ user: userID, workout: workoutID });
+            user = await User.findOne({ _id: userID });
         } else {
-            userWorkout = await UserWorkout.findOneAndUpdate(
+            user = await User.findOneAndUpdate(
                 {
-                    user: userID,
-                    workout: workoutID
+                    _id: userID
                 },
                 {
                     $push: { completedCategories: categoryID }
@@ -341,17 +341,17 @@ async function updateCompletedCategories(userID, workoutID, categoryID, fetchDat
             );
         }
 
-        if (!userWorkout) {
+        if (!user) {
             return {
                 staus: 400,
-                message: 'User Workout not found'
+                message: 'User not found'
             }
         }
 
         return {
             status: 200,
             message: 'Completed Categories updated successfully',
-            completedCategories: userWorkout.completedCategories
+            completedCategories: user.completedCategories
         }
     } catch (error) {
         return {

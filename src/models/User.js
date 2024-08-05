@@ -95,7 +95,14 @@ const UserSchema = new mongoose.Schema({
     },
     workoutFrequency: {
         type: Number,
-    }
+    },
+
+    completedCategories: [
+        {
+            type: mongoose.Types.ObjectId,
+            required: false,
+        }
+    ]
 
 }, { timestamps: true });
 

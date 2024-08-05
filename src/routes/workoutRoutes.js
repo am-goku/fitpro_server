@@ -23,8 +23,8 @@ router.patch('/user-workouts/:workoutID', userProtect, upload.single('image'), u
 
 // Temporary functions for testing and client side development
 // TODO: Need to remove this function and related APIs after use
-router.post('/user-workouts/:workoutID/categories/:categoryID', userProtect, updateCategories)
-router.get('/user-workouts/:workoutID/completed-categories', userProtect, updateCategories)
+router.post('/user-workouts/categories/:categoryID', userProtect, updateCategories)
+router.get('/user-workouts/completed-categories', userProtect, updateCategories)
 
 
 module.exports = router;
