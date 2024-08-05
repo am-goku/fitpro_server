@@ -103,7 +103,7 @@ async function updateCategories(req, res) {
         const { categoryID } = req.params;
         const userID = req.userID;
 
-        const fetchData = false;
+        let fetchData = false;
 
         if(!categoryID){
             fetchData = true;
