@@ -29,13 +29,19 @@ const UserWorkoutSchema = new Schema({
             }
         }
     ],
+    completedCategories: [
+        {
+            type: mongoose.Types.ObjectId,
+            required: false
+        }
+    ],
     calories: {
         type: Number,
-        requires: false,
+        required: false,
     },
     minutes: {
         type: Number,
-        requires: false,
+        required: false,
     },
     image: {
         type: String,

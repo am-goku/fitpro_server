@@ -3038,3 +3038,91 @@
  */
 
 
+
+
+/**
+ * @swagger
+ * /api/v1/workouts/user-workouts/{workoutID}/categories/{categoryID}:
+ *   post:
+ *     summary: Update the category in a user's workout
+ *     tags: 
+ *       - Test APIs
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: workoutID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the workout
+ *       - in: path
+ *         name: categoryID
+ *         type: string
+ *         description: ID of the category that has been completed
+ *     responses:
+ *       200:
+ *         description: Updated the completed categories in a user's workout
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                 completedCategories:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: 6dtgafrsb20s63osDnd12
+ *       400:
+ *         description: Workout status not found in user collection
+ *       500:
+ *         description: Internal server error
+ */
+
+
+
+/**
+ * @swagger
+ * /api/v1/workouts/user-workouts/{workoutID}/completed-categories:
+ *   get:
+ *     summary: Fetch the completed categories in a user's workout
+ *     tags: 
+ *       - Test APIs
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: workoutID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the workout
+ *     responses:
+ *       200:
+ *         description: Completed categories fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                 completedCategories:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: 6dtgafrsb20s63osDnd12
+ *       400:
+ *         description: Workout status not found in user collection
+ *       500:
+ *         description: Internal server error
+ */
+

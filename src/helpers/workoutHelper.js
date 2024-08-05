@@ -130,7 +130,7 @@ async function createUserWorkout(userID, workoutID, populateWorkout, populateExe
 
         const isExist = await UserWorkout.findOne({ user: userID, workout: workoutID });
 
-        if(isExist) {
+        if (isExist) {
             return {
                 status: 409,
                 message: 'User has already started or completed this workout'
@@ -170,11 +170,11 @@ async function createUserWorkout(userID, workoutID, populateWorkout, populateExe
 
         await userWorkout.save();
 
-        if(populateExercise === 'true') {
+        if (populateExercise === 'true') {
             await userWorkout.populate("exercises.exercise");
         }
 
-        if(populateWorkout === 'true') {
+        if (populateWorkout === 'true') {
             await userWorkout.populate("workout");
         }
 
@@ -287,7 +287,7 @@ async function updateExerciseCompletion(userID, workoutID, exerciseID, completed
 
 async function updateWorkoutImage(userID, workoutID, file) {
     try {
-        const userWorkout = await UserWorkout.findOne({user: userID, workout: workoutID});
+        const userWorkout = await UserWorkout.findOne({ user: userID, workout: workoutID });
 
         if (!userWorkout) {
             return {
@@ -320,4 +320,47 @@ async function updateWorkoutImage(userID, workoutID, file) {
 
 
 
-module.exports = { createWorkout, fetchWorkout, deleteWorkout, createUserWorkout, readUserWorkout, updateExerciseCompletion, updateWorkoutImage }
+// Temporary functions for testing and client side development
+// TODO: Need to remove this function and related APIs after use
+async function updateCompletedCategories(userID, workoutID, categoryID, fetchData) {
+    try {
+        let userWorkout = null;
+
+        if (fetchData) {
+            userWorkout = await UserWorkout.findOne({ user: userID, workout: workoutID });
+        } else {
+            userWorkout = await UserWorkout.findOneAndUpdate(
+                {
+                    user: userID,
+                    workout: workoutID
+                },
+                {
+                    $push: { completedCategories: categoryID }
+                },
+                { new: true }
+            );
+        }
+
+        if (!userWorkout) {
+            return {
+                staus: 400,
+                message: 'User Workout not found'
+            }
+        }
+
+        return {
+            status: 200,
+            message: 'Completed Categories updated successfully',
+            completedCategories: userWorkout.completedCategories
+        }
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message
+        }
+    }
+}
+
+
+
+module.exports = { createWorkout, fetchWorkout, deleteWorkout, createUserWorkout, readUserWorkout, updateExerciseCompletion, updateWorkoutImage, updateCompletedCategories }

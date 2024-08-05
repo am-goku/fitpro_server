@@ -1,4 +1,4 @@
-const { createUserWorkout, readUserWorkout, updateExerciseCompletion, updateWorkoutImage } = require('../helpers/workoutHelper'); // Adjust the path if needed
+const { createUserWorkout, readUserWorkout, updateExerciseCompletion, updateWorkoutImage, updateCompletedCategories } = require('../helpers/workoutHelper'); // Adjust the path if needed
 const { createWorkout, fetchWorkout, deleteWorkout } = require('../helpers/workoutHelper');
 const responseHandler = require('../utils/responseHandler');
 
@@ -54,7 +54,7 @@ async function deleteWorkoutController(req, res) {
 
 async function createUserWorkoutController(req, res) {
     const { workoutID } = req.params;
-    const {populateExercise, populateWorkout} = req.query
+    const { populateExercise, populateWorkout } = req.query
     const userID = req.userID
     const data = await createUserWorkout(userID, workoutID, populateWorkout, populateExercise);
     return responseHandler(res, data);
@@ -77,7 +77,7 @@ async function updateExerciseCompletionController(req, res) {
     const userID = req.userID;
     const { completed, completionDate, minutes } = req.body;
     console.log(req.body);
-    
+
 
     const data = await updateExerciseCompletion(userID, workoutID, exerciseID, completed, completionDate, minutes);
     return responseHandler(res, data);
@@ -96,6 +96,30 @@ async function updateImagInWorkout(req, res) {
 
 
 
+// Temporary functions for testing and client side development
+// TODO: Need to remove this function and related APIs after use
+async function updateCategories(req, res) {
+    try {
+        const { workoutID, categoryID } = req.params;
+        const userID = req.userID;
+
+        const fetchData = false;
+
+        if(!categoryID){
+            fetchData = true;
+        }
+
+        const data = await updateCompletedCategories(userID, workoutID, categoryID, fetchData);
+
+        return responseHandler(res, data);
+
+    } catch (error) {
+        return responseHandler(res, { status: 500, message: error.message })
+    }
+}
+
+
+
 
 module.exports = {
     createWorkoutController,
@@ -104,5 +128,6 @@ module.exports = {
     createUserWorkoutController,
     readUserWorkoutController,
     updateExerciseCompletionController,
-    updateImagInWorkout
+    updateImagInWorkout,
+    updateCategories
 };
