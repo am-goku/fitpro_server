@@ -2565,3 +2565,20 @@
 
 
 
+/**
+ * @swagger
+ * /api/v1/workouts/{workoutID}/exercises:
+ *   get:
+ *     summary: Get exercises searatly {exercises, circuit, superset}
+ *     tags:
+ *       - Workouts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: workoutID
+ *         schema:
+ *           type: string
+ *         description: ID of the workout plan
+ */
+

@@ -1,4 +1,4 @@
-const { createUserWorkout, readUserWorkout, updateExerciseCompletion, updateWorkoutImage, updateCompletedCategories } = require('../helpers/workoutHelper'); // Adjust the path if needed
+const { createUserWorkout, readUserWorkout, updateExerciseCompletion, updateWorkoutImage, updateCompletedCategories, fetchAllExercises } = require('../helpers/workoutHelper'); // Adjust the path if needed
 const { createWorkout, fetchWorkout, deleteWorkout } = require('../helpers/workoutHelper');
 const responseHandler = require('../utils/responseHandler');
 
@@ -14,6 +14,28 @@ async function createWorkoutController(req, res) {
             status: 500,
             message: error.message
         });
+    }
+}
+
+async function createWorkoutJSON(req, res) {
+    try {
+        const file = req.file;
+        if (!file) {
+            return responseHandler(
+                res,
+                { status: 400, message: "No JSON file provided" }
+            )
+        }
+
+        const bufferBody = file.buffer.toString();
+
+        const workout = JSON.parse(bufferBody);
+
+        const data = await createWorkout(workout);
+
+        return responseHandler(res, data);
+    } catch (error) {
+        return responseHandler(res, { status: 500, message: error.message });
     }
 }
 
@@ -95,6 +117,18 @@ async function updateImagInWorkout(req, res) {
 }
 
 
+async function fetchPopulatedExercises(req, res) {
+    try {
+        const workoutID = req.params.workoutID;
+        const data = await fetchAllExercises(workoutID);
+
+        return responseHandler(res, data);
+    } catch (error) {
+        return responseHandler(res, error);
+    }
+}
+
+
 
 // Temporary functions for testing and client side development
 // TODO: Need to remove this function and related APIs after use
@@ -123,11 +157,13 @@ async function updateCategories(req, res) {
 
 module.exports = {
     createWorkoutController,
+    createWorkoutJSON,
     fetchWorkoutController,
     deleteWorkoutController,
     createUserWorkoutController,
     readUserWorkoutController,
     updateExerciseCompletionController,
     updateImagInWorkout,
-    updateCategories
+    updateCategories,
+    fetchPopulatedExercises
 };

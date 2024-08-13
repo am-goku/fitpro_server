@@ -319,6 +319,44 @@ async function updateWorkoutImage(userID, workoutID, file) {
     }
 }
 
+async function fetchAllExercises(workoutID) {
+    try {
+        const workout = await Workout.findById(workoutID).populate({
+            path: 'categories',
+            populate: {
+                path: 'exercises',
+            }
+        });
+
+        const exercises = [];
+        const superset = [];
+        const circuit = [];
+
+        workout.categories.forEach((cat) => {
+            if (cat.sub_category.toLowerCase() === 'circuit') {
+                circuit.push(...cat.exercises);
+            } else if (cat.sub_category.toLowerCase() === 'superset') {
+                superset.push(...cat.exercises);
+            } else {
+                exercises.push(...cat.exercises);
+            }
+        })
+
+        return {
+            status: 200,
+            message: 'Exercises fetched successfully',
+            exercises,
+            superset,
+            circuit
+        }
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message
+        }
+    }
+}
+
 
 
 // Temporary functions for testing and client side development
@@ -363,4 +401,4 @@ async function updateCompletedCategories(userID, categoryID, fetchData) {
 
 
 
-module.exports = { createWorkout, fetchWorkout, deleteWorkout, createUserWorkout, readUserWorkout, updateExerciseCompletion, updateWorkoutImage, updateCompletedCategories }
+module.exports = { createWorkout, fetchWorkout, deleteWorkout, fetchAllExercises, createUserWorkout, readUserWorkout, updateExerciseCompletion, updateWorkoutImage, updateCompletedCategories }

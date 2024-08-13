@@ -2698,6 +2698,55 @@
 
 /**
  * @swagger
+ * /api/v1/workouts/json:
+ *   post:
+ *     summary: Create a new workout from JSON
+ *     description: Creates a new workout along with its categories and exercises from json.
+ *     tags:
+ *       - Workouts
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               workout:
+ *                 type: string
+ *                 format: binary
+ *                 description: JSON file containing the workout data
+ *     responses:
+ *       200:
+ *         description: Workout created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ *                 workout:
+ *                   $ref: '#/components/schemas/Workout'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ */
+
+
+/**
+ * @swagger
  * /api/v1/workouts:
  *   get:
  *     summary: Fetch a specific workout or all workouts
