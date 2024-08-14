@@ -340,9 +340,9 @@ async function fetchAllExercises(workoutID) {
         const circuit = [];
 
         workout.categories.forEach((cat) => {
-            if (cat.sub_category.toLowerCase() === 'circuit') {
+            if (cat.sub_category.toLowerCase().includes('circuit')) {
                 circuit.push(...cat.exercises);
-            } else if (cat.sub_category.toLowerCase() === 'superset') {
+            } else if (cat.sub_category.toLowerCase().includes('superset')) {
                 superset.push(...cat.exercises);
             } else {
                 exercises.push(...cat.exercises);
