@@ -328,6 +328,13 @@ async function fetchAllExercises(workoutID) {
             }
         });
 
+        if(!workout) {
+            return {
+                status: 404,
+                message: 'Workout not found'
+            }
+        }
+
         const exercises = [];
         const superset = [];
         const circuit = [];
