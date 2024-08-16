@@ -23,7 +23,8 @@ const {
     fetchFeaturedPlans, addTrendingPlan,
     fetchTrendingPlans, fetchWeekPlan,
     fetchDayPlan, fetchCategory, fetchExercise,
-    createUsingJSON
+    createUsingJSON,
+    fetchDailyExercises
 } = require('../controllers/planController');
 const upload = require('../utils/multerConfig');
 const { uploadNewFile } = require('../controllers/imageController');
@@ -159,6 +160,8 @@ router.get('/day/:dayID', userProtect, fetchDayPlan);
  * @param {updateWorkoutDayPlan} controller - Controller function for updating a workout day
  */
 router.put('/day/:dayID', adminProtect, updateWorkoutDayPlan);
+
+router.get('/day/:dayID/exercises', userProtect, fetchDailyExercises);
 
 
 /////////////////////// WORKOUT CATEGORY //////////////////////

@@ -2582,3 +2582,22 @@
  *         description: ID of the workout plan
  */
 
+
+
+/**
+ * @swagger
+ * /api/v1/day/{dayID}/exercises:
+ *   get:
+ *     summary: Get exercises {exercises, circuit, superset}
+ *     tags:
+ *       - Plans - DAY
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: dayID
+ *         schema:
+ *           type: string
+ *         description: ID of the day
+ */
+

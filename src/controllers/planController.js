@@ -1,4 +1,4 @@
-const { fetchPlan, updatePlan, deletePlan, updateWeek, updateDay, updateCategory, updateExercise, fetchPlanOverview, createJsonPlan, createPlan, setFeaturedPlanStatus, setTrendingPlanStatus, getTrendingPlans, getFeaturedPlans, addWeek, addDay, addCategory, addExercise, getWeek, getDay, getCategory, getExercise } = require("../helpers/planHelper");
+const { fetchPlan, updatePlan, deletePlan, updateWeek, updateDay, updateCategory, updateExercise, fetchPlanOverview, createJsonPlan, createPlan, setFeaturedPlanStatus, setTrendingPlanStatus, getTrendingPlans, getFeaturedPlans, addWeek, addDay, addCategory, addExercise, getWeek, getDay, getCategory, getExercise, getExercisesInDay } = require("../helpers/planHelper");
 const responseHandler = require("../utils/responseHandler");
 
 
@@ -680,6 +680,18 @@ async function fetchFeaturedPlans(req, res) {
 }
 
 
+async function fetchDailyExercises(req, res) {
+    try {
+        const dayID = req.params.dayID;
+        const data = await getExercisesInDay(dayID)
+
+        return responseHandler(res, data);
+    } catch (error) {
+        return responseHandler(res, error)
+    }
+}
+
+
 
 
 
@@ -691,5 +703,5 @@ async function fetchFeaturedPlans(req, res) {
 const workoutCreate = { createJsonWorkoutPlan, createUsingJSON }
 const workoutFetch = { fetchWorkoutPlan, fetchWorkoutOverview, fetchWeekPlan, fetchDayPlan, fetchCategory, fetchExercise }
 const specialPlans = { addFeaturedPlan, addTrendingPlan, fetchFeaturedPlans, fetchTrendingPlans }
-const workoutUpdate = { updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise }
+const workoutUpdate = { updateWorkoutPlan, deleteWorkoutPlan, updateWorkoutWeekPlan, updateWorkoutDayPlan, updateWorkoutCategory, updateWorkoutExercise, fetchDailyExercises }
 module.exports = { ...specialPlans, ...workoutCreate, ...workoutFetch, ...workoutUpdate }

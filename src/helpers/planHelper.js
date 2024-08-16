@@ -95,7 +95,7 @@ async function createJsonPlan({ weeks, ...planBody }) {
 
     } catch (error) {
         console.log(error);
-        
+
         const data = {
             status: 500,
             message: error.message,
@@ -788,6 +788,54 @@ async function getFeaturedPlans() {
 }
 
 
+
+async function getExercisesInDay(dayID) {
+    try {
+        const day = await DayPlan.findById(dayID).populate({
+            path: 'categories',
+            populate: {
+                path: 'exercises',
+            }
+        });
+
+        if (!day) {
+            return {
+                status: 404,
+                message: 'Day not found'
+            }
+        }
+
+        const exercises = [];
+        const superset = [];
+        const circuit = [];
+
+        day.categories.forEach((cat) => {
+            if (cat.sub_category.toLowerCase().includes('circuit')) {
+                circuit.push(...cat.exercises);
+            } else if (cat.sub_category.toLowerCase().includes('superset')) {
+                superset.push(...cat.exercises);
+            } else {
+                exercises.push(...cat.exercises);
+            }
+        })
+
+        return {
+            status: 200,
+            message: 'Exercises fetched successfully',
+            exercises,
+            superset,
+            circuit
+        }
+
+    } catch (error) {
+        return {
+            status: 500,
+            message: error.message,
+        }
+    }
+}
+
+
 /**
  * Exports functions for managing data plans.
  *
@@ -795,5 +843,5 @@ async function getFeaturedPlans() {
  */
 const createFunctions = { createJsonPlan };
 const specialPlans = { setTrendingPlanStatus, getTrendingPlans, setFeaturedPlanStatus, getFeaturedPlans };
-const fetchingPlans = { getWeek, getDay, getCategory, getExercise }
+const fetchingPlans = { getWeek, getDay, getCategory, getExercise, getExercisesInDay }
 module.exports = { ...createFunctions, ...specialPlans, ...fetchingPlans, fetchPlan, fetchPlanOverview, updatePlan, deletePlan, updateWeek, updateDay, updateCategory, updateExercise };
