@@ -805,27 +805,16 @@ async function getExercisesInDay(dayID) {
             }
         }
 
-        const exercises = [];
-        const superset = [];
-        const circuit = [];
+        const data = {}
 
         day.categories.forEach((cat) => {
-            if (cat.sub_category.toLowerCase().includes('circuit')) {
-                circuit.push(...cat.exercises);
-            } else if (cat.sub_category.toLowerCase().includes('superset')) {
-                superset.push(...cat.exercises);
-            } else {
-                exercises.push(...cat.exercises);
-            }
+            data[cat.sub_category] = cat.exercises;
         })
 
-        return {
-            status: 200,
-            message: 'Exercises fetched successfully',
-            exercises,
-            superset,
-            circuit
-        }
+        data.status = 200;
+        data.message = 'Exercises fetched successfully'
+
+        return data;
 
     } catch (error) {
         return {
