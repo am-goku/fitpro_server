@@ -341,11 +341,12 @@ async function fetchAllExercises(workoutID) {
             data[cat.sub_category] = cat.exercises;
         })
 
-        data.status = 200;
-        data.message = 'Exercises fetched successfully'
+        return {
+            status: 200,
+            message: 'Exercises fetched successfully',
+            data
+        };
 
-        return data;
-        
     } catch (error) {
         return {
             status: 500,

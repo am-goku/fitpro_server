@@ -811,10 +811,11 @@ async function getExercisesInDay(dayID) {
             data[cat.sub_category] = cat.exercises;
         })
 
-        data.status = 200;
-        data.message = 'Exercises fetched successfully'
-
-        return data;
+        return {
+            status: 200,
+            message: 'Exercises fetched successfully',
+            data
+        };
 
     } catch (error) {
         return {
