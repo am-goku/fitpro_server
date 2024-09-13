@@ -1,4 +1,3 @@
-```markdown
 # FitPro Fitness App Backend
 
 FitPro is a fitness app backend built with Node.js, Express, and MongoDB. It provides various fitness-related functionalities like user management, workout tracking, and more. This backend supports authentication using JWT tokens and integrates with AWS S3 for media storage and email notifications using SMTP.
